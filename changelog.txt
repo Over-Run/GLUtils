@@ -1,0 +1,10 @@
+0.1.0
+org.overrun.glutils
+    .callback
+        + ErrorCallback
+        + WarningCallback
+    + GlProgram
+    + GLUtils
+    + ShaderReader
+    + ShaderType
+    + Textures
