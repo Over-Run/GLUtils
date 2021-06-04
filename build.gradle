@@ -57,30 +57,58 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-signing {
-    sign configurations.archives
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
-// You need to add 'ossUsername', 'ossPassword' to GRADLE_USER_HOME/gradle.properties
-publishing {
-    publications {
-        mavenRemote(MavenPublication) {
-            groupId 'io.github.over-run'
-            artifactId 'glutils'
-            version projectVersion
-            description 'Utils for OpenGL for Java.'
-        }
-    }
-    repositories {
-        maven {
-            credentials {
-                username ossrhUsername
-                password ossrhPassword
+publishing.publications {
+    mavenJava(MavenPublication) {
+        groupId = 'io.github.over-run'
+        artifactId = 'glutils'
+        version = projectVersion
+        description = 'Utils for OpenGL for Java.'
+        from components.java
+        pom {
+            name = 'GLUtils'
+            description = 'Utils for OpenGL for Java.'
+            url = 'https://github.com/Over-Run/GLUtils'
+            licenses {
+                license {
+                    name = 'The MIT License'
+                    url = 'https://raw.githubusercontent.com/Over-Run/GLUtils/pre-alpha/LICENSE'
+                }
             }
-            url 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            developers {
+                developer {
+                    id = 'squid233'
+                    name = 'squid233'
+                    email = '513508220@qq.com'
+                }
+            }
+            scm {
+                connection = 'https://github.com/Over-Run/GLUtils.git'
+                developerConnection = 'https://github.com/Over-Run/GLUtils.git'
+                url = 'https://github.com/Over-Run/GLUtils'
+            }
         }
-        mavenLocal()
     }
+}
+// You need to add 'ossUsername', 'ossPassword' to GRADLE_USER_HOME/gradle.properties
+publishing.repositories {
+    maven {
+        credentials {
+            username ossrhUsername
+            password ossrhPassword
+        }
+        url = version.endsWith('SNAPSHOT')
+                ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }
 
 idea.module.inheritOutputDirs = true
