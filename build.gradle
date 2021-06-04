@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'signing'
     id 'maven-publish'
 }
 
@@ -8,7 +9,8 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 group 'io.github.over-run'
 archivesBaseName = 'glutils'
-version '0.1.0'
+project.ext.projectVersion =
+version = '0.1.0'
 
 repositories {
     mavenCentral()
@@ -35,8 +37,7 @@ jar {
                 'Specification-Version': '0',
                 'Implementation-Title': 'GLUtils 0',
                 'Implementation-Vendor': 'OverRun Organization',
-                'Implementation-Version': archiveVersion,
-                'Multi-Release': true
+                'Implementation-Version': archiveVersion
     }
 }
 
@@ -48,25 +49,36 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier.set 'javadoc'
-    from 'build/docs/javadoc'
+    from javadoc
     from 'LICENSE'
 }
 
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+// You need to add 'ossUsername', 'ossPassword' to GRADLE_USER_HOME/gradle.properties
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifact(jar) {
-                builtBy jar
-            }
-            artifact(sourcesJar) {
-                builtBy sourcesJar
-            }
-            artifact(javadocJar) {
-                builtBy javadocJar
-            }
+        mavenRemote(MavenPublication) {
+            groupId 'io.github.over-run'
+            artifactId 'glutils'
+            version projectVersion
+            description 'Utils for OpenGL for Java.'
         }
     }
     repositories {
+        maven {
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+            url 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+        }
         mavenLocal()
     }
 }
