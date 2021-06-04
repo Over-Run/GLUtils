@@ -47,7 +47,7 @@ public class ShaderReader {
     }
 
     /**
-     * Read lines from stream by loader.
+     * Read lines from stream.
      *
      * @param stream The InputStream.
      * @return File contents.

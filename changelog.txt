@@ -8,3 +8,8 @@ org.overrun.glutils
     + ShaderReader
     + ShaderType
     + Textures
+
+0.2.0
+Fixed a bug: Program crashed when loading texture by Textures.loadFS
+Fixed a bug: Expect ARGB but return ABGR when loading texture by Textures.loadAWT
+New feature: Developers can load texture by ByteBuffer
