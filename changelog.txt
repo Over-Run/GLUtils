@@ -10,6 +10,10 @@ org.overrun.glutils
     + Textures
 
 0.2.0
-Fixed a bug: Program crashed when loading texture by Textures.loadFS
-Fixed a bug: Expect ARGB but return ABGR when loading texture by Textures.loadAWT
+Fixed a bug: Program crashed when loading texture by `Textures.loadFS`
+Fixed a bug: Expect ARGB but return ABGR when loading texture by `Textures.loadAWT`
 New feature: Developers can load texture by ByteBuffer
+New feature: `Mesh` for OpenGL 2 and `Mesh3` for OpenGL 3
+New feature: Developers can and MUST close `Textures` before terminating
+New feature: interface for `ThrowableCallback`
+Changed: Program will not throw an exception when attrib not found (`GlProgram#getAttrib`)

@@ -23,44 +23,14 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.callback;
 
-import static org.lwjgl.opengl.GL32.*;
+import java.util.function.Consumer;
 
 /**
  * @author squid233
- * @since 0.1.0
+ * @since 0.2.0
  */
-public enum ShaderType {
-    /**
-     * fragmentShader
-     */
-    FRAGMENT_SHADER(GL_FRAGMENT_SHADER),
-    /**
-     * vertexShader
-     */
-    VERTEX_SHADER(GL_VERTEX_SHADER),
-    /**
-     * geometryShader
-     */
-    GEOMETRY_SHADER(GL_GEOMETRY_SHADER);
-
-    private final int type;
-
-    ShaderType(int type) {
-        this.type = type;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name().toLowerCase().replace("_s", "S");
-    }
-
-    @Override
-    public String toString() {
-        return getName();
-    }
+@FunctionalInterface
+public interface ThrowableCallback extends Consumer<Throwable> {
 }

@@ -1,6 +1,8 @@
 # GLUtils
 Utils for OpenGL for Java:coffee:.
 
+[If there are any bugs, tell us!](https://github.com/Over-Run/GLUtils/issues/new)
+
 ## Use for depending on
 
 ```properties
@@ -21,14 +23,17 @@ public class Example {
     public static void main(String[] args) {
         init();
         ClassLoader cl = Example.class.getClassLoader();
-        prg = new GlProgram()
-        prg.createVsh(ShaderReader.lines(cl, "shaders/sense.vsh"));
-        prg.createFsh(ShaderReader.lines(cl, "shaders/sense.fsh"));
-        prg.link();
+        try {
+            prg = new GlProgram()
+            prg.createVsh(ShaderReader.lines(cl, "shaders/sense.vsh"));
+            prg.createFsh(ShaderReader.lines(cl, "shaders/sense.fsh"));
+            prg.link();
+        } catch (Throwable e) {
+            if (prg != null) {
+                prg.close();
+            }
+        }
         render();
-    }
-    static void close() {
-        prg.close();
     }
 }
 ```

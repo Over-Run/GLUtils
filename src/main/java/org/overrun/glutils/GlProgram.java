@@ -25,7 +25,6 @@
 
 package org.overrun.glutils;
 
-import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +34,7 @@ import static org.lwjgl.opengl.GL20.*;
  * @author squid233
  * @since 0.1.0
  */
-public class GlProgram implements Closeable {
+public class GlProgram implements AutoCloseable {
     private final int id;
     private int vshId, fshId, gshId;
     private final Map<String, Integer> uniforms = new HashMap<>();
@@ -138,9 +137,10 @@ public class GlProgram implements Closeable {
         }
         int loc = glGetAttribLocation(id, name);
         if (loc < 0) {
-            throw new RuntimeException("Couldn't find attribute: \"" +
+            GLUtils.getErrorCb().error("Couldn't find attribute: \"" +
                     name +
                     "\"");
+            return -1;
         }
         attributes.put(name, loc);
         return loc;

@@ -26,16 +26,15 @@
 package org.overrun.glutils;
 
 import org.overrun.glutils.callback.ErrorCallback;
+import org.overrun.glutils.callback.ThrowableCallback;
 import org.overrun.glutils.callback.WarningCallback;
-
-import java.util.function.Consumer;
 
 /**
  * @author squid233
  * @since 0.1.0
  */
 public final class GLUtils {
-    private static Consumer<Throwable> throwableCb = Throwable::printStackTrace;
+    private static ThrowableCallback throwableCb = Throwable::printStackTrace;
     private static WarningCallback warningCb = GLUtils::defaultWarningCb;
     private static ErrorCallback errorCb = GLUtils::defaultErrorCb;
 
@@ -71,11 +70,11 @@ public final class GLUtils {
      *
      * @param cb Consumer with a Throwable.
      */
-    public static void setThrowableCb(Consumer<Throwable> cb) {
+    public static void setThrowableCb(ThrowableCallback cb) {
         throwableCb = cb;
     }
 
-    public static Consumer<Throwable> getThrowableCb() {
+    public static ThrowableCallback getThrowableCb() {
         return throwableCb;
     }
 }

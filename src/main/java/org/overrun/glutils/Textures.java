@@ -51,8 +51,8 @@ public class Textures {
      * Load texture from stream by AWT.
      *
      * @param loader ClassLoader of loader class.
-     * @param name The filename.
-     * @param mode Processor mode.
+     * @param name   The filename.
+     * @param mode   Processor mode.
      * @return The texture id.
      */
     public static int loadAWT(ClassLoader loader, String name, int mode) {
@@ -132,9 +132,10 @@ public class Textures {
      * Load texture by buffer.
      *
      * @param identifier The identifier of texture.
-     * @param buffer The ByteBuffer that contains pixel data.
-     * @param mode Processor mode.
+     * @param buffer     The ByteBuffer that contains pixel data.
+     * @param mode       Processor mode.
      * @return The texture id.
+     * @since 0.2.0
      */
     public static int load(String identifier, ByteBuffer buffer, int mode) {
         if (ID_MAP.containsKey(identifier)) {
@@ -179,5 +180,17 @@ public class Textures {
                 GL_UNSIGNED_BYTE,
                 data
         );
+    }
+
+    /**
+     * Cleanup all resources.
+     *
+     * @since 0.2.0
+     */
+    public static void close() {
+        for (int id : ID_MAP.values()) {
+            glDeleteTextures(id);
+        }
+        ID_MAP.clear();
     }
 }
