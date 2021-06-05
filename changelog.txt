@@ -17,3 +17,7 @@ New feature: `Mesh` for OpenGL 2 and `Mesh3` for OpenGL 3
 New feature: Developers can and MUST close `Textures` before terminating
 New feature: interface for `ThrowableCallback`
 Changed: Program will not throw an exception when attrib not found (`GlProgram#getAttrib`)
+
+0.3.0
+New feature: Developers can load texture by int array
+New feature: Developers can generate sprite by `AtlasLoom`

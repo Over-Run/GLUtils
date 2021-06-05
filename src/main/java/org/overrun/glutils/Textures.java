@@ -26,7 +26,6 @@
 package org.overrun.glutils;
 
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -70,25 +69,16 @@ public class Textures {
             return 0;
         }
         int id = glGenTextures();
-        ByteBuffer buffer = null;
-        try {
-            buffer = MemoryUtil.memAlloc(w * h * 4);
-            int[] pixels = new int[w * h];
-            img.getRGB(0, 0, w, h, pixels, 0, w);
-            for (int i = 0; i < pixels.length; ++i) {
-                int a = pixels[i] >> 24 & 255;
-                int r = pixels[i] >> 16 & 255;
-                int g = pixels[i] >> 8 & 255;
-                int b = pixels[i] >> 0 & 255;
-                pixels[i] = a << 24 | b << 16 | g << 8 | r << 0;
-            }
-            buffer.asIntBuffer().put(pixels);
-            pushToGL(id, mode, w, h, buffer);
-        } finally {
-            if (buffer != null) {
-                MemoryUtil.memFree(buffer);
-            }
+        int[] pixels = new int[w * h];
+        img.getRGB(0, 0, w, h, pixels, 0, w);
+        for (int i = 0; i < pixels.length; ++i) {
+            int a = pixels[i] >> 24 & 255;
+            int r = pixels[i] >> 16 & 255;
+            int g = pixels[i] >> 8 & 255;
+            int b = pixels[i] >> 0 & 255;
+            pixels[i] = a << 24 | b << 16 | g << 8 | r << 0;
         }
+        pushToGL(id, mode, w, h, pixels);
         ID_MAP.put(name, id);
         return id;
     }
@@ -165,12 +155,63 @@ public class Textures {
         return id;
     }
 
-    private static void pushToGL(int id, int mode, int w, int h, ByteBuffer data) {
+    /**
+     * Load texture by array.
+     *
+     * @param identifier The identifier of texture.
+     * @param w          Texture width
+     * @param h          Texture height
+     * @param data       The array that contains pixel data.
+     * @param mode       Processor mode.
+     * @return The texture id.
+     * @since 0.3.0
+     */
+    public static int load(String identifier, int w, int h, int[] data, int mode) {
+        if (ID_MAP.containsKey(identifier)) {
+            return ID_MAP.get(identifier);
+        }
+        int id = glGenTextures();
+        pushToGL(id, mode, w, h, data);
+        ID_MAP.put(identifier, id);
+        return id;
+    }
+
+    /**
+     * @param id   identifier
+     * @param mode mode
+     * @since 0.3.0
+     */
+    private static void processTexture(int id, int mode) {
         glBindTexture(GL_TEXTURE_2D, id);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mode);
-        glTexImage2D(
-                GL_TEXTURE_2D,
+    }
+
+    public static void pushToGL(int id, int mode, int w, int h, ByteBuffer data) {
+        processTexture(id, mode);
+        glTexImage2D(GL_TEXTURE_2D,
+                0,
+                GL_RGBA,
+                w,
+                h,
+                0,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                data
+        );
+    }
+
+    /**
+     * @param id   identifier
+     * @param mode mode
+     * @param w    width
+     * @param h    height
+     * @param data pixel data
+     * @since 0.3.0
+     */
+    public static void pushToGL(int id, int mode, int w, int h, int[] data) {
+        processTexture(id, mode);
+        glTexImage2D(GL_TEXTURE_2D,
                 0,
                 GL_RGBA,
                 w,

@@ -5,12 +5,9 @@ Utils for OpenGL for Java:coffee:.
 
 ## Use for depending on
 
-```properties
-GLUTILS_VERSION=0.1.0
-```
 ```groovy
 dependencies {
-    implementation "io.github.over-run:glutils:${GLUTILS_VERSION}"
+    implementation "io.github.over-run:glutils:0.2.0"
 }
 ```
 

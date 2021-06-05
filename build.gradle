@@ -93,7 +93,7 @@ publishing.publications {
         }
     }
 }
-// You need to add 'ossUsername', 'ossPassword' to GRADLE_USER_HOME/gradle.properties
+// You need to add 'ossrhUsername', 'ossrhPassword' to GRADLE_USER_HOME/gradle.properties
 publishing.repositories {
     maven {
         credentials {
