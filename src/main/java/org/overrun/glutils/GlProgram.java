@@ -28,7 +28,7 @@ package org.overrun.glutils;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL41.*;
 
 /**
  * @author squid233
@@ -63,8 +63,8 @@ public class GlProgram implements AutoCloseable {
     /**
      * Create a shader.
      *
-     * @param src The shader source code. May get from
-     * {@link ShaderReader#lines(ClassLoader, String) lines}.
+     * @param src  The shader source code. May get from
+     *             {@link ShaderReader#lines(ClassLoader, String) lines}.
      * @param type The shader type.
      */
     private int createShader(String src, ShaderType type)
@@ -146,6 +146,10 @@ public class GlProgram implements AutoCloseable {
         return loc;
     }
 
+    public void enableVertexAttribArray(String name) {
+        glEnableVertexAttribArray(getAttrib(name));
+    }
+
     public void enableVertexAttribArrays(String... names) {
         for (String name : names) {
             glEnableVertexAttribArray(getAttrib(name));
@@ -156,6 +160,42 @@ public class GlProgram implements AutoCloseable {
         for (String name : names) {
             glDisableVertexAttribArray(getAttrib(name));
         }
+    }
+
+    /**
+     * Specifies the location and organization of a vertex attribute array.
+     *
+     * @param name       Attrib name
+     * @param size       the number of values per vertex that are stored in the array.
+     * @param type       the data type of each component in the array. The
+     *                   initial value is GL_FLOAT.
+     * @param normalized whether fixed-point data values should be normalized or
+     *                   converted directly as fixed-point values when they are
+     *                   accessed
+     * @param stride     the byte offset between consecutive generic vertex
+     *                   attributes. If stride is 0, the generic vertex
+     *                   attributes are understood to be tightly packed in the
+     *                   array. The initial value is 0.
+     * @param pointer    the vertex attribute data or the offset of the first
+     *                   component of the first generic vertex attribute in the
+     *                   array in the data store of the buffer currently bound
+     *                   to the ARRAY_BUFFER target. The initial value is 0.
+     * @see <a target="_blank" href="http://docs.gl/gl4/glVertexAttribPointer">Reference Page</a>
+     * @since 0.3.0
+     */
+    @SuppressWarnings("JavaDoc")
+    public void vertexAttribPointer(String name,
+                                    int size,
+                                    int type,
+                                    boolean normalized,
+                                    int stride,
+                                    long pointer) {
+        glVertexAttribPointer(getAttrib(name),
+                size,
+                type,
+                normalized,
+                stride,
+                pointer);
     }
 
     public int getId() {

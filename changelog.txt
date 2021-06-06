@@ -21,3 +21,4 @@ Changed: Program will not throw an exception when attrib not found (`GlProgram#g
 0.3.0
 New feature: Developers can load texture by int array
 New feature: Developers can generate sprite by `AtlasLoom`
+New feature: `GlProgram#vertexAttribPointer`
