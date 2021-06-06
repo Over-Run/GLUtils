@@ -1,5 +1,5 @@
 0.4.0
-Booting
+Fixed a bug: IMesh#texSize is 3
 
 0.3.0
 New feature: Developers can load texture by int array

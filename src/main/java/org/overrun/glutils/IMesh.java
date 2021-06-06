@@ -73,7 +73,7 @@ public interface IMesh extends AutoCloseable {
         protected float[] texCoords = null;
         protected int texture = 0;
         protected int texUsage = GL_STATIC_DRAW;
-        protected int texSize = 3;
+        protected int texSize = 2;
         protected boolean texNormalized = false;
         protected int texStride = 0;
         protected int[] indices;
