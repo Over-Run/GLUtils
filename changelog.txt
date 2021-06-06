@@ -22,3 +22,6 @@ Changed: Program will not throw an exception when attrib not found (`GlProgram#g
 New feature: Developers can load texture by int array
 New feature: Developers can generate sprite by `AtlasLoom`
 New feature: `GlProgram#vertexAttribPointer`
+Fixed a fatal bug: Program crashed when creating shaders
+    Exception in thread "main" java.lang.RuntimeException: Error compiling shader src: No errors.
+    	at org.overrun.glutils.GlProgram.createShader(GlProgram.java:84)

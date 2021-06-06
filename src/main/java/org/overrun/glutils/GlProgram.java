@@ -79,7 +79,7 @@ public class GlProgram implements AutoCloseable {
         }
         glShaderSource(shader, src);
         glCompileShader(shader);
-        if (glGetShaderi(id, GL_COMPILE_STATUS) == GL_FALSE) {
+        if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
             throw new RuntimeException("Error compiling shader src: " +
                     glGetShaderInfoLog(shader));
         }
