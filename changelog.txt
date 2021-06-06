@@ -1,13 +1,13 @@
-0.1.0
-org.overrun.glutils
-    .callback
-        + ErrorCallback
-        + WarningCallback
-    + GlProgram
-    + GLUtils
-    + ShaderReader
-    + ShaderType
-    + Textures
+0.4.0
+Booting
+
+0.3.0
+New feature: Developers can load texture by int array
+New feature: Developers can generate sprite by `AtlasLoom`
+New feature: `GlProgram#vertexAttribPointer`
+Fixed a fatal bug: Program crashed when creating shaders
+    Exception in thread "main" java.lang.RuntimeException: Error compiling shader src: No errors.
+    	at org.overrun.glutils.GlProgram.createShader(GlProgram.java:84)
 
 0.2.0
 Fixed a bug: Program crashed when loading texture by `Textures.loadFS`
@@ -18,10 +18,13 @@ New feature: Developers can and MUST close `Textures` before terminating
 New feature: interface for `ThrowableCallback`
 Changed: Program will not throw an exception when attrib not found (`GlProgram#getAttrib`)
 
-0.3.0
-New feature: Developers can load texture by int array
-New feature: Developers can generate sprite by `AtlasLoom`
-New feature: `GlProgram#vertexAttribPointer`
-Fixed a fatal bug: Program crashed when creating shaders
-    Exception in thread "main" java.lang.RuntimeException: Error compiling shader src: No errors.
-    	at org.overrun.glutils.GlProgram.createShader(GlProgram.java:84)
+0.1.0
+org.overrun.glutils
+    .callback
+        + ErrorCallback
+        + WarningCallback
+    + GlProgram
+    + GLUtils
+    + ShaderReader
+    + ShaderType
+    + Textures
