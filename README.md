@@ -1,5 +1,5 @@
 # GLUtils
-Utils for OpenGL for Java:coffee:.
+Utils for developing OpenGL for Java:coffee:.
 
 [If there are any bugs, tell us!](https://github.com/Over-Run/GLUtils/issues/new)
 

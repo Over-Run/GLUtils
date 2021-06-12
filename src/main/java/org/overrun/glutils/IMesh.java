@@ -62,18 +62,18 @@ public interface IMesh extends AutoCloseable {
     abstract class Builder<T> {
         protected float[] vertices;
         protected int vertUsage = GL_STATIC_DRAW;
-        protected int vertSize = 3;
+        protected int vertDim = 3;
         protected boolean vertNormalized = false;
         protected int vertStride = 0;
         protected float[] colors;
         protected int colorUsage = GL_STATIC_DRAW;
-        protected int colorSize = 3;
+        protected int colorDim = 3;
         protected boolean colorNormalized = false;
         protected int colorStride = 0;
         protected float[] texCoords = null;
         protected int texture = 0;
         protected int texUsage = GL_STATIC_DRAW;
-        protected int texSize = 2;
+        protected int texDim = 2;
         protected boolean texNormalized = false;
         protected int texStride = 0;
         protected int[] indices;
@@ -92,8 +92,8 @@ public interface IMesh extends AutoCloseable {
             return getThis();
         }
 
-        public T vertSize(int vertSize) {
-            this.vertSize = vertSize;
+        public T vertDim(int vertDim) {
+            this.vertDim = vertDim;
             return getThis();
         }
 
@@ -117,8 +117,8 @@ public interface IMesh extends AutoCloseable {
             return getThis();
         }
 
-        public T colorSize(int colorSize) {
-            this.colorSize = colorSize;
+        public T colorDim(int colorDim) {
+            this.colorDim = colorDim;
             return getThis();
         }
 
@@ -147,8 +147,8 @@ public interface IMesh extends AutoCloseable {
             return getThis();
         }
 
-        public T texSize(int texSize) {
-            this.texSize = texSize;
+        public T texDim(int texDim) {
+            this.texDim = texDim;
             return getThis();
         }
 

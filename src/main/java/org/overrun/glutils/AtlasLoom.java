@@ -25,106 +25,33 @@
 
 package org.overrun.glutils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-
-import static org.lwjgl.opengl.GL12.*;
 
 /**
  * @author squid233
  * @since 0.3.0
  */
-public class AtlasLoom {
-    private final Map<String, UV> uvMap = new HashMap<>();
-    private final Map<String, BufferedImage> imageMap = new HashMap<>();
-    private int width, maxH;
-    private int atlasId;
+public abstract class AtlasLoom<T> {
+    protected final Map<String, T> imageMap = new HashMap<>();
+    protected final Map<String, UV> uvMap = new HashMap<>();
+    protected int width, maxH;
+    protected int atlasId;
 
-    public void load(String name,
-                            ClassLoader loader,
-                            int defaultW,
-                            int defaultH,
-                            int mode,
-                            String... images) {
-        for (String img : images) {
-            addImg(img);
-        }
-        for (String img : imageMap.keySet()) {
-            BufferedImage bi;
-            try (InputStream is = loader.getResourceAsStream(img)) {
-                bi = ImageIO.read(Objects.requireNonNull(is));
-            } catch (IOException e) {
-                GLUtils.getThrowableCb().accept(e);
-                bi = new BufferedImage(defaultW,
-                        defaultH,
-                        BufferedImage.TYPE_INT_ARGB);
-            }
-            imageMap.put(img, bi);
-            int w = bi.getWidth();
-            int h = bi.getHeight();
-            uvMap.put(img, new UV(width, width + w, h));
-            width += w;
-            if (h > maxH) {
-                maxH = h;
-            }
-        }
-        atlasId = Textures.load(name + "-atlas",
-                width,
-                maxH,
-                new int[width * maxH],
-                mode);
-        int i = 0;
-        for (Map.Entry<String, BufferedImage> e : imageMap.entrySet()) {
-            BufferedImage bi = e.getValue();
-            int w;
-            if (bi != null) {
-                w = bi.getWidth();
-                int h = bi.getHeight();
-                glTexSubImage2D(GL_TEXTURE_2D,
-                        0,
-                        i,
-                        0,
-                        w,
-                        h,
-                        GL_BGRA,
-                        GL_UNSIGNED_BYTE,
-                        bi.getRGB(0, 0, w, h, null, 0, w));
-            } else {
-                w = defaultW;
-                int[] pixels = new int[defaultW * defaultH];
-                int j = 0;
-                for (int k = 0, s = defaultH / 2; k < s; k++) {
-                    for (int l = 0, t = defaultW / 2; l < t; l++) {
-                        pixels[j++] = 0xfff800f8;
-                    }
-                    for (int l = 0, t = defaultW / 2; l < t; l++) {
-                        pixels[j++] = 0xff000000;
-                    }
-                }
-                for (int k = 0, s = defaultH / 2; k < s; k++) {
-                    for (int l = 0, t = defaultW / 2; l < t; l++) {
-                        pixels[j++] = 0xff000000;
-                    }
-                    for (int l = 0, t = defaultW / 2; l < t; l++) {
-                        pixels[j++] = 0xfff800f8;
-                    }
-                }
-                glTexSubImage2D(GL_TEXTURE_2D,
-                        0,
-                        i,
-                        0,
-                        w,
-                        defaultH,
-                        GL_RGBA,
-                        GL_UNSIGNED_BYTE,
-                        pixels);
-            }
-            i += w;
+    public static AtlasLoomAWT getAWT() {
+        return new AtlasLoomAWT();
+    }
+
+    public abstract void load(String name,
+                     ClassLoader loader,
+                     int defaultW,
+                     int defaultH,
+                     int mode,
+                     String... images);
+
+    protected void addImg(String img) {
+        if (img != null) {
+            imageMap.put(img, null);
         }
     }
 
@@ -154,12 +81,6 @@ public class AtlasLoom {
 
     public float getV1(String id) {
         return (float) uvMap.get(id).v1 / (float) maxH;
-    }
-
-    private void addImg(String img) {
-        if (img != null) {
-            imageMap.put(img, null);
-        }
     }
 
     public static class UV {

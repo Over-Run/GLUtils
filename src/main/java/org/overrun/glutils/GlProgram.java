@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL41.*;
+import static org.overrun.glutils.GLString.toJava;
 
 /**
  * @author squid233
@@ -81,7 +82,7 @@ public class GlProgram implements AutoCloseable {
         glCompileShader(shader);
         if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
             throw new RuntimeException("Error compiling shader src: " +
-                    glGetShaderInfoLog(shader));
+                    toJava(glGetShaderInfoLog(shader)));
         }
         glAttachShader(id, shader);
         return shader;
@@ -92,14 +93,14 @@ public class GlProgram implements AutoCloseable {
         glLinkProgram(id);
         if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE) {
             throw new RuntimeException("Error linking GL program: " +
-                    glGetProgramInfoLog(id));
+                    toJava(glGetProgramInfoLog(id)));
         }
         glDetachShader(id, vshId);
         glDetachShader(id, fshId);
         glDetachShader(id, gshId);
         glValidateProgram(id);
         if (glGetProgrami(id, GL_VALIDATE_STATUS) == GL_FALSE) {
-            GLUtils.getWarningCb().warn(glGetProgramInfoLog(id));
+            GLUtils.getWarningCb().warn(toJava(glGetProgramInfoLog(id)));
         }
     }
 
@@ -121,7 +122,7 @@ public class GlProgram implements AutoCloseable {
             return uniforms.get(name);
         }
         int loc = glGetUniformLocation(id, name);
-        if (loc < 0) {
+        if (!hasUniform(name)) {
             throw new RuntimeException("Couldn't find uniform: \"" +
                     name +
                     "\"");
