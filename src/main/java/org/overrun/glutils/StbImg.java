@@ -29,6 +29,10 @@ import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 
+/**
+ * @author squid233
+ * @since 0.4.0
+ */
 public class StbImg implements AutoCloseable {
     public static final Recycler RECYCLER = STBImage::stbi_image_free;
     private final int width;

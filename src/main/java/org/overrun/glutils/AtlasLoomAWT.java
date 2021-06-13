@@ -34,6 +34,10 @@ import java.util.Objects;
 
 import static org.lwjgl.opengl.GL12.*;
 
+/**
+ * @author squid233
+ * @since 0.4.0
+ */
 public class AtlasLoomAWT extends AtlasLoom<BufferedImage> {
     @Override
     public void load(String name,

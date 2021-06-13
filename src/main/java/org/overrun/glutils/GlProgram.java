@@ -25,8 +25,12 @@
 
 package org.overrun.glutils;
 
+import org.lwjgl.system.MemoryStack;
+
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.lwjgl.opengl.GL41.*;
 import static org.overrun.glutils.GLString.toJava;
@@ -129,6 +133,42 @@ public class GlProgram implements AutoCloseable {
         }
         uniforms.put(name, loc);
         return loc;
+    }
+
+    /**
+     * setUniform
+     *
+     * @param name uniform name
+     * @param value value
+     * @since 0.4.0
+     */
+    public void setUniform(String name, int value) {
+        glUniform1i(getUniform(name), value);
+    }
+
+    /**
+     * setUniform
+     *
+     * @param name uniform name
+     * @param matrix4f matrix as FloatBuffer
+     * @since 0.4.0
+     */
+    public void setUniformMat4(String name, FloatBuffer matrix4f) {
+        glUniformMatrix4fv(getUniform(name), false, matrix4f);
+    }
+
+    /**
+     * setUniform
+     *
+     * @param name uniform name
+     * @param matrix4f matrix function (example: <code>matrix4f::get</code>)
+     * @since 0.4.0
+     */
+    public void setUniformMat4(String name,
+                               Function<FloatBuffer, FloatBuffer> matrix4f) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            setUniformMat4(name, matrix4f.apply(stack.mallocFloat(16)));
+        }
     }
 
     public int getAttrib(String name)

@@ -25,6 +25,10 @@
 
 package org.overrun.glutils;
 
+/**
+ * @author squid233
+ * @since 0.4.0
+ */
 public class GLString {
     /**
      * Convert C String to Java String.

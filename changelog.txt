@@ -1,6 +1,7 @@
 0.4.0
 New feature: GLString
 New feature: StbImg
+New feature: `GlProgram#setUniform*`
 Changed: *Size -> *Dim
 Changed: Split `AtlasLoom` into `-AWT` and `-STB`
 Fixed a bug: IMesh#texDim is 3

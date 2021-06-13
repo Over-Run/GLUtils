@@ -35,6 +35,10 @@ import java.util.Map;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.stb.STBImage.*;
 
+/**
+ * @author squid233
+ * @since 0.4.0
+ */
 public class AtlasLoomSTB extends AtlasLoom<StbImg> {
     @Override
     public void load(String name,
