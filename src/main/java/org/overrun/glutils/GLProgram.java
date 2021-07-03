@@ -39,13 +39,13 @@ import static org.overrun.glutils.GLString.toJava;
  * @author squid233
  * @since 0.1.0
  */
-public class GlProgram implements AutoCloseable {
+public class GLProgram implements AutoCloseable {
     private final int id;
     private int vshId, fshId, gshId;
     private final Map<String, Integer> uniforms = new HashMap<>();
     private final Map<String, Integer> attributes = new HashMap<>();
 
-    public GlProgram()
+    public GLProgram()
             throws RuntimeException {
         id = glCreateProgram();
         if (id == 0) {
@@ -138,7 +138,7 @@ public class GlProgram implements AutoCloseable {
     /**
      * setUniform
      *
-     * @param name uniform name
+     * @param name  uniform name
      * @param value value
      * @since 0.4.0
      */
@@ -149,7 +149,7 @@ public class GlProgram implements AutoCloseable {
     /**
      * setUniform
      *
-     * @param name uniform name
+     * @param name     uniform name
      * @param matrix4f matrix as FloatBuffer
      * @since 0.4.0
      */
@@ -160,7 +160,7 @@ public class GlProgram implements AutoCloseable {
     /**
      * setUniform
      *
-     * @param name uniform name
+     * @param name     uniform name
      * @param matrix4f matrix function (example: <code>matrix4f::get</code>)
      * @since 0.4.0
      */
@@ -187,13 +187,19 @@ public class GlProgram implements AutoCloseable {
         return loc;
     }
 
+    /**
+     * glEnableVertexAttribArray
+     *
+     * @param name attrib name
+     * @since 0.3.0
+     */
     public void enableVertexAttribArray(String name) {
         glEnableVertexAttribArray(getAttrib(name));
     }
 
     public void enableVertexAttribArrays(String... names) {
         for (String name : names) {
-            glEnableVertexAttribArray(getAttrib(name));
+            enableVertexAttribArray(name);
         }
     }
 

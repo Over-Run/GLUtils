@@ -40,9 +40,18 @@ import static org.lwjgl.stb.STBImage.*;
  * @since 0.4.0
  */
 public class AtlasLoomSTB extends AtlasLoom<StbImg> {
+    /**
+     * constructor
+     *
+     * @param name target id
+     * @since 0.4.0
+     */
+    public AtlasLoomSTB(String name) {
+        super(name);
+    }
+
     @Override
-    public void load(String name,
-                     ClassLoader loader,
+    public void load(ClassLoader loader,
                      int defaultW,
                      int defaultH,
                      int mode,
@@ -81,16 +90,16 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                             StbImg.RECYCLER);
                 }
                 imageMap.put(img, stbImg);
-                uvMap.put(img, new UV(width, width + w, h));
-                width += w;
+                uvMap.put(img, new UV(maxW, 0, maxW + w, h));
+                maxW += w;
                 if (h > maxH) {
                     maxH = h;
                 }
             }
             atlasId = Textures.load(name + "-atlas",
-                    width,
+                    maxW,
                     maxH,
-                    new int[width * maxH],
+                    new int[maxW * maxH],
                     mode);
             int i = 0;
             for (Map.Entry<String, StbImg> e : imageMap.entrySet()) {

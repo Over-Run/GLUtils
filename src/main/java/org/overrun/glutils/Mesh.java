@@ -59,7 +59,7 @@ public class Mesh implements IMesh {
     private final int[] indices;
     private final int indexUsage;
 
-    private Mesh(GlProgram program,
+    private Mesh(GLProgram program,
                  float[] vertices,
                  int vertUsage,
                  String vertIdx,
@@ -130,7 +130,7 @@ public class Mesh implements IMesh {
         return new Builder();
     }
 
-    public static Mesh of(GlProgram program,
+    public static Mesh of(GLProgram program,
                           float[] vertices,
                           String vertIdx,
                           float[] colors,
@@ -153,12 +153,12 @@ public class Mesh implements IMesh {
     }
 
     public static class Builder extends IMesh.Builder<Builder> {
-        private GlProgram program;
+        private GLProgram program;
         private String vertIdx;
         private String colorIdx;
         private String texIdx;
 
-        public Builder program(GlProgram program) {
+        public Builder program(GLProgram program) {
             this.program = program;
             return this;
         }

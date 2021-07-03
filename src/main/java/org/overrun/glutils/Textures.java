@@ -69,16 +69,7 @@ public class Textures {
             return 0;
         }
         int id = glGenTextures();
-        int[] pixels = new int[w * h];
-        img.getRGB(0, 0, w, h, pixels, 0, w);
-        for (int i = 0; i < pixels.length; ++i) {
-            int a = pixels[i] >> 24 & 255;
-            int r = pixels[i] >> 16 & 255;
-            int g = pixels[i] >> 8 & 255;
-            int b = pixels[i] >> 0 & 255;
-            pixels[i] = a << 24 | b << 16 | g << 8 | r << 0;
-        }
-        pushToGL(id, mode, w, h, pixels);
+        pushToGL(id, mode, w, h, AWTImage.getRGB(img));
         ID_MAP.put(name, id);
         return id;
     }

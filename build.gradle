@@ -9,7 +9,11 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 group 'io.github.over-run'
 archivesBaseName = 'glutils'
-version = projectVersion
+version = '0.4.0'
+
+test {
+    useJUnitPlatform()
+}
 
 repositories {
     mavenCentral()
@@ -22,6 +26,15 @@ dependencies {
 	implementation 'org.lwjgl:lwjgl'
     implementation 'org.lwjgl:lwjgl-opengl'
     implementation 'org.lwjgl:lwjgl-stb'
+
+    testRuntimeOnly 'org.lwjgl:lwjgl::natives-windows'
+    testRuntimeOnly 'org.lwjgl:lwjgl-glfw::natives-windows'
+    testRuntimeOnly 'org.lwjgl:lwjgl-opengl::natives-windows'
+    testRuntimeOnly 'org.lwjgl:lwjgl-stb::natives-windows'
+    testImplementation 'org.lwjgl:lwjgl-glfw'
+    testImplementation 'org.joml:joml:1.10.1'
+    testImplementation 'org.junit.platform:junit-platform-launcher:1.7.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 }
 
 tasks.withType(JavaCompile) {
@@ -65,7 +78,7 @@ publishing.publications {
     mavenJava(MavenPublication) {
         groupId = 'io.github.over-run'
         artifactId = 'glutils'
-        version = projectVersion
+        version = project.version
         description = 'Utils for OpenGL for Java.'
         from components.java
         pom {

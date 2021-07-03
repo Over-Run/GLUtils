@@ -1,15 +1,17 @@
 0.4.0
 New feature: GLString
 New feature: StbImg
-New feature: `GlProgram#setUniform*`
-Changed: *Size -> *Dim
+New feature: AWTImage
+New feature: `GLProgram#setUniform*`
+Changed: `IMesh#*Size` -> `IMesh#*Dim`
 Changed: Split `AtlasLoom` into `-AWT` and `-STB`
-Fixed a bug: IMesh#texDim is 3
+Changed: `AtlasLoom` must construct by name
+Fixed a bug: `IMesh#texDim` is 3
 
 0.3.0
 New feature: Developers can load texture by int array
-New feature: Developers can generate sprite by `AtlasLoom`
-New feature: `GlProgram#vertexAttribPointer`
+New feature: Developers can generate image atlas by `AtlasLoom`
+New feature: `GLProgram#vertexAttribPointer`
 Fixed a fatal bug: Program crashed when creating shaders
     Exception in thread "main" java.lang.RuntimeException: Error compiling shader src: No errors.\\0
     	at org.overrun.glutils.GlProgram.createShader(GlProgram.java:84)
@@ -21,14 +23,14 @@ New feature: Developers can load texture by ByteBuffer
 New feature: `Mesh` for OpenGL 2 and `Mesh3` for OpenGL 3
 New feature: Developers can and MUST close `Textures` before terminating
 New feature: interface for `ThrowableCallback`
-Changed: Program will not throw an exception when attrib not found (`GlProgram#getAttrib`)
+Changed: Program will not throw an exception when attrib not found (`GLProgram#getAttrib`)
 
 0.1.0
 org.overrun.glutils
     .callback
         + ErrorCallback
         + WarningCallback
-    + GlProgram
+    + GLProgram
     + GLUtils
     + ShaderReader
     + ShaderType

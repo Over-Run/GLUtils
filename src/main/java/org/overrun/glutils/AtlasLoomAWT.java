@@ -32,16 +32,26 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL12.*;
 
 /**
  * @author squid233
  * @since 0.4.0
  */
-public class AtlasLoomAWT extends AtlasLoom<BufferedImage> {
+public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
+    /**
+     * constructor
+     *
+     * @param name target id
+     * @since 0.4.0
+     */
+    public AtlasLoomAWT(String name) {
+        super(name);
+    }
+
     @Override
-    public void load(String name,
-                     ClassLoader loader,
+    public void load(ClassLoader loader,
                      int defaultW,
                      int defaultH,
                      int mode,
@@ -49,8 +59,10 @@ public class AtlasLoomAWT extends AtlasLoom<BufferedImage> {
         for (String img : images) {
             addImg(img);
         }
+        int maxWper = defaultW, maxHper = defaultH;
         for (String img : imageMap.keySet()) {
             BufferedImage bi;
+            boolean isNull = false;
             try (InputStream is = loader.getResourceAsStream(img)) {
                 bi = ImageIO.read(Objects.requireNonNull(is));
             } catch (IOException e) {
@@ -58,68 +70,78 @@ public class AtlasLoomAWT extends AtlasLoom<BufferedImage> {
                 bi = new BufferedImage(defaultW,
                         defaultH,
                         BufferedImage.TYPE_INT_ARGB);
+                isNull = true;
             }
-            imageMap.put(img, bi);
+            imageMap.put(img, new AWTImage(isNull, bi));
             int w = bi.getWidth();
             int h = bi.getHeight();
-            uvMap.put(img, new UV(width, width + w, h));
-            width += w;
-            if (h > maxH) {
-                maxH = h;
+            if (w > maxWper) {
+                maxWper = w;
+            }
+            if (h > maxHper) {
+                maxHper = h;
             }
         }
+        int siz = (int) ceil(sqrt(images.length));
+        maxW = maxH = max(siz * maxWper, siz * maxHper);
         atlasId = Textures.load(name + "-atlas",
-                width,
+                maxW,
                 maxH,
-                new int[width * maxH],
+                new int[maxW * maxH],
                 mode);
-        int i = 0;
-        for (Map.Entry<String, BufferedImage> e : imageMap.entrySet()) {
-            BufferedImage bi = e.getValue();
-            int w;
-            if (bi != null) {
-                w = bi.getWidth();
-                int h = bi.getHeight();
-                glTexSubImage2D(GL_TEXTURE_2D,
-                        0,
-                        i,
-                        0,
-                        w,
-                        h,
-                        GL_BGRA,
-                        GL_UNSIGNED_BYTE,
-                        bi.getRGB(0, 0, w, h, null, 0, w));
-            } else {
+        int u0 = 0, v0 = 0;
+        for (Map.Entry<String, AWTImage> e : imageMap.entrySet()) {
+            AWTImage awti = e.getValue();
+            BufferedImage bi = awti.img;
+            int w, h;
+            int format;
+            int[] pixels;
+            if (awti.isNull) {
                 w = defaultW;
-                int[] pixels = new int[defaultW * defaultH];
+                h = defaultH;
+                format = GL_RGBA;
+                pixels = new int[w * h];
+                if (u0 + w > maxW) {
+                    u0 = 0;
+                    v0 += maxHper;
+                }
                 int j = 0;
-                for (int k = 0, s = defaultH / 2; k < s; k++) {
-                    for (int l = 0, t = defaultW / 2; l < t; l++) {
+                for (int k = 0, s = h / 2; k < s; k++) {
+                    for (int l = 0, t = w / 2; l < t; l++) {
                         pixels[j++] = 0xfff800f8;
                     }
-                    for (int l = 0, t = defaultW / 2; l < t; l++) {
+                    for (int l = 0, t = w / 2; l < t; l++) {
                         pixels[j++] = 0xff000000;
                     }
                 }
-                for (int k = 0, s = defaultH / 2; k < s; k++) {
-                    for (int l = 0, t = defaultW / 2; l < t; l++) {
+                for (int k = 0, s = h / 2; k < s; k++) {
+                    for (int l = 0, t = w / 2; l < t; l++) {
                         pixels[j++] = 0xff000000;
                     }
-                    for (int l = 0, t = defaultW / 2; l < t; l++) {
+                    for (int l = 0, t = w / 2; l < t; l++) {
                         pixels[j++] = 0xfff800f8;
                     }
                 }
-                glTexSubImage2D(GL_TEXTURE_2D,
-                        0,
-                        i,
-                        0,
-                        w,
-                        defaultH,
-                        GL_RGBA,
-                        GL_UNSIGNED_BYTE,
-                        pixels);
+            } else {
+                w = bi.getWidth();
+                h = bi.getHeight();
+                format = GL_BGRA;
+                pixels = AWTImage.getBGR(bi);
+                if (u0 + w > maxW) {
+                    v0 += maxHper;
+                }
             }
-            i += w;
+            glTexSubImage2D(GL_TEXTURE_2D,
+                    0,
+                    u0,
+                    v0,
+                    w,
+                    h,
+                    format,
+                    GL_UNSIGNED_BYTE,
+                    pixels);
+            u0 += w;
+            uvMap.put(e.getKey(), new UV(u0, v0, u0 + w, v0 + h));
         }
     }
 }

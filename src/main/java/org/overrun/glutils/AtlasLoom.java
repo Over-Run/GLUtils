@@ -35,19 +35,47 @@ import java.util.Map;
 public abstract class AtlasLoom<T> {
     protected final Map<String, T> imageMap = new HashMap<>();
     protected final Map<String, UV> uvMap = new HashMap<>();
-    protected int width, maxH;
+    protected final String name;
+    protected int maxW, maxH;
     protected int atlasId;
 
-    public static AtlasLoomAWT getAWT() {
-        return new AtlasLoomAWT();
+    /**
+     * constructor
+     *
+     * @param name target id
+     * @since 0.4.0
+     */
+    public AtlasLoom(String name) {
+        this.name = name;
     }
 
-    public abstract void load(String name,
-                     ClassLoader loader,
-                     int defaultW,
-                     int defaultH,
-                     int mode,
-                     String... images);
+    /**
+     * gen by AWT
+     *
+     * @param name target id
+     * @return {@link AtlasLoomAWT}
+     * @since 0.4.0
+     */
+    public static AtlasLoomAWT awt(String name) {
+        return new AtlasLoomAWT(name);
+    }
+
+    /**
+     * gen by STB
+     *
+     * @param name target id
+     * @return {@link AtlasLoomSTB}
+     * @since 0.4.0
+     */
+    public static AtlasLoomSTB stb(String name) {
+        return new AtlasLoomSTB(name);
+    }
+
+    public abstract void load(ClassLoader loader,
+                              int defaultW,
+                              int defaultH,
+                              int mode,
+                              String... images);
 
     protected void addImg(String img) {
         if (img != null) {
@@ -60,7 +88,7 @@ public abstract class AtlasLoom<T> {
     }
 
     public int getWidth() {
-        return width;
+        return maxW;
     }
 
     public int getHeight() {
@@ -68,11 +96,11 @@ public abstract class AtlasLoom<T> {
     }
 
     public float getU0(String id) {
-        return (float) uvMap.get(id).u0 / (float) width;
+        return (float) uvMap.get(id).u0 / (float) maxW;
     }
 
     public float getU1(String id) {
-        return (float) uvMap.get(id).u1 / (float) width;
+        return (float) uvMap.get(id).u1 / (float) maxW;
     }
 
     public float getV0(String id) {
@@ -84,12 +112,13 @@ public abstract class AtlasLoom<T> {
     }
 
     public static class UV {
-        public final int u0, v0 = 0;
+        public final int u0, v0;
         public final int u1, v1;
 
-        public UV(int u0,
+        public UV(int u0, int v0,
                   int u1, int v1) {
             this.u0 = u0;
+            this.v0 = v0;
             this.u1 = u1;
             this.v1 = v1;
         }

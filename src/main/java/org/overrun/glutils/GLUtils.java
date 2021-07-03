@@ -34,6 +34,7 @@ import org.overrun.glutils.callback.WarningCallback;
  * @since 0.1.0
  */
 public final class GLUtils {
+    public static final String VERSION = "0.4.0";
     private static ThrowableCallback throwableCb = Throwable::printStackTrace;
     private static WarningCallback warningCb = GLUtils::defaultWarningCb;
     private static ErrorCallback errorCb = GLUtils::defaultErrorCb;
