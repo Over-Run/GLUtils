@@ -44,14 +44,13 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
      * constructor
      *
      * @param name target id
-     * @since 0.4.0
      */
     public AtlasLoomSTB(String name) {
         super(name);
     }
 
     @Override
-    public void load(ClassLoader loader,
+    public int load(ClassLoader loader,
                      int defaultW,
                      int defaultH,
                      int mode,
@@ -151,5 +150,6 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                 img.close();
             }
         }
+        return atlasId;
     }
 }

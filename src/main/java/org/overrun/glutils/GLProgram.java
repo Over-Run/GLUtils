@@ -25,6 +25,7 @@
 
 package org.overrun.glutils;
 
+import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
@@ -34,6 +35,8 @@ import java.util.function.Function;
 
 import static org.lwjgl.opengl.GL41.*;
 import static org.overrun.glutils.GLString.toJava;
+import static org.overrun.glutils.GLUtils.getErrorCb;
+import static org.overrun.glutils.GLUtils.getWarningCb;
 
 /**
  * @author squid233
@@ -99,12 +102,18 @@ public class GLProgram implements AutoCloseable {
             throw new RuntimeException("Error linking GL program: " +
                     toJava(glGetProgramInfoLog(id)));
         }
-        glDetachShader(id, vshId);
-        glDetachShader(id, fshId);
-        glDetachShader(id, gshId);
+        if (vshId != 0) {
+            glDetachShader(id, vshId);
+        }
+        if (fshId != 0) {
+            glDetachShader(id, fshId);
+        }
+        if (gshId != 0) {
+            glDetachShader(id, gshId);
+        }
         glValidateProgram(id);
         if (glGetProgrami(id, GL_VALIDATE_STATUS) == GL_FALSE) {
-            GLUtils.getWarningCb().warn(toJava(glGetProgramInfoLog(id)));
+            getWarningCb().warn(toJava(glGetProgramInfoLog(id)));
         }
     }
 
@@ -171,6 +180,20 @@ public class GLProgram implements AutoCloseable {
         }
     }
 
+    /**
+     * setUniform
+     *
+     * @param name     uniform name
+     * @param matrix4f matrix
+     * @since 0.5.0
+     */
+    public void setUniformMat4(String name,
+                               Matrix4f matrix4f) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            setUniformMat4(name, matrix4f.get(stack.mallocFloat(16)));
+        }
+    }
+
     public int getAttrib(String name)
             throws RuntimeException {
         if (attributes.containsKey(name)) {
@@ -178,7 +201,7 @@ public class GLProgram implements AutoCloseable {
         }
         int loc = glGetAttribLocation(id, name);
         if (loc < 0) {
-            GLUtils.getErrorCb().error("Couldn't find attribute: \"" +
+            getErrorCb().error("Couldn't find attribute: \"" +
                     name +
                     "\"");
             return -1;

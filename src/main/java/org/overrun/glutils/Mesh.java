@@ -42,18 +42,18 @@ public class Mesh implements IMesh {
     private int texIdx = -1;
     private final float[] vertices;
     private final int vertUsage;
-    private final int vertSize;
+    private final int vertDim;
     private final boolean vertNormalized;
     private final int vertStride;
     private final float[] colors;
     private final int colorUsage;
-    private final int colorSize;
+    private final int colorDim;
     private final boolean colorNormalized;
     private final int colorStride;
     private float[] texCoords;
     private final int texture;
     private int texUsage;
-    private int texSize;
+    private int texDim;
     private boolean texNormalized;
     private int texStride;
     private final int[] indices;
@@ -63,20 +63,20 @@ public class Mesh implements IMesh {
                  float[] vertices,
                  int vertUsage,
                  String vertIdx,
-                 int vertSize,
+                 int vertDim,
                  boolean vertNormalized,
                  int vertStride,
                  float[] colors,
                  int colorUsage,
                  String colorIdx,
-                 int colorSize,
+                 int colorDim,
                  boolean colorNormalized,
                  int colorStride,
                  float[] texCoords,
                  int texture,
                  int texUsage,
                  String texIdx,
-                 int texSize,
+                 int texDim,
                  boolean texNormalized,
                  int texStride,
                  int[] indices,
@@ -102,19 +102,19 @@ public class Mesh implements IMesh {
             texVbo = glGenBuffers();
             this.texCoords = texCoords;
             this.texUsage = texUsage;
-            this.texSize = texSize;
+            this.texDim = texDim;
             this.texNormalized = texNormalized;
             this.texStride = texStride;
         }
         idxVbo = glGenBuffers();
         this.vertices = vertices;
         this.vertUsage = vertUsage;
-        this.vertSize = vertSize;
+        this.vertDim = vertDim;
         this.vertNormalized = vertNormalized;
         this.vertStride = vertStride;
         this.colors = colors;
         this.colorUsage = colorUsage;
-        this.colorSize = colorSize;
+        this.colorDim = colorDim;
         this.colorNormalized = colorNormalized;
         this.colorStride = colorStride;
         this.indices = indices;
@@ -126,6 +126,7 @@ public class Mesh implements IMesh {
         return vertexCount;
     }
 
+    @Deprecated
     public static Builder builder() {
         return new Builder();
     }
@@ -152,6 +153,7 @@ public class Mesh implements IMesh {
                 .build();
     }
 
+    @Deprecated
     public static class Builder extends IMesh.Builder<Builder> {
         private GLProgram program;
         private String vertIdx;
@@ -219,7 +221,7 @@ public class Mesh implements IMesh {
         glBufferData(GL_ARRAY_BUFFER, vertices, vertUsage);
         glEnableVertexAttribArray(vertIdx);
         glVertexAttribPointer(vertIdx,
-                vertSize,
+                vertDim,
                 GL_FLOAT,
                 vertNormalized,
                 vertStride,
@@ -228,7 +230,7 @@ public class Mesh implements IMesh {
         glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
         glEnableVertexAttribArray(colorIdx);
         glVertexAttribPointer(colorIdx,
-                colorSize,
+                colorDim,
                 GL_FLOAT,
                 colorNormalized,
                 colorStride,
@@ -237,7 +239,7 @@ public class Mesh implements IMesh {
         glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
         glEnableVertexAttribArray(texIdx);
         glVertexAttribPointer(texIdx,
-                texSize,
+                texDim,
                 GL_FLOAT,
                 texNormalized,
                 texStride,

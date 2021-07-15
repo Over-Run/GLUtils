@@ -1,5 +1,8 @@
 0.5.0
-Ready
+New feature: Bind JOML now
+New feature: Package math
+Changed: `AtlasLoom#load` returns int now
+Deprecated: Mesh builder
 
 0.4.0
 New feature: GLString

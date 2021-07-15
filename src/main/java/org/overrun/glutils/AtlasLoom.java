@@ -71,7 +71,7 @@ public abstract class AtlasLoom<T> {
         return new AtlasLoomSTB(name);
     }
 
-    public abstract void load(ClassLoader loader,
+    public abstract int load(ClassLoader loader,
                               int defaultW,
                               int defaultH,
                               int mode,

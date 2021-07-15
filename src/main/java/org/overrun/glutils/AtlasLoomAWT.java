@@ -44,14 +44,13 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
      * constructor
      *
      * @param name target id
-     * @since 0.4.0
      */
     public AtlasLoomAWT(String name) {
         super(name);
     }
 
     @Override
-    public void load(ClassLoader loader,
+    public int load(ClassLoader loader,
                      int defaultW,
                      int defaultH,
                      int mode,
@@ -92,14 +91,11 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
         int u0 = 0, v0 = 0;
         for (Map.Entry<String, AWTImage> e : imageMap.entrySet()) {
             AWTImage awti = e.getValue();
-            BufferedImage bi = awti.img;
             int w, h;
-            int format;
             int[] pixels;
             if (awti.isNull) {
                 w = defaultW;
                 h = defaultH;
-                format = GL_RGBA;
                 pixels = new int[w * h];
                 if (u0 + w > maxW) {
                     u0 = 0;
@@ -123,25 +119,27 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
                     }
                 }
             } else {
+                BufferedImage bi = awti.img;
                 w = bi.getWidth();
                 h = bi.getHeight();
-                format = GL_BGRA;
-                pixels = AWTImage.getBGR(bi);
+                pixels = AWTImage.getRGB(bi);
                 if (u0 + w > maxW) {
+                    u0 = 0;
                     v0 += maxHper;
                 }
             }
             glTexSubImage2D(GL_TEXTURE_2D,
                     0,
-                    u0,
-                    v0,
+                    maxW - u0 - 1,
+                    maxH - v0 - 1,
                     w,
                     h,
-                    format,
+                    GL_RGBA,
                     GL_UNSIGNED_BYTE,
                     pixels);
             u0 += w;
             uvMap.put(e.getKey(), new UV(u0, v0, u0 + w, v0 + h));
         }
+        return atlasId;
     }
 }

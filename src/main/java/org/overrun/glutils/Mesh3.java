@@ -49,20 +49,20 @@ public class Mesh3 implements IMesh {
     private Mesh3(float[] vertices,
                   int vertUsage,
                   int vertIdx,
-                  int vertSize,
+                  int vertDim,
                   boolean vertNormalized,
                   int vertStride,
                   float[] colors,
                   int colorUsage,
                   int colorIdx,
-                  int colorSize,
+                  int colorDim,
                   boolean colorNormalized,
                   int colorStride,
                   float[] texCoords,
                   int texture,
                   int texUsage,
                   int texIdx,
-                  int texSize,
+                  int texDim,
                   boolean texNormalized,
                   int texStride,
                   int[] indices,
@@ -80,7 +80,7 @@ public class Mesh3 implements IMesh {
         glBufferData(GL_ARRAY_BUFFER, vertices, vertUsage);
         glEnableVertexAttribArray(vertIdx);
         glVertexAttribPointer(vertIdx,
-                vertSize,
+                vertDim,
                 GL_FLOAT,
                 vertNormalized,
                 vertStride,
@@ -90,7 +90,7 @@ public class Mesh3 implements IMesh {
         glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
         glEnableVertexAttribArray(colorIdx);
         glVertexAttribPointer(colorIdx,
-                colorSize,
+                colorDim,
                 GL_FLOAT,
                 colorNormalized,
                 colorStride,
@@ -101,7 +101,7 @@ public class Mesh3 implements IMesh {
             glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
             glEnableVertexAttribArray(texIdx);
             glVertexAttribPointer(texIdx,
-                    texSize,
+                    texDim,
                     GL_FLOAT,
                     texNormalized,
                     texStride,
@@ -135,6 +135,7 @@ public class Mesh3 implements IMesh {
         return vertexCount;
     }
 
+    @Deprecated
     public static Builder builder() {
         return new Builder();
     }
@@ -159,6 +160,7 @@ public class Mesh3 implements IMesh {
                 .build();
     }
 
+    @Deprecated
     public static class Builder extends IMesh.Builder<Builder> {
         private int vertIdx;
         private int colorIdx;

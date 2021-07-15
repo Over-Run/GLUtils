@@ -32,20 +32,19 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
-import org.overrun.glutils.GLProgram;
-import org.overrun.glutils.GLUtils;
-import org.overrun.glutils.Mesh3;
+import org.overrun.glutils.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 
-import static java.lang.Math.*;
+import static org.joml.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.overrun.glutils.ShaderReader.lines;
+import static org.overrun.glutils.math.Transform.*;
 
 /**
  * @author squid233
@@ -57,7 +56,9 @@ public class GLUTest {
     public final Matrix4f proj = new Matrix4f();
     public final Matrix4f modelv = new Matrix4f();
     public final Matrix4f view = new Matrix4f();
+    public final AtlasLoomAWT loom = AtlasLoom.awt("cube");
     public final int TEST_VER = 1;
+    public int texture;
     public long hwnd;
     public GLProgram program;
     public GLProgram program2d;
@@ -71,8 +72,17 @@ public class GLUTest {
     public double delta;
     public double lastX = w / 2.0, lastY = h / 2.0;
 
-    public boolean press(int key) {
+    public boolean pressing(int key) {
         return glfwGetKey(hwnd, key) == GLFW_PRESS;
+    }
+
+    public float speed() {
+        double base = STEP * delta;
+        if (pressing(GLFW_KEY_LEFT_CONTROL)
+                || pressing(GLFW_KEY_RIGHT_CONTROL)) {
+            return (float) (base * 2);
+        }
+        return (float) base;
     }
 
     public void run() {
@@ -145,6 +155,15 @@ public class GLUTest {
                 color.getGreen() / 255f,
                 color.getBlue() / 255f,
                 color.getAlpha() / 255f);
+        texture = /*loom.load(cl,
+                1,
+                1,
+                GL_NEAREST,
+                "img0.png",
+                "img1.png",
+                "img2.png",
+                "img3.png")*/Textures.loadAWT(cl, "face.png", GL_NEAREST);
+        System.out.println("GL Version " + glGetString(GL_VERSION));
         glfwShowWindow(hwnd);
         loop();
     }
@@ -155,59 +174,114 @@ public class GLUTest {
         program.createFsh(lines(cl, "shaders/scene.fsh"));
         program.link();
         program2d = new GLProgram();
-        program2d.createVsh(lines(cl, "shaders/gui.vsh"));
+        program2d.createVsh(lines(cl, "shaders/scene.vsh"));
         program2d.createFsh(lines(cl, "shaders/scene.fsh"));
         program2d.link();
+        float size = 1.0f;
         float[] vert = {
-                0.0f, 1.0f, 0.0f, //0
+                // front
+                0.0f, size, 0.0f, //0
                 0.0f, 0.0f, 0.0f, //1
-                1.0f, 0.0f, 0.0f, //2
-                1.0f, 1.0f, 0.0f, //3
-                0.0f, 1.0f, -1.0f, //4
-                0.0f, 0.0f, -1.0f, //5
-                1.0f, 0.0f, -1.0f, //6
-                1.0f, 1.0f, -1.0f //7
+                size, 0.0f, 0.0f, //2
+                size, size, 0.0f, //3
+                // back
+                size, size, -size, // 4
+                size, 0.0f, -size, // 5
+                0.0f, 0.0f, -size, // 6
+                0.0f, size, -size, // 7
+                // left
+                0.0f, size, -size, // 8
+                0.0f, 0.0f, -size, // 9
+                0.0f, 0.0f, 0.0f, // 10
+                0.0f, size, 0.0f, // 11
+                // right
+                size, size, 0.0f, // 12
+                size, 0.0f, 0.0f, // 13
+                size, 0.0f, -size, // 14
+                size, size, -size, // 15
+                // up
+                0.0f, size, -size, // 16
+                0.0f, size, 0.0f, // 17
+                size, size, 0.0f, // 18
+                size, size, -size, // 19
+                // down
+                size, 0.0f, -size, // 20
+                size, 0.0f, 0.0f, // 21
+                0.0f, 0.0f, 0.0f, // 22
+                0.0f, 0.0f, -size // 23
         };
         float[] col = {
-                0.5f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.5f,
-                0.0f, 0.5f, 0.5f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.0f,
-                0.5f, 0.0f, 0.0f
+                0.4f, 0.8f, 1.0f,
+                0.4f, 0.8f, 1.0f,
+                0.4f, 0.8f, 1.0f,
+                0.4f, 0.8f, 1.0f,
+
+                0.5f, 1.0f, 0.5f,
+                0.5f, 1.0f, 0.5f,
+                0.5f, 1.0f, 0.5f,
+                0.5f, 1.0f, 0.5f,
+
+                1.0f, 0.5f, 0.0f,
+                1.0f, 0.5f, 0.0f,
+                1.0f, 0.5f, 0.0f,
+                1.0f, 0.5f, 0.0f,
+
+                1.0f, 0.1f, 0.0f,
+                1.0f, 0.1f, 0.0f,
+                1.0f, 0.1f, 0.0f,
+                1.0f, 0.1f, 0.0f,
+
+                1.0f, 1.0f, 0.0f,
+                1.0f, 1.0f, 0.0f,
+                1.0f, 1.0f, 0.0f,
+                1.0f, 1.0f, 0.0f,
+
+                1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f
+        };
+        float[] tex = {
+                0, 0, 0, 1, 1, 1, 1, 0,
+                0, 0, 0, 1, 1, 1, 1, 0,
+                0, 0, 0, 1, 1, 1, 1, 0,
+                0, 0, 0, 1, 1, 1, 1, 0,
+                0, 0, 0, 1, 1, 1, 1, 0,
+                0, 0, 0, 1, 1, 1, 1, 0
         };
         int[] idx = {
                 // south
                 0, 1, 3, 3, 1, 2,
-                // up
-                4, 0, 7, 7, 0, 3,
-                // east
-                3, 2, 7, 7, 2, 6,
-                // west
-                4, 5, 0, 0, 5, 1,
-                // down
-                1, 5, 2, 2, 5, 6,
                 // north
-                7, 6, 4, 4, 6, 5
+                4, 5, 7, 7, 5, 6,
+                // west
+                8, 9, 11, 11, 9, 10,
+                // east
+                12, 13, 15, 15, 13, 14,
+                // up
+                16, 17, 19, 19, 17, 18,
+                // down
+                20, 21, 23, 23, 21, 22
         };
         mesh = Mesh3.builder()
-                .vertices(vert)
                 .vertIdx(0)
-                .colors(col)
+                .vertices(vert)
                 .colorIdx(1)
+                .colors(col)
+                .texIdx(2)
+                .texture(texture)
+                .texCoords(tex)
                 .indices(idx)
                 .build();
         vert = new float[]{
-                -1, 9, 0, //0
-                1, 9, 0, //1
-                -1, -9, 0, //2
-                1, -9, 0, //3
-                -9, 1, 0, //4
-                -9, -1, 0, //5
-                9, 1, 0, //6
-                9, -1, 0 //7
+                -1, -9, 0, //0
+                1, -9, 0, //1
+                -1, 9, 0, //2
+                1, 9, 0, //3
+                -9, -1, 0, //4
+                -9, 1, 0, //5
+                9, -1, 0, //6
+                9, 1, 0 //7
         };
         col = new float[]{
                 1, 1, 1,
@@ -224,10 +298,10 @@ public class GLUTest {
                 4, 5, 6, 6, 5, 7
         };
         crossing = Mesh3.builder()
-                .vertices(vert)
                 .vertIdx(0)
-                .colors(col)
+                .vertices(vert)
                 .colorIdx(1)
+                .colors(col)
                 .indices(idx)
                 .build();
         grabbing = true;
@@ -249,35 +323,36 @@ public class GLUTest {
             glViewport(0, 0, w, h);
             resized = false;
         }
-        float speed = (float) (STEP * delta);
-        if (press(GLFW_KEY_W)) {
-            pos.x += sin(toRadians(yRot)) * speed;
-            pos.z -= cos(toRadians(yRot)) * speed;
+        if (pressing(GLFW_KEY_W)) {
+            pos.x += sin(toRadians(yRot)) * speed();
+            pos.z -= cos(toRadians(yRot)) * speed();
         }
-        if (press(GLFW_KEY_S)) {
-            pos.x -= sin(toRadians(yRot)) * speed;
-            pos.z += cos(toRadians(yRot)) * speed;
+        if (pressing(GLFW_KEY_S)) {
+            pos.x -= sin(toRadians(yRot)) * speed();
+            pos.z += cos(toRadians(yRot)) * speed();
         }
-        if (press(GLFW_KEY_A)) {
-            pos.x += sin(toRadians(yRot - 90)) * speed;
-            pos.z -= cos(toRadians(yRot - 90)) * speed;
+        if (pressing(GLFW_KEY_A)) {
+            pos.x += sin(toRadians(yRot - 90)) * speed();
+            pos.z -= cos(toRadians(yRot - 90)) * speed();
         }
-        if (press(GLFW_KEY_D)) {
-            pos.x -= sin(toRadians(yRot - 90)) * speed;
-            pos.z += cos(toRadians(yRot - 90)) * speed;
+        if (pressing(GLFW_KEY_D)) {
+            pos.x -= sin(toRadians(yRot - 90)) * speed();
+            pos.z += cos(toRadians(yRot - 90)) * speed();
         }
-        if (press(GLFW_KEY_LEFT_SHIFT)) {
-            pos.y -= speed;
+        if (pressing(GLFW_KEY_LEFT_SHIFT)) {
+            pos.y -= speed();
         }
-        if (press(GLFW_KEY_SPACE)) {
-            pos.y += speed;
+        if (pressing(GLFW_KEY_SPACE)) {
+            pos.y += speed();
         }
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         program.bind();
-        program.setUniformMat4("proj", proj.setPerspective((float) toRadians(70), (float) w / (float) h, 0.05f, 1000.0f)::get);
-        program.setUniformMat4("modelv", modelv.rotationX((float) toRadians(-xRot)).rotateY((float) toRadians(yRot)).translate(-pos.x, -pos.y, -pos.z)::get);
+        program.setUniform("texSampler", 0);
+        program.setUniformMat4("proj", setPerspective(proj, 70, w, h, 0.05f, 1000.0f));
+        program.setUniformMat4("modelv", rotateY(rotationX(modelv, -xRot), yRot).translate(-pos.x, -pos.y, -pos.z));
+        program.setUniform("textured", 1);
         mesh.render();
         program.unbind();
         glDisable(GL_DEPTH_TEST);
@@ -287,7 +362,9 @@ public class GLUTest {
 
     public void renderGui() {
         program2d.bind();
-        program2d.setUniformMat4("view", view.setOrtho2D(0, w, h, 0).translate(w / 2f, h / 2f, 0)::get);
+        program2d.setUniform("texSampler", 0);
+        program2d.setUniformMat4("proj", view.setOrtho2D(0, w, h, 0));
+        program2d.setUniformMat4("modelv", view.translation(w / 2f, h / 2f, 0));
         crossing.render();
         program2d.unbind();
     }

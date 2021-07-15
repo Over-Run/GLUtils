@@ -59,6 +59,7 @@ public interface IMesh extends AutoCloseable {
     @Override
     void close();
 
+    @Deprecated
     abstract class Builder<T> {
         protected float[] vertices;
         protected int vertUsage = GL_STATIC_DRAW;
