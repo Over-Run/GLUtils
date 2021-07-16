@@ -1,5 +1,6 @@
 0.6.0
-Ready
+Removed: Mesh builder
+New feature: `BaseMesh`
 
 0.5.0
 New feature: Bind JOML now

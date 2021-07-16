@@ -89,6 +89,34 @@ public class Transform {
     }
 
     /**
+     * matrix4f.perspective
+     * <p>
+     * {@code fovy} will convert to radians
+     * </p>
+     *
+     * @param matrix4f matrix
+     * @param fovy     fov in <b>degree</b>
+     * @param width    viewport width
+     * @param height   viewport height
+     * @param zNear    zNear
+     * @param zFar     zFar
+     * @return {@link Matrix4f#perspective(float, float, float, float)
+     * @see Matrix4f#perspective(float, float, float, float) perspective
+     * @since 0.6.0
+     */
+    public static Matrix4f perspective(Matrix4f matrix4f,
+                                          float fovy,
+                                          int width,
+                                          int height,
+                                          float zNear,
+                                          float zFar) {
+        return matrix4f.perspective(fovy,
+                (float) width / (float) height,
+                zNear,
+                zFar);
+    }
+
+    /**
      * matrix4f.rotationX
      *
      * @param matrix4f matrix
@@ -102,6 +130,20 @@ public class Transform {
     }
 
     /**
+     * matrix4f.rotateX
+     *
+     * @param matrix4f matrix
+     * @param angle    the angle in <b>degree</b>
+     * @return {@link Matrix4f#rotateX matrix4f.rotateX}
+     * @see Matrix4f#rotateX(float) rotateX
+     * @since 0.6.0
+     */
+    public static Matrix4f rotateX(Matrix4f matrix4f,
+                                   float angle) {
+        return matrix4f.rotateX(toRadians(angle));
+    }
+
+    /**
      * matrix4f.rotateY
      *
      * @param matrix4f matrix
@@ -110,7 +152,7 @@ public class Transform {
      * @see Matrix4f#rotateY(float) rotateY
      */
     public static Matrix4f rotateY(Matrix4f matrix4f,
-                                     float angle) {
+                                   float angle) {
         return matrix4f.rotateY(toRadians(angle));
     }
 

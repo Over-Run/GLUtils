@@ -25,55 +25,39 @@
 
 package org.overrun.glutest;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.junit.jupiter.api.Test;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
-import org.overrun.glutils.*;
+import org.overrun.glutils.GLUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.nio.DoubleBuffer;
-import java.nio.IntBuffer;
 
 import static org.joml.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.overrun.glutils.ShaderReader.lines;
-import static org.overrun.glutils.math.Transform.*;
 
 /**
  * @author squid233
  */
 public class GLUTest {
-    public static final ClassLoader cl = GLUTest.class.getClassLoader();
     public static final float STEP = 0.5f;
     public static final float SENSITIVITY = 0.05f;
-    public final Matrix4f proj = new Matrix4f();
-    public final Matrix4f modelv = new Matrix4f();
-    public final Matrix4f view = new Matrix4f();
-    public final AtlasLoomAWT loom = AtlasLoom.awt("cube");
-    public final int TEST_VER = 1;
-    public int texture;
-    public long hwnd;
-    public GLProgram program;
-    public GLProgram program2d;
-    public Mesh3 mesh;
-    public Mesh3 crossing;
-    public int w = 854, h = 480;
+    public static final int TEST_VER = 1;
+    public final GameRenderer renderer = new GameRenderer();
+    public Window window;
     public float xRot, yRot;
     public final Vector3f pos = new Vector3f(0.5f, 0.5f, 0.5f);
     public boolean resized;
     public boolean grabbing;
     public double delta;
-    public double lastX = w / 2.0, lastY = h / 2.0;
+    public double lastX, lastY;
 
     public boolean pressing(int key) {
-        return glfwGetKey(hwnd, key) == GLFW_PRESS;
+        return window.key(key) == GLFW_PRESS;
     }
 
     public float speed() {
@@ -90,15 +74,17 @@ public class GLUTest {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        hwnd = glfwCreateWindow(w, h, "Game", NULL, NULL);
-        glfwSetKeyCallback(hwnd, (window, key, scancode, action, mods) -> {
+        window = new Window(854, 480, "Game");
+        lastX = 854 / 2.0;
+        lastY = 480 / 2.0;
+        window.keyCb((window, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {
                 if (key == GLFW_KEY_ESCAPE) {
                     glfwSetWindowShouldClose(window, true);
                 }
                 if (key == GLFW_KEY_GRAVE_ACCENT) {
                     grabbing = !grabbing;
-                    glfwSetInputMode(hwnd,
+                    glfwSetInputMode(window,
                             GLFW_CURSOR,
                             grabbing ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
                     if (grabbing) {
@@ -113,12 +99,12 @@ public class GLUTest {
                 }
             }
         });
-        glfwSetFramebufferSizeCallback(hwnd, (window, width, height) -> {
+        window.frbufSizCb((h, width, height) -> {
             resized = true;
-            w = width;
-            h = height;
+            window.w = width;
+            window.h = height;
         });
-        glfwSetCursorPosCallback(hwnd, (window, xpos, ypos) -> {
+        window.cursorPosCb((window, xpos, ypos) -> {
             if (grabbing) {
                 double xOffset = xpos - lastX;
                 double yOffset = lastY - ypos;
@@ -138,16 +124,10 @@ public class GLUTest {
         });
         GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         if (mode != null) {
-            try (MemoryStack stack = MemoryStack.stackPush()) {
-                IntBuffer pw = stack.mallocInt(1);
-                IntBuffer ph = stack.mallocInt(1);
-                glfwGetWindowSize(hwnd, pw, ph);
-                glfwSetWindowPos(hwnd,
-                        (mode.width() - pw.get(0)) / 2,
-                        (mode.height() - ph.get(0)) / 2);
-            }
+            window.setPos((mode.width() - window.w) / 2,
+                    (mode.height() - window.h) / 2);
         }
-        glfwMakeContextCurrent(hwnd);
+        window.makeCurr();
         GL.createCapabilities(true);
         glfwSwapInterval(1);
         Color color = UIManager.getColor("control");
@@ -155,170 +135,30 @@ public class GLUTest {
                 color.getGreen() / 255f,
                 color.getBlue() / 255f,
                 color.getAlpha() / 255f);
-        texture = /*loom.load(cl,
-                1,
-                1,
-                GL_NEAREST,
-                "img0.png",
-                "img1.png",
-                "img2.png",
-                "img3.png")*/Textures.loadAWT(cl, "face.png", GL_NEAREST);
         System.out.println("GL Version " + glGetString(GL_VERSION));
-        glfwShowWindow(hwnd);
         loop();
     }
 
     public void loop() {
-        program = new GLProgram();
-        program.createVsh(lines(cl, "shaders/scene.vsh"));
-        program.createFsh(lines(cl, "shaders/scene.fsh"));
-        program.link();
-        program2d = new GLProgram();
-        program2d.createVsh(lines(cl, "shaders/scene.vsh"));
-        program2d.createFsh(lines(cl, "shaders/scene.fsh"));
-        program2d.link();
-        float size = 1.0f;
-        float[] vert = {
-                // front
-                0.0f, size, 0.0f, //0
-                0.0f, 0.0f, 0.0f, //1
-                size, 0.0f, 0.0f, //2
-                size, size, 0.0f, //3
-                // back
-                size, size, -size, // 4
-                size, 0.0f, -size, // 5
-                0.0f, 0.0f, -size, // 6
-                0.0f, size, -size, // 7
-                // left
-                0.0f, size, -size, // 8
-                0.0f, 0.0f, -size, // 9
-                0.0f, 0.0f, 0.0f, // 10
-                0.0f, size, 0.0f, // 11
-                // right
-                size, size, 0.0f, // 12
-                size, 0.0f, 0.0f, // 13
-                size, 0.0f, -size, // 14
-                size, size, -size, // 15
-                // up
-                0.0f, size, -size, // 16
-                0.0f, size, 0.0f, // 17
-                size, size, 0.0f, // 18
-                size, size, -size, // 19
-                // down
-                size, 0.0f, -size, // 20
-                size, 0.0f, 0.0f, // 21
-                0.0f, 0.0f, 0.0f, // 22
-                0.0f, 0.0f, -size // 23
-        };
-        float[] col = {
-                0.4f, 0.8f, 1.0f,
-                0.4f, 0.8f, 1.0f,
-                0.4f, 0.8f, 1.0f,
-                0.4f, 0.8f, 1.0f,
-
-                0.5f, 1.0f, 0.5f,
-                0.5f, 1.0f, 0.5f,
-                0.5f, 1.0f, 0.5f,
-                0.5f, 1.0f, 0.5f,
-
-                1.0f, 0.5f, 0.0f,
-                1.0f, 0.5f, 0.0f,
-                1.0f, 0.5f, 0.0f,
-                1.0f, 0.5f, 0.0f,
-
-                1.0f, 0.1f, 0.0f,
-                1.0f, 0.1f, 0.0f,
-                1.0f, 0.1f, 0.0f,
-                1.0f, 0.1f, 0.0f,
-
-                1.0f, 1.0f, 0.0f,
-                1.0f, 1.0f, 0.0f,
-                1.0f, 1.0f, 0.0f,
-                1.0f, 1.0f, 0.0f,
-
-                1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f
-        };
-        float[] tex = {
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0
-        };
-        int[] idx = {
-                // south
-                0, 1, 3, 3, 1, 2,
-                // north
-                4, 5, 7, 7, 5, 6,
-                // west
-                8, 9, 11, 11, 9, 10,
-                // east
-                12, 13, 15, 15, 13, 14,
-                // up
-                16, 17, 19, 19, 17, 18,
-                // down
-                20, 21, 23, 23, 21, 22
-        };
-        mesh = Mesh3.builder()
-                .vertIdx(0)
-                .vertices(vert)
-                .colorIdx(1)
-                .colors(col)
-                .texIdx(2)
-                .texture(texture)
-                .texCoords(tex)
-                .indices(idx)
-                .build();
-        vert = new float[]{
-                -1, -9, 0, //0
-                1, -9, 0, //1
-                -1, 9, 0, //2
-                1, 9, 0, //3
-                -9, -1, 0, //4
-                -9, 1, 0, //5
-                9, -1, 0, //6
-                9, 1, 0 //7
-        };
-        col = new float[]{
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1
-        };
-        idx = new int[]{
-                0, 2, 1, 1, 2, 3,
-                4, 5, 6, 6, 5, 7
-        };
-        crossing = Mesh3.builder()
-                .vertIdx(0)
-                .vertices(vert)
-                .colorIdx(1)
-                .colors(col)
-                .indices(idx)
-                .build();
+        renderer.init();
+        window.show();
+        window.focus();
         grabbing = true;
-        glfwSetInputMode(hwnd, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        window.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         double lastTime = 0;
-        while (!glfwWindowShouldClose(hwnd)) {
+        while (!window.shouldClose()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             double curr = glfwGetTime();
             delta = curr - lastTime;
             lastTime = curr;
             render();
-            glfwSwapBuffers(hwnd);
+            window.swapBuffers();
             glfwPollEvents();
         }
     }
 
     public void render() {
+        int w = window.w, h = window.h;
         if (resized) {
             glViewport(0, 0, w, h);
             resized = false;
@@ -345,32 +185,10 @@ public class GLUTest {
         if (pressing(GLFW_KEY_SPACE)) {
             pos.y += speed();
         }
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        program.bind();
-        program.setUniform("texSampler", 0);
-        program.setUniformMat4("proj", setPerspective(proj, 70, w, h, 0.05f, 1000.0f));
-        program.setUniformMat4("modelv", rotateY(rotationX(modelv, -xRot), yRot).translate(-pos.x, -pos.y, -pos.z));
-        program.setUniform("textured", 1);
-        mesh.render();
-        program.unbind();
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        renderGui();
+        renderer.render(w, h, xRot, yRot, pos);
     }
 
-    public void renderGui() {
-        program2d.bind();
-        program2d.setUniform("texSampler", 0);
-        program2d.setUniformMat4("proj", view.setOrtho2D(0, w, h, 0));
-        program2d.setUniformMat4("modelv", view.translation(w / 2f, h / 2f, 0));
-        crossing.render();
-        program2d.unbind();
-    }
-
-    @Test
-    public void main() throws Exception {
+    public void start() throws Exception {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         System.out.println("Testing GLUtils " + GLUtils.VERSION);
         System.out.println("Version " + TEST_VER);
@@ -379,14 +197,12 @@ public class GLUTest {
         try {
             run();
         } finally {
-            if (mesh != null) {
-                mesh.close();
-            }
-            if (program != null) {
-                program.close();
-            }
             glfwSetErrorCallback(null).free();
             glfwTerminate();
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        new GLUTest().start();
     }
 }

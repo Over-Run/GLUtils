@@ -34,48 +34,44 @@ import static org.lwjgl.opengl.GL30.*;
  * @author squid233
  * @since 0.2.0
  */
-public class Mesh3 implements IMesh {
+public class Mesh3 extends BaseMesh<Mesh3> {
     private final int vao;
-    private final int vertVbo;
-    private final int colorVbo;
-    private int texVbo;
-    private final int idxVbo;
-    private final int vertexCount;
-    private final int vertIdx;
-    private final int colorIdx;
-    private final int texIdx;
-    private final int texture;
+    private int vertIdx;
+    private int colorIdx;
+    private int texIdx = -1;
 
-    private Mesh3(float[] vertices,
-                  int vertUsage,
-                  int vertIdx,
-                  int vertDim,
-                  boolean vertNormalized,
-                  int vertStride,
-                  float[] colors,
-                  int colorUsage,
-                  int colorIdx,
-                  int colorDim,
-                  boolean colorNormalized,
-                  int colorStride,
-                  float[] texCoords,
-                  int texture,
-                  int texUsage,
-                  int texIdx,
-                  int texDim,
-                  boolean texNormalized,
-                  int texStride,
-                  int[] indices,
-                  int indexUsage,
-                  int vertexCount) {
-        this.vertIdx = vertIdx;
-        this.colorIdx = colorIdx;
-        this.texIdx = texIdx;
-        this.vertexCount = vertexCount;
-        this.texture = texture;
+    public Mesh3() {
         vao = glGenVertexArrays();
+    }
+
+    /**
+     * @since 0.6.0
+     */
+    public Mesh3 vertIdx(int vertIdx) {
+        this.vertIdx = vertIdx;
+        return this;
+    }
+
+    /**
+     * @since 0.6.0
+     */
+    public Mesh3 colorIdx(int colorIdx) {
+        this.colorIdx = colorIdx;
+        return this;
+    }
+
+    /**
+     * @since 0.6.0
+     */
+    public Mesh3 texIdx(int texIdx) {
+        this.texIdx = texIdx;
+        return this;
+    }
+
+    @Override
+    public Mesh3 vertices(float[] vertices) {
+        super.vertices(vertices);
         glBindVertexArray(vao);
-        vertVbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vertVbo);
         glBufferData(GL_ARRAY_BUFFER, vertices, vertUsage);
         glEnableVertexAttribArray(vertIdx);
@@ -85,7 +81,15 @@ public class Mesh3 implements IMesh {
                 vertNormalized,
                 vertStride,
                 0);
-        colorVbo = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        return this;
+    }
+
+    @Override
+    public Mesh3 colors(float[] colors) {
+        super.colors(colors);
+        glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
         glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
         glEnableVertexAttribArray(colorIdx);
@@ -95,23 +99,37 @@ public class Mesh3 implements IMesh {
                 colorNormalized,
                 colorStride,
                 0);
-        if (texture != 0) {
-            texVbo = glGenBuffers();
-            glBindBuffer(GL_ARRAY_BUFFER, texVbo);
-            glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
-            glEnableVertexAttribArray(texIdx);
-            glVertexAttribPointer(texIdx,
-                    texDim,
-                    GL_FLOAT,
-                    texNormalized,
-                    texStride,
-                    0);
-        }
-        idxVbo = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxVbo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, indexUsage);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+        return this;
+    }
+
+    @Override
+    public Mesh3 texCoords(float[] texCoords) {
+        super.texCoords(texCoords);
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, texVbo);
+        glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
+        glEnableVertexAttribArray(texIdx);
+        glVertexAttribPointer(texIdx,
+                texDim,
+                GL_FLOAT,
+                texNormalized,
+                texStride,
+                0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        return this;
+    }
+
+    @Override
+    public Mesh3 indices(int[] indices) {
+        super.indices(indices);
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxVbo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, indexUsage);
+        glBindVertexArray(0);
+        return this;
     }
 
     @Override
@@ -121,7 +139,11 @@ public class Mesh3 implements IMesh {
             glBindTexture(GL_TEXTURE_2D, texture);
         }
         glBindVertexArray(getVao());
-        glDrawElements(mode, getVertexCount(), GL_UNSIGNED_INT, 0);
+        if (idxVbo == 0) {
+            glDrawArrays(mode, 0, getVertexCount());
+        } else {
+            glDrawElements(mode, getVertexCount(), GL_UNSIGNED_INT, 0);
+        }
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
@@ -135,11 +157,6 @@ public class Mesh3 implements IMesh {
         return vertexCount;
     }
 
-    @Deprecated
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static Mesh3 of(float[] vertices,
                            int vertIdx,
                            float[] colors,
@@ -148,71 +165,31 @@ public class Mesh3 implements IMesh {
                            int texture,
                            int texIdx,
                            int[] indices) {
-        return builder()
-                .vertices(vertices)
+        return new Mesh3()
                 .vertIdx(vertIdx)
-                .colors(colors)
+                .vertices(vertices)
                 .colorIdx(colorIdx)
-                .texCoords(texCoords)
+                .colors(colors)
                 .texture(texture)
                 .texIdx(texIdx)
-                .indices(indices)
-                .build();
+                .texCoords(texCoords)
+                .indices(indices);
     }
 
-    @Deprecated
-    public static class Builder extends IMesh.Builder<Builder> {
-        private int vertIdx;
-        private int colorIdx;
-        private int texIdx = -1;
-
-        public Builder vertIdx(int vertIdx) {
-            this.vertIdx = vertIdx;
-            return this;
-        }
-
-        public Builder colorIdx(int colorIdx) {
-            this.colorIdx = colorIdx;
-            return this;
-        }
-
-        public Builder texIdx(int texIdx) {
-            this.texIdx = texIdx;
-            return this;
-        }
-
-        @Override
-        public Builder getThis() {
-            return this;
-        }
-
-        @Override
-        public Mesh3 build() {
-            return new Mesh3(
-                    vertices,
-                    vertUsage,
-                    vertIdx,
-                    vertDim,
-                    vertNormalized,
-                    vertStride,
-                    colors,
-                    colorUsage,
-                    colorIdx,
-                    colorDim,
-                    colorNormalized,
-                    colorStride,
-                    texCoords,
-                    texture,
-                    texUsage,
-                    texIdx,
-                    texDim,
-                    texNormalized,
-                    texStride,
-                    indices,
-                    indexUsage,
-                    vertexCount
-            );
-        }
+    /**
+     * @since 0.6.0
+     */
+    public static Mesh3 of(float[] vertices,
+                           int vertIdx,
+                           float[] colors,
+                           int colorIdx,
+                           int[] indices) {
+        return new Mesh3()
+                .vertIdx(vertIdx)
+                .vertices(vertices)
+                .colorIdx(colorIdx)
+                .colors(colors)
+                .indices(indices);
     }
 
     @Override
@@ -228,8 +205,15 @@ public class Mesh3 implements IMesh {
         if (texVbo != 0) {
             glDeleteBuffers(texVbo);
         }
-        glDeleteBuffers(idxVbo);
+        if (idxVbo != 0) {
+            glDeleteBuffers(idxVbo);
+        }
         glBindVertexArray(0);
         glDeleteVertexArrays(vao);
+    }
+
+    @Override
+    public Mesh3 getThis() {
+        return this;
     }
 }
