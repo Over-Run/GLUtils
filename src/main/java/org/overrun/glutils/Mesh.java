@@ -38,6 +38,8 @@ public class Mesh extends BaseMesh<Mesh> {
     private int texIdx;
 
     /**
+     * @param program program
+     * @return this
      * @since 0.6.0
      */
     public Mesh program(GLProgram program) {
@@ -46,6 +48,8 @@ public class Mesh extends BaseMesh<Mesh> {
     }
 
     /**
+     * @param vertIdx vertices index name
+     * @return this
      * @since 0.6.0
      */
     public Mesh vertIdx(String vertIdx) {
@@ -54,6 +58,8 @@ public class Mesh extends BaseMesh<Mesh> {
     }
 
     /**
+     * @param colorIdx colors index name
+     * @return this
      * @since 0.6.0
      */
     public Mesh colorIdx(String colorIdx) {
@@ -62,6 +68,8 @@ public class Mesh extends BaseMesh<Mesh> {
     }
 
     /**
+     * @param texIdx texture coordinates index name
+     * @return this
      * @since 0.6.0
      */
     public Mesh texIdx(String texIdx) {

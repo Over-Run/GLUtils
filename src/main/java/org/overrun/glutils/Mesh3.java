@@ -45,7 +45,9 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     }
 
     /**
+     * @param vertIdx vertices index
      * @since 0.6.0
+     * @return this
      */
     public Mesh3 vertIdx(int vertIdx) {
         this.vertIdx = vertIdx;
@@ -53,7 +55,9 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     }
 
     /**
+     * @param colorIdx colors index
      * @since 0.6.0
+     * @return this
      */
     public Mesh3 colorIdx(int colorIdx) {
         this.colorIdx = colorIdx;
@@ -61,7 +65,9 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     }
 
     /**
+     * @param texIdx texture coordinates index
      * @since 0.6.0
+     * @return this
      */
     public Mesh3 texIdx(int texIdx) {
         this.texIdx = texIdx;
@@ -177,7 +183,13 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     }
 
     /**
+     * @param vertices vertices
+     * @param vertIdx vertices index
+     * @param colors colors
+     * @param colorIdx colors index
+     * @param indices indices
      * @since 0.6.0
+     * @return this
      */
     public static Mesh3 of(float[] vertices,
                            int vertIdx,

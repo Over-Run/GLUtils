@@ -100,7 +100,7 @@ public class Transform {
      * @param height   viewport height
      * @param zNear    zNear
      * @param zFar     zFar
-     * @return {@link Matrix4f#perspective(float, float, float, float)
+     * @return {@link Matrix4f#perspective(float, float, float, float)}
      * @see Matrix4f#perspective(float, float, float, float) perspective
      * @since 0.6.0
      */
