@@ -158,11 +158,6 @@ public class Mesh3 extends BaseMesh<Mesh3> {
         return vao;
     }
 
-    @Override
-    public int getVertexCount() {
-        return vertexCount;
-    }
-
     public static Mesh3 of(float[] vertices,
                            int vertIdx,
                            float[] colors,

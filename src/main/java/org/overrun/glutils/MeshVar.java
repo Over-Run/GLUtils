@@ -25,47 +25,18 @@
 
 package org.overrun.glutils;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Objects;
-
 /**
+ * #define name value
+ *
  * @author squid233
- * @since 0.1.0
+ * @since 0.7.0
  */
-public class ShaderReader {
-    /**
-     * Read lines from stream by loader.
-     *
-     * @param loader The ClassLoader.
-     * @param name   The filename.
-     * @return File contents.
-     * @throws Exception When file not found.
-     */
-    public static String lines(ClassLoader loader, String name)
-            throws Exception {
-        return lines(loader.getResourceAsStream(name));
-    }
+public class MeshVar {
+    public final String name;
+    public final String value;
 
-    /**
-     * Read lines from stream.
-     *
-     * @param stream The InputStream.
-     * @return File contents.
-     * @throws Exception When file not found.
-     */
-    public static String lines(InputStream stream)
-            throws Exception {
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(Objects.requireNonNull(stream))
-        )) {
-            StringBuilder sb = new StringBuilder();
-            String read;
-            while ((read = br.readLine()) != null) {
-                sb.append(read).append("\n");
-            }
-            return sb.toString();
-        }
+    public MeshVar(String name, String value) {
+        this.name = name;
+        this.value = value;
     }
 }

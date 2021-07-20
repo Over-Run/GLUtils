@@ -1,0 +1,77 @@
+var size
+
+# south
+v 0 size 0
+v 0 0 0
+v size 0 0
+v size size 0
+# north
+v size size -size
+v size 0 -size
+v 0 0 -size
+v 0 size -size
+# west
+v 0 size -size
+v 0 0 -size
+v 0 0 0
+v 0 size 0
+# east
+v size size 0
+v size 0 0
+v size 0 -size
+v size size -size
+# up
+v 0 size -size
+v 0 size 0
+v size size 0
+v size size -size
+# down
+v size 0 -size
+v size 0 0
+v 0 0 0
+v 0 0 -size
+
+vc 0.4 0.8 1.0
+vc 0.4 0.8 1.0
+vc 0.4 0.8 1.0
+vc 0.4 0.8 1.0
+vc 0.5 1.0 0.5
+vc 0.5 1.0 0.5
+vc 0.5 1.0 0.5
+vc 0.5 1.0 0.5
+vc 1.0 0.5 0.0
+vc 1.0 0.5 0.0
+vc 1.0 0.5 0.0
+vc 1.0 0.5 0.0
+vc 1.0 0.1 0.0
+vc 1.0 0.1 0.0
+vc 1.0 0.1 0.0
+vc 1.0 0.1 0.0
+vc 1.0 1.0 0.0
+vc 1.0 1.0 0.0
+vc 1.0 1.0 0.0
+vc 1.0 1.0 0.0
+vc 1.0 1.0 1.0
+vc 1.0 1.0 1.0
+vc 1.0 1.0 1.0
+vc 1.0 1.0 1.0
+
+vt 0 0 0 1 1 1 1 0
+vt 0 0 0 1 1 1 1 0
+vt 0 0 0 1 1 1 1 0
+vt 0 0 0 1 1 1 1 0
+vt 0 0 0 1 1 1 1 0
+vt 0 0 0 1 1 1 1 0
+
+# south
+f 0 1 3 3 1 2
+# north
+f 4 5 7 7 5 6
+# west
+f 8 9 11 11 9 10
+# east
+f 12 13 15 15 13 14
+# up
+f 16 17 19 19 17 18
+# down
+f 20 21 23 23 21 22

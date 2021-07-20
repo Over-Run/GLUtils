@@ -1,0 +1,35 @@
+# DSL designed by OverRun Organization
+# Soft-coded vertices meta
+# This file shows all of the valid syntax
+# Parser: org.overrun.glutils.MeshLoader
+
+# this is a comment
+// this is a comment
+
+# catch variables from Java code
+var aVar
+
+# set vertex dimension
+# default value is 3
+set vertices 3
+
+# set color dimension
+# default value is 3
+set colors 3
+
+# set texture dimension
+# default value is 2
+set texCoords 2
+
+# vertex
+# suffix 'f' is optional
+v 0.0 0.0 0.0
+
+# color
+vc 1.0 1.0 1.0
+
+# texture coordinate
+vt 0.0 0.0
+
+# faces
+f 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23

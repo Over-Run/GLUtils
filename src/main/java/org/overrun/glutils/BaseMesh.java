@@ -37,23 +37,23 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     protected int texVbo;
     protected int idxVbo;
     protected float[] vertices;
-    protected int vertUsage = GL_STATIC_DRAW;
-    protected int vertDim = 3;
-    protected boolean vertNormalized = false;
-    protected int vertStride = 0;
     protected float[] colors;
-    protected int colorUsage = GL_STATIC_DRAW;
-    protected int colorDim = 3;
-    protected boolean colorNormalized = false;
-    protected int colorStride = 0;
-    protected float[] texCoords = null;
-    protected int texture = 0;
-    protected int texUsage = GL_STATIC_DRAW;
-    protected int texDim = 2;
-    protected boolean texNormalized = false;
-    protected int texStride = 0;
+    protected float[] texCoords;
     protected int[] indices;
+    protected int vertUsage = GL_STATIC_DRAW;
+    protected int colorUsage = GL_STATIC_DRAW;
+    protected int texUsage = GL_STATIC_DRAW;
     protected int indexUsage = GL_STATIC_DRAW;
+    protected int vertDim = 3;
+    protected int colorDim = 3;
+    protected int texDim = 2;
+    protected boolean vertNormalized;
+    protected boolean colorNormalized;
+    protected boolean texNormalized;
+    protected int vertStride;
+    protected int colorStride;
+    protected int texStride;
+    protected int texture;
     protected int vertexCount;
 
     public BaseMesh() {
@@ -163,5 +163,98 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     public T vertexCount(int vertexCount) {
         this.vertexCount = vertexCount;
         return getThis();
+    }
+
+    public int getVertVbo() {
+        return vertVbo;
+    }
+
+    public int getColorVbo() {
+        return colorVbo;
+    }
+
+    public int getTexVbo() {
+        return texVbo;
+    }
+
+    public int getIdxVbo() {
+        return idxVbo;
+    }
+
+    public float[] getVertices() {
+        return vertices;
+    }
+
+    public float[] getColors() {
+        return colors;
+    }
+
+    public float[] getTexCoords() {
+        return texCoords;
+    }
+
+    public int[] getIndices() {
+        return indices;
+    }
+
+    public int getVertUsage() {
+        return vertUsage;
+    }
+
+    public int getColorUsage() {
+        return colorUsage;
+    }
+
+    public int getTexUsage() {
+        return texUsage;
+    }
+
+    public int getIndexUsage() {
+        return indexUsage;
+    }
+
+    public int getVertDim() {
+        return vertDim;
+    }
+
+    public int getColorDim() {
+        return colorDim;
+    }
+
+    public int getTexDim() {
+        return texDim;
+    }
+
+    public boolean isVertNormalized() {
+        return vertNormalized;
+    }
+
+    public boolean isColorNormalized() {
+        return colorNormalized;
+    }
+
+    public boolean isTexNormalized() {
+        return texNormalized;
+    }
+
+    public int getVertStride() {
+        return vertStride;
+    }
+
+    public int getColorStride() {
+        return colorStride;
+    }
+
+    public int getTexStride() {
+        return texStride;
+    }
+
+    public int getTexture() {
+        return texture;
+    }
+
+    @Override
+    public int getVertexCount() {
+        return vertexCount;
     }
 }

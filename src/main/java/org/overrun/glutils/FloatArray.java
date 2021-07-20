@@ -25,51 +25,31 @@
 
 package org.overrun.glutils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
-import java.util.Objects;
+import java.util.ArrayList;
 
 /**
+ * ArrayList of primitive float
+ *
  * @author squid233
- * @since 0.4.0
+ * @since 0.7.0
  */
-public class AWTImage {
-    public final boolean isNull;
-    public final BufferedImage img;
-
-    public AWTImage(boolean isNull, BufferedImage img) {
-        this.isNull = isNull;
-        this.img = img;
-    }
-
-    public static BufferedImage load(ClassLoader loader, String name)
-            throws Exception {
-        try (InputStream is = loader.getResourceAsStream(name)) {
-            return ImageIO.read(Objects.requireNonNull(is));
+public class FloatArray extends ArrayList<Float> {
+    public float[] toFArray() {
+        Float[] floats = toArray(new Float[0]);
+        float[] floats1 = new float[floats.length];
+        for (int i = 0; i < floats1.length; i++) {
+            floats1[i] = floats[i];
         }
+        return floats1;
     }
 
-    public static int[] getBGR(BufferedImage img) {
-        int w = img.getWidth();
-        return img.getRGB(0,
-                0,
-                w,
-                img.getHeight(),
-                null,
-                0,
-                w);
+    @Override
+    @Deprecated
+    public boolean add(Float aFloat) {
+        return super.add(aFloat);
     }
 
-    public static int[] getRGB(BufferedImage img) {
-        int[] pixels = getBGR(img);
-        for (int i = 0; i < pixels.length; ++i) {
-            int a = pixels[i] >> 24 & 255;
-            int r = pixels[i] >> 16 & 255;
-            int g = pixels[i] >> 8 & 255;
-            int b = pixels[i] & 255;
-            pixels[i] = a << 24 | b << 16 | g << 8 | r;
-        }
-        return pixels;
+    public boolean add(float aFloat) {
+        return super.add(aFloat);
     }
 }

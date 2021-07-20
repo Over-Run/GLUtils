@@ -25,47 +25,16 @@
 
 package org.overrun.glutils;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Objects;
-
 /**
  * @author squid233
- * @since 0.1.0
+ * @since 0.7.0
  */
-public class ShaderReader {
-    /**
-     * Read lines from stream by loader.
-     *
-     * @param loader The ClassLoader.
-     * @param name   The filename.
-     * @return File contents.
-     * @throws Exception When file not found.
-     */
-    public static String lines(ClassLoader loader, String name)
-            throws Exception {
-        return lines(loader.getResourceAsStream(name));
-    }
-
-    /**
-     * Read lines from stream.
-     *
-     * @param stream The InputStream.
-     * @return File contents.
-     * @throws Exception When file not found.
-     */
-    public static String lines(InputStream stream)
-            throws Exception {
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(Objects.requireNonNull(stream))
-        )) {
-            StringBuilder sb = new StringBuilder();
-            String read;
-            while ((read = br.readLine()) != null) {
-                sb.append(read).append("\n");
-            }
-            return sb.toString();
-        }
-    }
+public class MeshFile {
+    public boolean textured = false;
+    public boolean indexed = false;
+    public int vertDim = 3, colorDim = 3, texDim = 2;
+    public final FloatArray vertices = new FloatArray();
+    public final FloatArray colors = new FloatArray();
+    public final FloatArray texCoords = new FloatArray();
+    public final IntArray indices = new IntArray();
 }

@@ -69,7 +69,7 @@ public class GLUTest {
         return (float) base;
     }
 
-    public void run() {
+    public void run() throws Exception {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
@@ -139,7 +139,7 @@ public class GLUTest {
         loop();
     }
 
-    public void loop() {
+    public void loop() throws Exception {
         renderer.init();
         window.show();
         window.focus();

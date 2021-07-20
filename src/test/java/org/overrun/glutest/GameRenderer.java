@@ -32,6 +32,8 @@ import org.overrun.glutils.Mesh3;
 import org.overrun.glutils.Textures;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.MeshLoader.load3;
+import static org.overrun.glutils.MeshLoader.var;
 import static org.overrun.glutils.ShaderReader.lines;
 import static org.overrun.glutils.math.Transform.*;
 
@@ -49,7 +51,7 @@ public class GameRenderer implements AutoCloseable {
     public Mesh3 mesh;
     public Mesh3 crossing;
 
-    public void init() {
+    public void init() throws Exception {
         texture = Textures.loadAWT(cl, "face.png", GL_NEAREST);
         program = new GLProgram();
         program.createVsh(lines(cl, "shaders/scene.vsh"));
@@ -59,94 +61,11 @@ public class GameRenderer implements AutoCloseable {
         program2d.createVsh(lines(cl, "shaders/scene.vsh"));
         program2d.createFsh(lines(cl, "shaders/scene.fsh"));
         program2d.link();
-        float size = 1.0f;
+        mesh = load3(cl,
+                "cube.mesh",
+                m -> m.vertIdx(0).colorIdx(1).texIdx(2),
+                var("size", 1.0f)).texture(texture);
         float[] vert = {
-                // front
-                0.0f, size, 0.0f, //0
-                0.0f, 0.0f, 0.0f, //1
-                size, 0.0f, 0.0f, //2
-                size, size, 0.0f, //3
-                // back
-                size, size, -size, // 4
-                size, 0.0f, -size, // 5
-                0.0f, 0.0f, -size, // 6
-                0.0f, size, -size, // 7
-                // left
-                0.0f, size, -size, // 8
-                0.0f, 0.0f, -size, // 9
-                0.0f, 0.0f, 0.0f, // 10
-                0.0f, size, 0.0f, // 11
-                // right
-                size, size, 0.0f, // 12
-                size, 0.0f, 0.0f, // 13
-                size, 0.0f, -size, // 14
-                size, size, -size, // 15
-                // up
-                0.0f, size, -size, // 16
-                0.0f, size, 0.0f, // 17
-                size, size, 0.0f, // 18
-                size, size, -size, // 19
-                // down
-                size, 0.0f, -size, // 20
-                size, 0.0f, 0.0f, // 21
-                0.0f, 0.0f, 0.0f, // 22
-                0.0f, 0.0f, -size // 23
-        };
-        float[] col = {
-                0.4f, 0.8f, 1.0f,
-                0.4f, 0.8f, 1.0f,
-                0.4f, 0.8f, 1.0f,
-                0.4f, 0.8f, 1.0f,
-
-                0.5f, 1.0f, 0.5f,
-                0.5f, 1.0f, 0.5f,
-                0.5f, 1.0f, 0.5f,
-                0.5f, 1.0f, 0.5f,
-
-                1.0f, 0.5f, 0.0f,
-                1.0f, 0.5f, 0.0f,
-                1.0f, 0.5f, 0.0f,
-                1.0f, 0.5f, 0.0f,
-
-                1.0f, 0.1f, 0.0f,
-                1.0f, 0.1f, 0.0f,
-                1.0f, 0.1f, 0.0f,
-                1.0f, 0.1f, 0.0f,
-
-                1.0f, 1.0f, 0.0f,
-                1.0f, 1.0f, 0.0f,
-                1.0f, 1.0f, 0.0f,
-                1.0f, 1.0f, 0.0f,
-
-                1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f,
-                1.0f, 1.0f, 1.0f
-        };
-        float[] tex = {
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0,
-                0, 0, 0, 1, 1, 1, 1, 0
-        };
-        int[] idx = {
-                // south
-                0, 1, 3, 3, 1, 2,
-                // north
-                4, 5, 7, 7, 5, 6,
-                // west
-                8, 9, 11, 11, 9, 10,
-                // east
-                12, 13, 15, 15, 13, 14,
-                // up
-                16, 17, 19, 19, 17, 18,
-                // down
-                20, 21, 23, 23, 21, 22
-        };
-        mesh = Mesh3.of(vert, 0, col, 1, tex, texture, 2, idx);
-        vert = new float[]{
                 -1, -9, 0, //0
                 1, -9, 0, //1
                 -1, 9, 0, //2
@@ -156,7 +75,7 @@ public class GameRenderer implements AutoCloseable {
                 9, -1, 0, //6
                 9, 1, 0 //7
         };
-        col = new float[]{
+        float[] col = {
                 1, 1, 1,
                 1, 1, 1,
                 1, 1, 1,
@@ -166,7 +85,7 @@ public class GameRenderer implements AutoCloseable {
                 1, 1, 1,
                 1, 1, 1
         };
-        idx = new int[]{
+        int[] idx = {
                 0, 2, 1, 1, 2, 3,
                 4, 5, 6, 6, 5, 7
         };

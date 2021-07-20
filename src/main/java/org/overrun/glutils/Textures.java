@@ -53,8 +53,10 @@ public class Textures {
      * @param name   The filename.
      * @param mode   Processor mode.
      * @return The texture id.
+     * @throws Exception When file not found.
      */
-    public static int loadAWT(ClassLoader loader, String name, int mode) {
+    public static int loadAWT(ClassLoader loader, String name, int mode)
+            throws Exception {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
         }
@@ -64,9 +66,6 @@ public class Textures {
             img = ImageIO.read(Objects.requireNonNull(is));
             w = img.getWidth();
             h = img.getHeight();
-        } catch (Exception e) {
-            GLUtils.getThrowableCb().accept(e);
-            return 0;
         }
         int id = glGenTextures();
         pushToGL(id, mode, w, h, AWTImage.getRGB(img));

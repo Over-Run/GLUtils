@@ -25,51 +25,26 @@
 
 package org.overrun.glutils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author squid233
- * @since 0.4.0
+ * @since 0.7.0
  */
-public class AWTImage {
-    public final boolean isNull;
-    public final BufferedImage img;
-
-    public AWTImage(boolean isNull, BufferedImage img) {
-        this.isNull = isNull;
-        this.img = img;
+public class MapStr2Str extends HashMap<String, String> {
+    public MapStr2Str(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
     }
 
-    public static BufferedImage load(ClassLoader loader, String name)
-            throws Exception {
-        try (InputStream is = loader.getResourceAsStream(name)) {
-            return ImageIO.read(Objects.requireNonNull(is));
-        }
+    public MapStr2Str(int initialCapacity) {
+        super(initialCapacity);
     }
 
-    public static int[] getBGR(BufferedImage img) {
-        int w = img.getWidth();
-        return img.getRGB(0,
-                0,
-                w,
-                img.getHeight(),
-                null,
-                0,
-                w);
+    public MapStr2Str() {
     }
 
-    public static int[] getRGB(BufferedImage img) {
-        int[] pixels = getBGR(img);
-        for (int i = 0; i < pixels.length; ++i) {
-            int a = pixels[i] >> 24 & 255;
-            int r = pixels[i] >> 16 & 255;
-            int g = pixels[i] >> 8 & 255;
-            int b = pixels[i] & 255;
-            pixels[i] = a << 24 | b << 16 | g << 8 | r;
-        }
-        return pixels;
+    public MapStr2Str(Map<? extends String, ? extends String> m) {
+        super(m);
     }
 }

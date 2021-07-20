@@ -77,11 +77,6 @@ public class Mesh extends BaseMesh<Mesh> {
         return this;
     }
 
-    @Override
-    public int getVertexCount() {
-        return vertexCount;
-    }
-
     public static Mesh of(GLProgram program,
                           float[] vertices,
                           String vertIdx,
