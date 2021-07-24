@@ -9,7 +9,7 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 group 'io.github.over-run'
 archivesBaseName = 'glutils'
-version = '0.8.0'
+version = '0.9.0-SNAPSHOT'
 
 test {
     useJUnitPlatform()
@@ -104,8 +104,10 @@ publishing.publications {
         }
     }
 }
-// You should add 'OSSRH_USERNAME', 'OSSRH_PASSWORD', 'signing.keyId',
-// 'signing.password' and 'signing.secretKeyRingFile'
+// You should add 'OSSRH_USERNAME' and 'OSSRH_PASSWORD'
+// to environment path
+// You should add 'signing.keyId', 'signing.password'
+// and 'signing.secretKeyRingFile'
 // to GRADLE_USER_HOME/gradle.properties
 publishing.repositories {
     maven {
