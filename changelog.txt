@@ -1,3 +1,6 @@
+0.8.0
+Changed: Public dependencies
+
 0.7.0
 New feature: ArrayHelper
 New feature: CompileException
