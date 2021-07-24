@@ -27,12 +27,14 @@ package org.overrun.glutils;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.overrun.glutils.StbImg.Recycler;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL12.*;
+import static java.lang.Math.*;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.*;
 
 /**
@@ -58,13 +60,15 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
         for (String img : images) {
             addImg(img);
         }
+        int maxWper = defaultW, maxHper = defaultH;
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer pw = stack.mallocInt(1);
             IntBuffer ph = stack.mallocInt(1);
             IntBuffer pc = stack.mallocInt(1);
             for (String img : imageMap.keySet()) {
+                int w, h;
+                Recycler recycler;
                 ByteBuffer bb = stbi_load(img, pw, ph, pc, STBI_rgb_alpha);
-                pc.flip();
                 boolean failed = false;
                 if (bb == null) {
                     failed = true;
@@ -73,82 +77,79 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                             "\": " +
                             stbi_failure_reason());
                     bb = MemoryUtil.memAlloc(defaultW * defaultH * 4);
-                }
-                int w;
-                int h;
-                StbImg stbImg;
-                if (failed) {
-                    stbImg = new StbImg(w = defaultW,
-                            h = defaultH,
-                            bb,
-                            MemoryUtil::memFree);
-                } else {
-                    stbImg = new StbImg(w = pw.flip().get(),
-                            h = ph.flip().get(),
-                            bb,
-                            StbImg.RECYCLER);
-                }
-                imageMap.put(img, stbImg);
-                uvMap.put(img, new UV(maxW, 0, maxW + w, h));
-                maxW += w;
-                if (h > maxH) {
-                    maxH = h;
-                }
-            }
-            atlasId = Textures.load(name + "-atlas",
-                    maxW,
-                    maxH,
-                    new int[maxW * maxH],
-                    mode);
-            int i = 0;
-            for (Map.Entry<String, StbImg> e : imageMap.entrySet()) {
-                StbImg img = e.getValue();
-                int w;
-                if (img != null) {
-                    w = img.getWidth();
-                    int h = img.getHeight();
-                    glTexSubImage2D(GL_TEXTURE_2D,
-                            0,
-                            i,
-                            0,
-                            w,
-                            h,
-                            GL_BGRA,
-                            GL_UNSIGNED_BYTE,
-                            img.getData());
-                } else {
                     w = defaultW;
-                    int[] pixels = new int[defaultW * defaultH];
-                    int j = 0;
-                    for (int k = 0, s = defaultH / 2; k < s; k++) {
-                        for (int l = 0, t = defaultW / 2; l < t; l++) {
-                            pixels[j++] = 0xfff800f8;
-                        }
-                        for (int l = 0, t = defaultW / 2; l < t; l++) {
-                            pixels[j++] = 0xff000000;
-                        }
-                    }
-                    for (int k = 0, s = defaultH / 2; k < s; k++) {
-                        for (int l = 0, t = defaultW / 2; l < t; l++) {
-                            pixels[j++] = 0xff000000;
-                        }
-                        for (int l = 0, t = defaultW / 2; l < t; l++) {
-                            pixels[j++] = 0xfff800f8;
-                        }
-                    }
-                    glTexSubImage2D(GL_TEXTURE_2D,
-                            0,
-                            i,
-                            0,
-                            w,
-                            defaultH,
-                            GL_RGBA,
-                            GL_UNSIGNED_BYTE,
-                            pixels);
+                    h = defaultH;
+                    recycler = MemoryUtil::memFree;
+                } else {
+                    pw.flip();
+                    ph.flip();
+                    w = pw.get();
+                    h = ph.get();
+                    recycler = StbImg.defaultRecycler();
                 }
-                i += w;
-                img.close();
+                imageMap.put(img, new StbImg(w, h, bb, recycler, failed));
+                if (w > maxWper) {
+                    maxWper = w;
+                }
+                if (h > maxHper) {
+                    maxHper = h;
+                }
             }
+        }
+        int siz = (int) ceil(sqrt(images.length));
+        maxW = maxH = max(siz * maxWper, siz * maxHper);
+        atlasId = Textures.load(name + "-atlas",
+                maxW,
+                maxH,
+                new int[maxW * maxH],
+                mode);
+        int u0 = 0, v0 = 0;
+        for (Map.Entry<String, StbImg> e : imageMap.entrySet()) {
+            StbImg si = e.getValue();
+            int w = si.getWidth();
+            int h = si.getHeight();
+            int[] pixels;
+            if (si.isFailed()) {
+                pixels = new int[w * h];
+                if (u0 + w > maxW) {
+                    u0 = 0;
+                    v0 += maxHper;
+                }
+                int j = 0;
+                for (int k = 0, s = h / 2; k < s; k++) {
+                    for (int l = 0, t = w / 2; l < t; l++) {
+                        pixels[j++] = 0xfff800f8;
+                    }
+                    for (int l = 0, t = w / 2; l < t; l++) {
+                        pixels[j++] = 0xff000000;
+                    }
+                }
+                for (int k = 0, s = h / 2; k < s; k++) {
+                    for (int l = 0, t = w / 2; l < t; l++) {
+                        pixels[j++] = 0xff000000;
+                    }
+                    for (int l = 0, t = w / 2; l < t; l++) {
+                        pixels[j++] = 0xfff800f8;
+                    }
+                }
+            } else {
+                pixels = si.getData().asIntBuffer().array();
+                if (u0 + w > maxW) {
+                    u0 = 0;
+                    v0 += maxHper;
+                }
+            }
+            glTexSubImage2D(GL_TEXTURE_2D,
+                    0,
+                    maxW - u0 - 1,
+                    maxH - v0 - 1,
+                    w,
+                    h,
+                    GL_RGBA,
+                    GL_UNSIGNED_BYTE,
+                    pixels);
+            u0 += w;
+            uvMap.put(e.getKey(), new UV(u0, v0, u0 + w, v0 + h));
         }
         return atlasId;
     }

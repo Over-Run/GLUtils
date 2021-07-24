@@ -39,6 +39,7 @@ public class StbImg implements AutoCloseable {
     private final int height;
     private final ByteBuffer data;
     private final Recycler recycler;
+    private final boolean failed;
 
     public interface Recycler {
         void free(ByteBuffer data);
@@ -51,11 +52,13 @@ public class StbImg implements AutoCloseable {
     public StbImg(int width,
                   int height,
                   ByteBuffer data,
-                  Recycler recycler) {
+                  Recycler recycler,
+                  boolean failed) {
         this.width = width;
         this.height = height;
         this.data = data;
         this.recycler = recycler;
+        this.failed = failed;
     }
 
     public int getWidth() {
@@ -72,6 +75,10 @@ public class StbImg implements AutoCloseable {
 
     public Recycler getRecycler() {
         return recycler;
+    }
+
+    public boolean isFailed() {
+        return failed;
     }
 
     @Override

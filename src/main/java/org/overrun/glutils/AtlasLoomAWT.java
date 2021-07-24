@@ -91,11 +91,11 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
         int u0 = 0, v0 = 0;
         for (Map.Entry<String, AWTImage> e : imageMap.entrySet()) {
             AWTImage awti = e.getValue();
-            int w, h;
+            BufferedImage bi = awti.img;
+            int w = bi.getWidth();
+            int h = bi.getHeight();
             int[] pixels;
             if (awti.isNull) {
-                w = defaultW;
-                h = defaultH;
                 pixels = new int[w * h];
                 if (u0 + w > maxW) {
                     u0 = 0;
@@ -119,9 +119,6 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
                     }
                 }
             } else {
-                BufferedImage bi = awti.img;
-                w = bi.getWidth();
-                h = bi.getHeight();
                 pixels = AWTImage.getRGB(bi);
                 if (u0 + w > maxW) {
                     u0 = 0;

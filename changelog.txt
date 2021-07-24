@@ -1,4 +1,6 @@
 0.8.0
+Fixed a bug: `AtlasLoomSTB` was flipping
+Fixed a bug: Can't compile `AtlasLoomSTB`
 Changed: Public dependencies
 
 0.7.0
@@ -14,6 +16,7 @@ New feature: MeshVar
 0.6.1
 Fixed Javadoc
 0.6.0
+Alpha
 Removed: Mesh builder
 New feature: `BaseMesh`
 
