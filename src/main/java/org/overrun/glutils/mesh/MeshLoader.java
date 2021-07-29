@@ -23,7 +23,10 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.mesh;
+
+import org.overrun.glutils.CompileException;
+import org.overrun.glutils.MapStr2Str;
 
 import java.io.InputStream;
 import java.util.*;

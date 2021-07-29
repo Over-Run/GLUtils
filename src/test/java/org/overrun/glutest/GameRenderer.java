@@ -28,12 +28,12 @@ package org.overrun.glutest;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.overrun.glutils.GLProgram;
-import org.overrun.glutils.Mesh3;
+import org.overrun.glutils.mesh.Mesh3;
 import org.overrun.glutils.Textures;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.MeshLoader.load3;
-import static org.overrun.glutils.MeshLoader.var;
+import static org.overrun.glutils.mesh.MeshLoader.load3;
+import static org.overrun.glutils.mesh.MeshLoader.var;
 import static org.overrun.glutils.ShaderReader.lines;
 import static org.overrun.glutils.math.Transform.*;
 

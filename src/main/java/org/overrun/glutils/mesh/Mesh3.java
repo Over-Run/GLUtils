@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.mesh;
 
 import static org.lwjgl.opengl.GL30.*;
 

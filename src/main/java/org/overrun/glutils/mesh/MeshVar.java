@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.mesh;
 
 /**
  * #define name value

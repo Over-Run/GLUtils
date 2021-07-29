@@ -37,7 +37,42 @@ public class ArrayHelper {
     public static String[] removeNull(String[] arr) {
         List<String> list = new ArrayList<>(arr.length);
         list.addAll(Arrays.asList(arr));
-        while (list.remove(null) || list.remove(""));
+        while (list.remove(null) || list.remove("")) ;
         return list.toArray(new String[0]);
+    }
+
+    /**
+     * Convert String array to int array
+     *
+     * @param arr String array
+     * @return int array
+     * @since 0.9.0
+     */
+    public static int[] toIArray(String[] arr) {
+        int[] ia = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            ia[i] = Integer.parseInt(arr[i]);
+        }
+        return ia;
+    }
+
+    /**
+     * Expand array length by number 0
+     *
+     * @param arr src array
+     * @param newLength new length
+     * @return Expanded array
+     * @since 0.9.0
+     */
+    public static int[] expand(int[] arr, int newLength) {
+        if (newLength <= arr.length) {
+            return arr;
+        }
+        int[] ints = new int[newLength];
+        System.arraycopy(arr, 0, ints, 0, arr.length);
+        for (int i = arr.length; i < newLength; i++) {
+            ints[i] = 0;
+        }
+        return ints;
     }
 }

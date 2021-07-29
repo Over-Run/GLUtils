@@ -30,17 +30,132 @@ import org.overrun.glutils.callback.ThrowableCallback;
 import org.overrun.glutils.callback.WarningCallback;
 
 import static org.lwjgl.opengl.GL30.*;
+import static org.overrun.glutils.ArrayHelper.expand;
+import static org.overrun.glutils.ArrayHelper.toIArray;
 
 /**
  * @author squid233
  * @since 0.1.0
  */
 public final class GLUtils {
-    public static final String VERSION = "0.9.0";
+    public static final String VERSION_0_1_0 = "0.1.0";
+    public static final String VERSION_0_2_0 = "0.2.0";
+    public static final String VERSION_0_3_0 = "0.3.0";
+    public static final String VERSION_0_4_0 = "0.4.0";
+    public static final String VERSION_0_5_0 = "0.5.0";
+    public static final String VERSION_0_6_0 = "0.6.0";
+    public static final String VERSION_0_6_1 = "0.6.1";
+    public static final String VERSION_0_7_0 = "0.7.0";
+    public static final String VERSION_0_8_0 = "0.8.0";
+    public static final String VERSION_0_9_0 = "0.9.0";
+    public static final String VERSION = VERSION_0_9_0;
     public static final String NO_ERR = "GL_NO_ERROR (0)";
+    private static final int MAJOR = 0;
+    private static final int MINOR = 1;
+    private static final int PATCH = 2;
+    private static final int PRE_BUILD = 3;
     private static ThrowableCallback throwableCb = Throwable::printStackTrace;
     private static WarningCallback warningCb = GLUtils::defaultWarningCb;
     private static ErrorCallback errorCb = GLUtils::defaultErrorCb;
+
+    /**
+     * Check current version older than {@code other}
+     *
+     * @param other Other version
+     * @return {@link #VERSION} &lt; {@code other}
+     * @since 0.9.0
+     */
+    public static boolean isOlder(String other) {
+        // example: 0.9.0 < 0.10.0
+        // so 0.9.0 is older than 0.10.0
+        // so return true
+        int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
+        int[] oth = expand(toIArray(other.split("\\.")), 4);
+        if (curr[MAJOR] < oth[MAJOR]) {
+            return true;
+        }
+        if (curr[MAJOR] > oth[MINOR]) {
+            return false;
+        }
+
+        if (curr[MINOR] < oth[MINOR]) {
+            return true;
+        }
+        if (curr[MINOR] > oth[MINOR]) {
+            return false;
+        }
+
+        if (curr[PATCH] < oth[MINOR]) {
+            return true;
+        }
+        if (curr[PATCH] > oth[MINOR]) {
+            return false;
+        }
+
+        if (curr[PRE_BUILD] == 0 && oth[PRE_BUILD] != 0) {
+            return false;
+        }
+        return curr[PRE_BUILD] < oth[PRE_BUILD];
+    }
+
+    /**
+     * Check current version newer than {@code other}
+     *
+     * @param other Other version
+     * @return {@link #VERSION} &gt; {@code other}
+     * @since 0.9.0
+     */
+    public static boolean isNewer(String other) {
+        // example: 0.9.0 > 0.10.0
+        // so 0.9.0 is older than 0.10.0
+        // so return false
+        int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
+        int[] oth = expand(toIArray(other.split("\\.")), 4);
+        if (curr[MAJOR] > oth[MAJOR]) {
+            return true;
+        }
+        if (curr[MAJOR] < oth[MINOR]) {
+            return false;
+        }
+
+        if (curr[MINOR] > oth[MINOR]) {
+            return true;
+        }
+        if (curr[MINOR] < oth[MINOR]) {
+            return false;
+        }
+
+        if (curr[PATCH] > oth[MINOR]) {
+            return true;
+        }
+        if (curr[PATCH] < oth[MINOR]) {
+            return false;
+        }
+
+        if (curr[PRE_BUILD] == 0 && oth[PRE_BUILD] != 0) {
+            return true;
+        }
+        return curr[PRE_BUILD] > oth[PRE_BUILD];
+    }
+
+    /**
+     * Check current version equals {@code other}
+     *
+     * @param other Other version
+     * @return {@link #VERSION} == {@code other}
+     * @since 0.9.0
+     */
+    public static boolean isEqual(String other) {
+        // example: 0.9.0 > 0.10.0
+        // so 0.9.0 is older than 0.10.0
+        // so return false
+        int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
+        int[] oth = expand(toIArray(other.split("\\.")), 4);
+        return curr[MAJOR] == oth[MAJOR]
+                && curr[MINOR] == oth[MINOR]
+                && curr[PATCH] == oth[PATCH]
+                && curr[PRE_BUILD] == oth[PRE_BUILD];
+    }
 
     /**
      * glGetError to string
@@ -80,11 +195,12 @@ public final class GLUtils {
      * @since 0.5.0
      */
     public static void glPrintError(int i) {
-        String s = glErrorString();
-        if (s.equals(NO_ERR)) {
-            System.out.println(i + ":" + s);
+        String err = glErrorString();
+        String s = i + ":" + err;
+        if (err.equals(NO_ERR)) {
+            System.out.println(s);
         } else {
-            System.err.println(i + ":" + s);
+            System.err.println(s);
         }
     }
 

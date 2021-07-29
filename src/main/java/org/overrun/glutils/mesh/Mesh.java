@@ -23,7 +23,9 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.mesh;
+
+import org.overrun.glutils.GLProgram;
 
 import static org.lwjgl.opengl.GL20.*;
 

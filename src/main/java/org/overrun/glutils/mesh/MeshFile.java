@@ -23,39 +23,21 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.mesh;
 
-import static org.lwjgl.opengl.GL15.*;
+import org.overrun.glutils.FloatArray;
+import org.overrun.glutils.IntArray;
 
 /**
  * @author squid233
- * @since 0.2.0
+ * @since 0.7.0
  */
-public interface IMesh extends AutoCloseable {
-    /**
-     * getVertexCount
-     *
-     * @return vertex count
-     */
-    int getVertexCount();
-
-    /**
-     * Render this mesh.
-     *
-     * @param mode Drawing mode.
-     */
-    void render(int mode);
-
-    /**
-     * Render this mesh.
-     */
-    default void render() {
-        render(GL_TRIANGLES);
-    }
-
-    /**
-     * Cleanup all resources.
-     */
-    @Override
-    void close();
+public class MeshFile {
+    public boolean textured = false;
+    public boolean indexed = false;
+    public int vertDim = 3, colorDim = 3, texDim = 2;
+    public final FloatArray vertices = new FloatArray();
+    public final FloatArray colors = new FloatArray();
+    public final FloatArray texCoords = new FloatArray();
+    public final IntArray indices = new IntArray();
 }

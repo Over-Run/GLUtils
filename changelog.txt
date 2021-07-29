@@ -1,6 +1,10 @@
 0.9.0
 Beta
 Fixed a bug: `GLUtils.VERSION` was 0.7.0
+New feature: `ArrayHelper.toIArray`
+New feature: `ArrayHelper.expand`
+New feature: `GLUtils.isOlder`
+Changed: Move `*Mesh*` to [base pkg].mesh
 
 0.8.0
 Fixed a bug: `AtlasLoomSTB` was flipping
