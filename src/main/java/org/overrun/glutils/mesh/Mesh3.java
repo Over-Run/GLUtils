@@ -40,6 +40,9 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     private int colorIdx;
     private int texIdx = -1;
 
+    /**
+     * construct
+     */
     public Mesh3() {
         vao = glGenVertexArrays();
     }
@@ -154,10 +157,27 @@ public class Mesh3 extends BaseMesh<Mesh3> {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    /**
+     * get vao
+     * @return {@link #vao}
+     */
     public int getVao() {
         return vao;
     }
 
+    /**
+     * construct
+     *
+     * @param vertices  vertices
+     * @param vertIdx   vertIdx
+     * @param colors    colors
+     * @param colorIdx  colorIdx
+     * @param texCoords texCoords
+     * @param texture   texture
+     * @param texIdx    texIdx
+     * @param indices   indices
+     * @return mesh
+     */
     public static Mesh3 of(float[] vertices,
                            int vertIdx,
                            float[] colors,

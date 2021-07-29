@@ -33,11 +33,32 @@ import org.overrun.glutils.IntArray;
  * @since 0.7.0
  */
 public class MeshFile {
+    /**
+     * is textured
+     */
     public boolean textured = false;
+    /**
+     * is indexed
+     */
     public boolean indexed = false;
+    /**
+     * dimensions
+     */
     public int vertDim = 3, colorDim = 3, texDim = 2;
+    /**
+     * vertices
+     */
     public final FloatArray vertices = new FloatArray();
+    /**
+     * colors
+     */
     public final FloatArray colors = new FloatArray();
+    /**
+     * texCoords
+     */
     public final FloatArray texCoords = new FloatArray();
+    /**
+     * indices
+     */
     public final IntArray indices = new IntArray();
 }

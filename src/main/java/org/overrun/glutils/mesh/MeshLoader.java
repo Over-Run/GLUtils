@@ -109,6 +109,15 @@ public class MeshLoader {
         return map;
     }
 
+    /**
+     * load to file
+     *
+     * @param cl     class loader
+     * @param file   filename
+     * @param macros macros
+     * @return mesh file
+     * @throws Exception occurred exception on compiling
+     */
     public static MeshFile loadf(ClassLoader cl,
                                  String file,
                                  MeshMacro... macros)
@@ -248,6 +257,18 @@ public class MeshLoader {
         }
     }
 
+    /**
+     * load
+     *
+     * @param cl     class loader
+     * @param file   filename
+     * @param pre    pre-operations
+     * @param tClass target class
+     * @param macros macros
+     * @param <T>    mesh type
+     * @return mesh
+     * @throws Exception occurred exception on compiling
+     */
     public static <T extends BaseMesh<T>>
     T load(ClassLoader cl,
            String file,
@@ -274,6 +295,15 @@ public class MeshLoader {
         return mesh;
     }
 
+    /**
+     * load
+     *
+     * @param cl     class loader
+     * @param file   filename
+     * @param macros macros
+     * @return mesh
+     * @throws Exception occurred exception on compiling
+     */
     public static Mesh load(ClassLoader cl,
                             String file,
                             MeshMacro... macros)
@@ -281,6 +311,16 @@ public class MeshLoader {
         return load(cl, file, null, Mesh.class, macros);
     }
 
+    /**
+     * load
+     *
+     * @param cl     class loader
+     * @param file   filename
+     * @param pre    pre-operations
+     * @param macros macros
+     * @return mesh
+     * @throws Exception occurred exception on compiling
+     */
     public static Mesh3 load3(ClassLoader cl,
                               String file,
                               Consumer<Mesh3> pre,
@@ -289,6 +329,12 @@ public class MeshLoader {
         return load(cl, file, pre, Mesh3.class, macros);
     }
 
+    /**
+     * exception
+     *
+     * @param msg    message
+     * @param currLn current line
+     */
     public static void except(String msg,
                               int currLn) {
         throw new CompileException("Error loading mesh at line " +

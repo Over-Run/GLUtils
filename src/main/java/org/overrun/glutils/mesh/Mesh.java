@@ -79,6 +79,20 @@ public class Mesh extends BaseMesh<Mesh> {
         return this;
     }
 
+    /**
+     * construct
+     *
+     * @param program   program
+     * @param vertices  vertices
+     * @param vertIdx   vertIdx
+     * @param colors    colors
+     * @param colorIdx  colorIdx
+     * @param texCoords texCoords
+     * @param texture   texture
+     * @param texIdx    texIdx
+     * @param indices   indices
+     * @return mesh
+     */
     public static Mesh of(GLProgram program,
                           float[] vertices,
                           String vertIdx,

@@ -32,9 +32,21 @@ package org.overrun.glutils.mesh;
  * @since 0.7.0
  */
 public class MeshMacro {
+    /**
+     * macro name
+     */
     public final String name;
+    /**
+     * macro value
+     */
     public final String value;
 
+    /**
+     * construct
+     *
+     * @param name  macro name
+     * @param value macro value
+     */
     public MeshMacro(String name, String value) {
         this.name = name;
         this.value = value;
