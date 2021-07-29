@@ -1,9 +1,17 @@
+Update GLUtils.java on adding new versions
+
+1.0.0
+Release
+Rename `MeshVar` to `MeshMacro`
+
 0.9.0
 Beta
 Fixed a bug: `GLUtils.VERSION` was 0.7.0
 New feature: `ArrayHelper.toIArray`
 New feature: `ArrayHelper.expand`
 New feature: `GLUtils.isOlder`
+New feature: `GLUtils.isNewer`
+New feature: `GLUtils.isEqual`
 Changed: Move `*Mesh*` to [base pkg].mesh
 
 0.8.0

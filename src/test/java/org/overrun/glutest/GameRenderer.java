@@ -32,10 +32,10 @@ import org.overrun.glutils.mesh.Mesh3;
 import org.overrun.glutils.Textures;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.mesh.MeshLoader.load3;
-import static org.overrun.glutils.mesh.MeshLoader.var;
 import static org.overrun.glutils.ShaderReader.lines;
 import static org.overrun.glutils.math.Transform.*;
+import static org.overrun.glutils.mesh.MeshLoader.def;
+import static org.overrun.glutils.mesh.MeshLoader.load3;
 
 /**
  * @author squid233
@@ -64,7 +64,7 @@ public class GameRenderer implements AutoCloseable {
         mesh = load3(cl,
                 "cube.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2),
-                var("size", 1.0f)).texture(texture);
+                def("size", 1.0f)).texture(texture);
         float[] vert = {
                 -1, -9, 0, //0
                 1, -9, 0, //1

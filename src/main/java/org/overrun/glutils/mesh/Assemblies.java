@@ -26,17 +26,17 @@
 package org.overrun.glutils.mesh;
 
 /**
- * #define name value
- *
  * @author squid233
- * @since 0.7.0
+ * @since 1.0.0
  */
-public class MeshVar {
-    public final String name;
-    public final String value;
-
-    public MeshVar(String name, String value) {
-        this.name = name;
-        this.value = value;
-    }
+public class Assemblies {
+    public static final String DEFINE = "define";
+    public static final String SET = "set";
+    public static final String OPT_VERT_DIM = "vertices";
+    public static final String OPT_COL_DIM = "color";
+    public static final String OPT_TEX_DIM = "texCoords";
+    public static final String VERT = "v";
+    public static final String VERT_COL = "vc";
+    public static final String VERT_TEX = "vt";
+    public static final String FACE = "f";
 }

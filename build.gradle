@@ -9,7 +9,7 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 group 'io.github.over-run'
 archivesBaseName = 'glutils'
-version = '0.9.0'
+version = '1.0.0-SNAPSHOT'
 
 test {
     useJUnitPlatform()
