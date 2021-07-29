@@ -97,11 +97,11 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
             }
         }
         int siz = (int) ceil(sqrt(images.length));
-        maxW = maxH = max(siz * maxWper, siz * maxHper);
+        width = height = max(siz * maxWper, siz * maxHper);
         atlasId = Textures.load(name + "-atlas",
-                maxW,
-                maxH,
-                new int[maxW * maxH],
+                width,
+                height,
+                new int[width * height],
                 mode);
         int u0 = 0, v0 = 0;
         for (Map.Entry<String, StbImg> e : imageMap.entrySet()) {
@@ -111,7 +111,7 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
             int[] pixels;
             if (si.isFailed()) {
                 pixels = new int[w * h];
-                if (u0 + w > maxW) {
+                if (u0 + w > width) {
                     u0 = 0;
                     v0 += maxHper;
                 }
@@ -134,15 +134,15 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                 }
             } else {
                 pixels = si.getData().asIntBuffer().array();
-                if (u0 + w > maxW) {
+                if (u0 + w > width) {
                     u0 = 0;
                     v0 += maxHper;
                 }
             }
             glTexSubImage2D(GL_TEXTURE_2D,
                     0,
-                    maxW - u0 - 1,
-                    maxH - v0 - 1,
+                    width - u0 - 1,
+                    height - v0 - 1,
                     w,
                     h,
                     GL_RGBA,

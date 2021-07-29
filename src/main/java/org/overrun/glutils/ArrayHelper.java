@@ -34,6 +34,12 @@ import java.util.List;
  * @since 0.7.0
  */
 public class ArrayHelper {
+    /**
+     * remove null or empty strings
+     *
+     * @param arr array
+     * @return new array
+     */
     public static String[] removeNull(String[] arr) {
         List<String> list = new ArrayList<>(arr.length);
         list.addAll(Arrays.asList(arr));

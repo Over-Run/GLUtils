@@ -33,10 +33,29 @@ import java.util.Map;
  * @since 0.3.0
  */
 public abstract class AtlasLoom<T> {
+    /**
+     * string id to images obj
+     */
     protected final Map<String, T> imageMap = new HashMap<>();
+    /**
+     * texture UVs
+     */
     protected final Map<String, UV> uvMap = new HashMap<>();
+    /**
+     * atlas name
+     */
     protected final String name;
-    protected int maxW, maxH;
+    /**
+     * atlas width
+     */
+    protected int width;
+    /**
+     * atlas height
+     */
+    protected int height;
+    /**
+     * texture id of atlas
+     */
     protected int atlasId;
 
     /**
@@ -72,49 +91,113 @@ public abstract class AtlasLoom<T> {
     }
 
     public abstract int load(ClassLoader loader,
-                              int defaultW,
-                              int defaultH,
-                              int mode,
-                              String... images);
+                             int defaultW,
+                             int defaultH,
+                             int mode,
+                             String... images);
 
+    /**
+     * add image
+     *
+     * @param img image
+     */
     protected void addImg(String img) {
         if (img != null) {
             imageMap.put(img, null);
         }
     }
 
+    /**
+     * get atlas id
+     *
+     * @return {@link #atlasId}
+     */
     public int getAtlasId() {
         return atlasId;
     }
 
+    /**
+     * get atlas width
+     *
+     * @return {@link #width}
+     */
     public int getWidth() {
-        return maxW;
+        return width;
     }
 
+    /**
+     * get atlas height
+     *
+     * @return {@link #height}
+     */
     public int getHeight() {
-        return maxH;
+        return height;
     }
 
+    /**
+     * get texture u0
+     *
+     * @param id sprite id
+     * @return left-top texture coordinate x
+     */
     public float getU0(String id) {
-        return (float) uvMap.get(id).u0 / (float) maxW;
+        return (float) uvMap.get(id).u0 / (float) width;
     }
 
+    /**
+     * get texture u1
+     *
+     * @param id sprite id
+     * @return right-bottom texture coordinate x
+     */
     public float getU1(String id) {
-        return (float) uvMap.get(id).u1 / (float) maxW;
+        return (float) uvMap.get(id).u1 / (float) width;
     }
 
+    /**
+     * get texture v0
+     *
+     * @param id sprite id
+     * @return left-top texture coordinate y
+     */
     public float getV0(String id) {
-        return (float) uvMap.get(id).v0 / (float) maxH;
+        return (float) uvMap.get(id).v0 / (float) height;
     }
 
+    /**
+     * get texture v1
+     *
+     * @param id sprite id
+     * @return right-bottom texture coordinate y
+     */
     public float getV1(String id) {
-        return (float) uvMap.get(id).v1 / (float) maxH;
+        return (float) uvMap.get(id).v1 / (float) height;
     }
 
+    /**
+     * texture uv
+     *
+     * @author squid233
+     * @since 0.3.0
+     */
     public static class UV {
+        /**
+         * x
+         */
         public final int u0, v0;
+        /**
+         * y
+         */
         public final int u1, v1;
 
+        /**
+         * construct
+         *
+         * @param u0 u0
+         * @param v0 v0
+         * @param u1 u1
+         * @param v1 v1
+         */
         public UV(int u0, int v0,
                   int u1, int v1) {
             this.u0 = u0;

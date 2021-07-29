@@ -11,10 +11,6 @@ group 'io.github.over-run'
 archivesBaseName = 'glutils'
 version = '1.0.0-SNAPSHOT'
 
-test {
-    useJUnitPlatform()
-}
-
 repositories {
     mavenCentral()
     maven { url 'https://maven.aliyun.com/repository/central' }

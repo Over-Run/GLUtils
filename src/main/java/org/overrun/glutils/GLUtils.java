@@ -32,24 +32,14 @@ import org.overrun.glutils.callback.WarningCallback;
 import static org.lwjgl.opengl.GL30.*;
 import static org.overrun.glutils.ArrayHelper.expand;
 import static org.overrun.glutils.ArrayHelper.toIArray;
+import static org.overrun.glutils.Versions.current;
 
 /**
  * @author squid233
  * @since 0.1.0
  */
 public final class GLUtils {
-    public static final String VERSION_0_1_0 = "0.1.0";
-    public static final String VERSION_0_2_0 = "0.2.0";
-    public static final String VERSION_0_3_0 = "0.3.0";
-    public static final String VERSION_0_4_0 = "0.4.0";
-    public static final String VERSION_0_5_0 = "0.5.0";
-    public static final String VERSION_0_6_0 = "0.6.0";
-    public static final String VERSION_0_6_1 = "0.6.1";
-    public static final String VERSION_0_7_0 = "0.7.0";
-    public static final String VERSION_0_8_0 = "0.8.0";
-    public static final String VERSION_0_9_0 = "0.9.0";
-    public static final String VERSION_1_0_0 = "1.0.0";
-    public static final String VERSION = VERSION_1_0_0;
+    public static final String VERSION = current();
     public static final String NO_ERR = "GL_NO_ERROR (0)";
     private static final int MAJOR = 0;
     private static final int MINOR = 1;

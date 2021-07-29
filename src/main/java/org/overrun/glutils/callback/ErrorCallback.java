@@ -31,5 +31,11 @@ package org.overrun.glutils.callback;
  */
 @FunctionalInterface
 public interface ErrorCallback {
+    /**
+     * send error message
+     *
+     * @param msg message
+     * @param format objects to replace to msg
+     */
     void error(Object msg, Object... format);
 }
