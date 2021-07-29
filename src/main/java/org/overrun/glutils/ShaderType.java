@@ -45,18 +45,31 @@ public enum ShaderType {
      */
     GEOMETRY_SHADER(GL_GEOMETRY_SHADER);
 
+    /**
+     * GL type constant
+     */
     private final int type;
 
     ShaderType(int type) {
         this.type = type;
     }
 
+    /**
+     * get gl constant
+     *
+     * @return gl constant
+     */
     public int getType() {
         return type;
     }
 
+    /**
+     * get name
+     *
+     * @return name
+     */
     public String getName() {
-        return name().toLowerCase().replace("_s", "S");
+        return name().toLowerCase().replace("_", " ");
     }
 
     @Override

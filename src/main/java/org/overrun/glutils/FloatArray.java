@@ -34,6 +34,11 @@ import java.util.ArrayList;
  * @since 0.7.0
  */
 public class FloatArray extends ArrayList<Float> {
+    /**
+     * Convert boxed-object type to primitive type
+     *
+     * @return float array
+     */
     public float[] toFArray() {
         Float[] floats = toArray(new Float[0]);
         float[] floats1 = new float[floats.length];
@@ -49,6 +54,12 @@ public class FloatArray extends ArrayList<Float> {
         return super.add(aFloat);
     }
 
+    /**
+     * add a number to list
+     *
+     * @param aFloat primitive type float
+     * @return is changed
+     */
     public boolean add(float aFloat) {
         return super.add(aFloat);
     }

@@ -1,4 +1,6 @@
 # GLUtils
+
+[![Java CI with Gradle](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml/badge.svg)](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml)  
 Utils for developing OpenGL for Java:coffee:.
 
 [If there are any bugs, tell us!](https://github.com/Over-Run/GLUtils/issues/new)

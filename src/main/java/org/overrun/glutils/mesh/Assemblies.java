@@ -30,13 +30,40 @@ package org.overrun.glutils.mesh;
  * @since 1.0.0
  */
 public class Assemblies {
+    /**
+     * define macro
+     */
     public static final String DEFINE = "define";
+    /**
+     * set an option
+     */
     public static final String SET = "set";
+    /**
+     * vertex dim option
+     */
     public static final String OPT_VERT_DIM = "vertices";
+    /**
+     * color dim option
+     */
     public static final String OPT_COL_DIM = "color";
+    /**
+     * texture dim option
+     */
     public static final String OPT_TEX_DIM = "texCoords";
+    /**
+     * add vertices
+     */
     public static final String VERT = "v";
+    /**
+     * add vertex colors
+     */
     public static final String VERT_COL = "vc";
+    /**
+     * add vertex texture coordinates
+     */
     public static final String VERT_TEX = "vt";
+    /**
+     * add indices
+     */
     public static final String FACE = "f";
 }

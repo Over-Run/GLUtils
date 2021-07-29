@@ -111,15 +111,17 @@ public class Mesh extends BaseMesh<Mesh> {
                 vertNormalized,
                 vertStride,
                 0);
-        glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
-        glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
-        glEnableVertexAttribArray(colorIdx);
-        glVertexAttribPointer(colorIdx,
-                colorDim,
-                GL_FLOAT,
-                colorNormalized,
-                colorStride,
-                0);
+        if (colorVbo != 0) {
+            glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
+            glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
+            glEnableVertexAttribArray(colorIdx);
+            glVertexAttribPointer(colorIdx,
+                    colorDim,
+                    GL_FLOAT,
+                    colorNormalized,
+                    colorStride,
+                    0);
+        }
         if (texVbo != 0) {
             glBindBuffer(GL_ARRAY_BUFFER, texVbo);
             glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
@@ -131,8 +133,8 @@ public class Mesh extends BaseMesh<Mesh> {
                     texStride,
                     0);
         }
-        if (idxVbo != 0) {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxVbo);
+        if (ibo != 0) {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, indexUsage);
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -140,7 +142,7 @@ public class Mesh extends BaseMesh<Mesh> {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture);
         }
-        if (idxVbo == 0) {
+        if (ibo == 0) {
             glDrawArrays(mode, 0, getVertexCount());
         } else {
             glDrawElements(mode, getVertexCount(), GL_UNSIGNED_INT, 0);
@@ -169,8 +171,8 @@ public class Mesh extends BaseMesh<Mesh> {
         if (texVbo != 0) {
             glDeleteBuffers(texVbo);
         }
-        if (idxVbo != 0) {
-            glDeleteBuffers(idxVbo);
+        if (ibo != 0) {
+            glDeleteBuffers(ibo);
         }
     }
 

@@ -43,11 +43,28 @@ import static org.overrun.glutils.GLUtils.getWarningCb;
  * @since 0.1.0
  */
 public class GLProgram implements AutoCloseable {
+    /**
+     * program id
+     */
     private final int id;
+    /**
+     * shader id
+     */
     private int vshId, fshId, gshId;
+    /**
+     * uniform locations
+     */
     private final Map<String, Integer> uniforms = new HashMap<>();
+    /**
+     * attribute locations
+     */
     private final Map<String, Integer> attributes = new HashMap<>();
 
+    /**
+     * Construct and create program
+     *
+     * @throws RuntimeException An error occurred creating the program object
+     */
     public GLProgram()
             throws RuntimeException {
         id = glCreateProgram();
@@ -56,14 +73,29 @@ public class GLProgram implements AutoCloseable {
         }
     }
 
+    /**
+     * create vertex shader
+     *
+     * @param src source code
+     */
     public void createVsh(String src) {
         vshId = createShader(src, ShaderType.VERTEX_SHADER);
     }
 
+    /**
+     * create fragment shader
+     *
+     * @param src source code
+     */
     public void createFsh(String src) {
         fshId = createShader(src, ShaderType.FRAGMENT_SHADER);
     }
 
+    /**
+     * create geometry shader
+     *
+     * @param src source code
+     */
     public void createGsh(String src) {
         gshId = createShader(src, ShaderType.GEOMETRY_SHADER);
     }
@@ -81,7 +113,7 @@ public class GLProgram implements AutoCloseable {
         if (shader == 0) {
             throw new RuntimeException(
                     "An error occurred creating the " +
-                            type.getName() +
+                            type +
                             " object."
             );
         }
@@ -95,6 +127,11 @@ public class GLProgram implements AutoCloseable {
         return shader;
     }
 
+    /**
+     * link and validate program
+     *
+     * @throws RuntimeException error linking program
+     */
     public void link()
             throws RuntimeException {
         glLinkProgram(id);
@@ -117,18 +154,37 @@ public class GLProgram implements AutoCloseable {
         }
     }
 
+    /**
+     * use program
+     */
     public void bind() {
         glUseProgram(id);
     }
 
+    /**
+     * don't use program
+     */
     public void unbind() {
         glUseProgram(0);
     }
 
+    /**
+     * check has uniform
+     *
+     * @param name uniform name
+     * @return has uniform
+     */
     public boolean hasUniform(String name) {
         return glGetUniformLocation(id, name) >= 0;
     }
 
+    /**
+     * get uniform
+     *
+     * @param name uniform name
+     * @return uniform location
+     * @throws RuntimeException uniform not found
+     */
     public int getUniform(String name)
             throws RuntimeException {
         if (uniforms.containsKey(name)) {
@@ -194,8 +250,13 @@ public class GLProgram implements AutoCloseable {
         }
     }
 
-    public int getAttrib(String name)
-            throws RuntimeException {
+    /**
+     * get attribute
+     *
+     * @param name attribute name
+     * @return attribute location
+     */
+    public int getAttrib(String name) {
         if (attributes.containsKey(name)) {
             return attributes.get(name);
         }
@@ -220,12 +281,22 @@ public class GLProgram implements AutoCloseable {
         glEnableVertexAttribArray(getAttrib(name));
     }
 
+    /**
+     * glEnableVertexAttribArray
+     *
+     * @param names attrib names
+     */
     public void enableVertexAttribArrays(String... names) {
         for (String name : names) {
             enableVertexAttribArray(name);
         }
     }
 
+    /**
+     * glDisableVertexAttribArray
+     *
+     * @param names attrib names
+     */
     public void disableVertexAttribArrays(String... names) {
         for (String name : names) {
             glDisableVertexAttribArray(getAttrib(name));
@@ -233,27 +304,16 @@ public class GLProgram implements AutoCloseable {
     }
 
     /**
-     * Specifies the location and organization of a vertex attribute array.
+     * glVertexAttribPointer
      *
      * @param name       Attrib name
      * @param size       the number of values per vertex that are stored in the array.
-     * @param type       the data type of each component in the array. The
-     *                   initial value is GL_FLOAT.
-     * @param normalized whether fixed-point data values should be normalized or
-     *                   converted directly as fixed-point values when they are
-     *                   accessed
-     * @param stride     the byte offset between consecutive generic vertex
-     *                   attributes. If stride is 0, the generic vertex
-     *                   attributes are understood to be tightly packed in the
-     *                   array. The initial value is 0.
-     * @param pointer    the vertex attribute data or the offset of the first
-     *                   component of the first generic vertex attribute in the
-     *                   array in the data store of the buffer currently bound
-     *                   to the ARRAY_BUFFER target. The initial value is 0.
-     * @see <a target="_blank" href="http://docs.gl/gl4/glVertexAttribPointer">Reference Page</a>
+     * @param type       data type
+     * @param normalized normalized
+     * @param stride     stride
+     * @param pointer    pointer
      * @since 0.3.0
      */
-    @SuppressWarnings("JavaDoc")
     public void vertexAttribPointer(String name,
                                     int size,
                                     int type,
@@ -268,6 +328,11 @@ public class GLProgram implements AutoCloseable {
                 pointer);
     }
 
+    /**
+     * get program id
+     *
+     * @return {@link #id}
+     */
     public int getId() {
         return id;
     }

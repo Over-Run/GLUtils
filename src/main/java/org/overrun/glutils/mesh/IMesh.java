@@ -33,7 +33,7 @@ import static org.lwjgl.opengl.GL15.*;
  */
 public interface IMesh extends AutoCloseable {
     /**
-     * getVertexCount
+     * get vertex count
      *
      * @return vertex count
      */

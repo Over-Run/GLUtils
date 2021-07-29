@@ -90,6 +90,16 @@ public abstract class AtlasLoom<T> {
         return new AtlasLoomSTB(name);
     }
 
+    /**
+     * load
+     *
+     * @param loader class loader
+     * @param defaultW default width
+     * @param defaultH default height
+     * @param mode mipmap mode
+     * @param images images
+     * @return {@link #atlasId}
+     */
     public abstract int load(ClassLoader loader,
                              int defaultW,
                              int defaultH,

@@ -39,11 +39,29 @@ import static org.overrun.glutils.Versions.current;
  * @since 0.1.0
  */
 public final class GLUtils {
+    /**
+     * current version
+     */
     public static final String VERSION = current();
+    /**
+     * no error
+     */
     public static final String NO_ERR = "GL_NO_ERROR (0)";
+    /**
+     * version major index
+     */
     private static final int MAJOR = 0;
+    /**
+     * version minor index
+     */
     private static final int MINOR = 1;
+    /**
+     * version patch index
+     */
     private static final int PATCH = 2;
+    /**
+     * version pre-build index
+     */
     private static final int PRE_BUILD = 3;
     private static ThrowableCallback throwableCb = Throwable::printStackTrace;
     private static WarningCallback warningCb = GLUtils::defaultWarningCb;
@@ -195,26 +213,58 @@ public final class GLUtils {
         }
     }
 
+    /**
+     * default warning callback
+     *
+     * @param msg    message
+     * @param format objects to replace to msg
+     */
     public static void defaultWarningCb(Object msg, Object... format) {
         defaultErrorCb(msg, format);
     }
 
+    /**
+     * default warning callback
+     *
+     * @param msg    message
+     * @param format objects to replace to msg
+     */
     public static void defaultErrorCb(Object msg, Object... format) {
         System.err.printf(msg + "%n", format);
     }
 
+    /**
+     * set warning callback
+     *
+     * @param cb callback to set
+     */
     public static void setWarningCb(WarningCallback cb) {
         warningCb = cb;
     }
 
+    /**
+     * get warning callback
+     *
+     * @return warning callback
+     */
     public static WarningCallback getWarningCb() {
         return warningCb;
     }
 
+    /**
+     * set error callback
+     *
+     * @param cb callback to set
+     */
     public static void setErrorCb(ErrorCallback cb) {
         errorCb = cb;
     }
 
+    /**
+     * get error callback
+     *
+     * @return error callback
+     */
     public static ErrorCallback getErrorCb() {
         return errorCb;
     }
@@ -231,6 +281,11 @@ public final class GLUtils {
         throwableCb = cb;
     }
 
+    /**
+     * get throwable callback
+     *
+     * @return throwable callback
+     */
     public static ThrowableCallback getThrowableCb() {
         return throwableCb;
     }

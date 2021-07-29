@@ -132,7 +132,7 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     public Mesh3 indices(int[] indices) {
         super.indices(indices);
         glBindVertexArray(vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxVbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, indexUsage);
         glBindVertexArray(0);
         return this;
@@ -145,7 +145,7 @@ public class Mesh3 extends BaseMesh<Mesh3> {
             glBindTexture(GL_TEXTURE_2D, texture);
         }
         glBindVertexArray(getVao());
-        if (idxVbo == 0) {
+        if (ibo == 0) {
             glDrawArrays(mode, 0, getVertexCount());
         } else {
             glDrawElements(mode, getVertexCount(), GL_UNSIGNED_INT, 0);
@@ -207,13 +207,17 @@ public class Mesh3 extends BaseMesh<Mesh3> {
             glDisableVertexAttribArray(texIdx);
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glDeleteBuffers(vertVbo);
-        glDeleteBuffers(colorVbo);
+        if (vertVbo != 0) {
+            glDeleteBuffers(vertVbo);
+        }
+        if (colorVbo != 0) {
+            glDeleteBuffers(colorVbo);
+        }
         if (texVbo != 0) {
             glDeleteBuffers(texVbo);
         }
-        if (idxVbo != 0) {
-            glDeleteBuffers(idxVbo);
+        if (ibo != 0) {
+            glDeleteBuffers(ibo);
         }
         glBindVertexArray(0);
         glDeleteVertexArrays(vao);

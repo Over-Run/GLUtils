@@ -177,6 +177,16 @@ public class Textures {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mode);
     }
 
+
+    /**
+     * push image data to OpenGL state manager
+     *
+     * @param id   texture id
+     * @param mode mipmap mode
+     * @param w    texture width
+     * @param h    texture height
+     * @param data pixel data
+     */
     public static void pushToGL(int id, int mode, int w, int h, ByteBuffer data) {
         processTexture(id, mode);
         glTexImage2D(GL_TEXTURE_2D,
@@ -192,10 +202,12 @@ public class Textures {
     }
 
     /**
-     * @param id   identifier
-     * @param mode mode
-     * @param w    width
-     * @param h    height
+     * push image data to OpenGL state manager
+     *
+     * @param id   texture id
+     * @param mode mipmap mode
+     * @param w    texture width
+     * @param h    texture height
      * @param data pixel data
      * @since 0.3.0
      */

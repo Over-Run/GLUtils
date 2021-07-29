@@ -28,6 +28,7 @@ package org.overrun.glutils;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -35,14 +36,34 @@ import java.util.Objects;
  * @since 0.4.0
  */
 public class AWTImage {
+    /**
+     * is empty image
+     */
     public final boolean isNull;
+    /**
+     * image obj
+     */
     public final BufferedImage img;
 
+    /**
+     * construct
+     *
+     * @param isNull isNull
+     * @param img    img
+     */
     public AWTImage(boolean isNull, BufferedImage img) {
         this.isNull = isNull;
         this.img = img;
     }
 
+    /**
+     * load image from classpath
+     *
+     * @param loader class loader
+     * @param name   image absolute name
+     * @return loaded image
+     * @throws Exception IOE on file not found, etc.
+     */
     public static BufferedImage load(ClassLoader loader, String name)
             throws Exception {
         try (InputStream is = loader.getResourceAsStream(name)) {
@@ -50,6 +71,12 @@ public class AWTImage {
         }
     }
 
+    /**
+     * get pixels array
+     *
+     * @param img image
+     * @return pixels array
+     */
     public static int[] getBGR(BufferedImage img) {
         int w = img.getWidth();
         return img.getRGB(0,
@@ -61,6 +88,12 @@ public class AWTImage {
                 w);
     }
 
+    /**
+     * get pixels array and convert to RGB
+     *
+     * @param img image
+     * @return converted pixels array
+     */
     public static int[] getRGB(BufferedImage img) {
         int[] pixels = getBGR(img);
         for (int i = 0; i < pixels.length; ++i) {
@@ -71,5 +104,24 @@ public class AWTImage {
             pixels[i] = a << 24 | b << 16 | g << 8 | r;
         }
         return pixels;
+    }
+
+    /**
+     * Convert BGR to RGB pixels
+     *
+     * @param pixels BGR pixels
+     * @return Copy of converted pixels
+     * @since 1.0.0
+     */
+    public static int[] toRGB(int[] pixels) {
+        int[] copy = Arrays.copyOf(pixels, pixels.length);
+        for (int i = 0; i < copy.length; ++i) {
+            int a = copy[i] >> 24 & 255;
+            int r = copy[i] >> 16 & 255;
+            int g = copy[i] >> 8 & 255;
+            int b = copy[i] & 255;
+            copy[i] = a << 24 | b << 16 | g << 8 | r;
+        }
+        return copy;
     }
 }

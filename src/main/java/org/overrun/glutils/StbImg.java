@@ -34,6 +34,9 @@ import java.nio.ByteBuffer;
  * @since 0.4.0
  */
 public class StbImg implements AutoCloseable {
+    /**
+     * default recycler
+     */
     public static final Recycler RECYCLER = STBImage::stbi_image_free;
     private final int width;
     private final int height;
@@ -41,14 +44,37 @@ public class StbImg implements AutoCloseable {
     private final Recycler recycler;
     private final boolean failed;
 
+    /**
+     * @author squid233
+     * @since 0.4.0
+     */
     public interface Recycler {
+        /**
+         * free memory
+         *
+         * @param data image data
+         */
         void free(ByteBuffer data);
     }
 
+    /**
+     * get default recycler
+     *
+     * @return {@link #RECYCLER}
+     */
     public static Recycler defaultRecycler() {
         return RECYCLER;
     }
 
+    /**
+     * construct
+     *
+     * @param width    image width
+     * @param height   image height
+     * @param data     image data
+     * @param recycler recycler
+     * @param failed   is failed
+     */
     public StbImg(int width,
                   int height,
                   ByteBuffer data,
@@ -61,22 +87,47 @@ public class StbImg implements AutoCloseable {
         this.failed = failed;
     }
 
+    /**
+     * get width
+     *
+     * @return {@link #width}
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * get height
+     *
+     * @return {@link #height}
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * get data
+     *
+     * @return {@link #data}
+     */
     public ByteBuffer getData() {
         return data;
     }
 
+    /**
+     * get recycler
+     *
+     * @return {@link #recycler}
+     */
     public Recycler getRecycler() {
         return recycler;
     }
 
+    /**
+     * is failed
+     *
+     * @return {@link #failed}
+     */
     public boolean isFailed() {
         return failed;
     }

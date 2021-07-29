@@ -65,20 +65,17 @@ public class ArrayHelper {
     /**
      * Expand array length by number 0
      *
-     * @param arr src array
+     * @param original original array
      * @param newLength new length
-     * @return Expanded array
+     * @return Copy of expanded array
      * @since 0.9.0
      */
-    public static int[] expand(int[] arr, int newLength) {
-        if (newLength <= arr.length) {
-            return arr;
+    public static int[] expand(int[] original, int newLength) {
+        if (newLength <= original.length) {
+            return original;
         }
-        int[] ints = new int[newLength];
-        System.arraycopy(arr, 0, ints, 0, arr.length);
-        for (int i = arr.length; i < newLength; i++) {
-            ints[i] = 0;
-        }
-        return ints;
+        int[] copy = new int[newLength];
+        System.arraycopy(original, 0, copy, 0, original.length);
+        return copy;
     }
 }

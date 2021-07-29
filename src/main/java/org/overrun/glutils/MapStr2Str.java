@@ -33,17 +33,36 @@ import java.util.Map;
  * @since 0.7.0
  */
 public class MapStr2Str extends HashMap<String, String> {
+    /**
+     * construct
+     *
+     * @param initialCapacity initialCapacity
+     * @param loadFactor      loadFactor
+     */
     public MapStr2Str(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
     }
 
+    /**
+     * construct
+     *
+     * @param initialCapacity initialCapacity
+     */
     public MapStr2Str(int initialCapacity) {
         super(initialCapacity);
     }
 
+    /**
+     * construct
+     */
     public MapStr2Str() {
     }
 
+    /**
+     * construct
+     *
+     * @param m the other map to copy
+     */
     public MapStr2Str(Map<? extends String, ? extends String> m) {
         super(m);
     }
