@@ -31,6 +31,8 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.overrun.glutils.GLUtils;
+import org.overrun.glutils.wnd.Framebuffer;
+import org.overrun.glutils.wnd.Window;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,12 +45,13 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * @author squid233
  */
-public class GLUTest {
+public class GLUTest implements AutoCloseable {
     public static final float STEP = 0.5f;
     public static final float SENSITIVITY = 0.05f;
     public static final int TEST_VER = 1;
     public final GameRenderer renderer = new GameRenderer();
     public Window window;
+    public Framebuffer fb;
     public float xRot, yRot;
     public final Vector3f pos = new Vector3f(0.5f, 0.5f, 0.5f);
     public boolean resized;
@@ -77,6 +80,9 @@ public class GLUTest {
         window = new Window(854, 480, "Game");
         lastX = 854 / 2.0;
         lastY = 480 / 2.0;
+        fb = new Framebuffer();
+        fb.cb = (window1, width, height) -> resized = true;
+        fb.init(window);
         window.keyCb((window, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {
                 if (key == GLFW_KEY_ESCAPE) {
@@ -99,11 +105,6 @@ public class GLUTest {
                 }
             }
         });
-        window.frbufSizCb((h, width, height) -> {
-            resized = true;
-            window.w = width;
-            window.h = height;
-        });
         window.cursorPosCb((window, xpos, ypos) -> {
             if (grabbing) {
                 double xOffset = xpos - lastX;
@@ -124,8 +125,8 @@ public class GLUTest {
         });
         GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         if (mode != null) {
-            window.setPos((mode.width() - window.w) / 2,
-                    (mode.height() - window.h) / 2);
+            window.setPos((mode.width() - fb.getWidth()) / 2,
+                    (mode.height() - fb.getHeight()) / 2);
         }
         window.makeCurr();
         GL.createCapabilities(true);
@@ -158,7 +159,7 @@ public class GLUTest {
     }
 
     public void render() {
-        int w = window.w, h = window.h;
+        int w = fb.getWidth(), h = fb.getHeight();
         if (resized) {
             glViewport(0, 0, w, h);
             resized = false;
@@ -188,21 +189,25 @@ public class GLUTest {
         renderer.render(w, h, xRot, yRot, pos);
     }
 
+    @Override
+    public void close() {
+        window.free();
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
+    }
+
     public void start() throws Exception {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         System.out.println("Testing GLUtils " + GLUtils.VERSION);
         System.out.println("Version " + TEST_VER);
         GLFWErrorCallback.createPrint().set();
         glfwInit();
-        try {
-            run();
-        } finally {
-            glfwSetErrorCallback(null).free();
-            glfwTerminate();
-        }
+        run();
     }
 
     public static void main(String[] args) throws Exception {
-        new GLUTest().start();
+        try (GLUTest test = new GLUTest()) {
+            test.start();
+        }
     }
 }

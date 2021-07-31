@@ -4,6 +4,8 @@ Update Versions.java on adding new versions
 Release
 New feature: More docs
 New feature: `Versions`
+New feature: `Window`
+New feature: `Framebuffer`
 Changed: Rename `MeshVar` to `MeshMacro`
 Changed: Rename `idxVbo` to `ibo`
 Changed: `ShaderType#toString`: "vertexShader" -> "vertex shader"

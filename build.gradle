@@ -9,7 +9,7 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 group 'io.github.over-run'
 archivesBaseName = 'glutils'
-version = '1.0.0-SNAPSHOT'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -17,22 +17,18 @@ repositories {
 }
 
 dependencies {
-    //noinspection GradlePackageUpdate
     api platform('org.lwjgl:lwjgl-bom:3.2.3')
 
     api 'org.lwjgl:lwjgl'
-    //noinspection GradlePackageUpdate
+    api 'org.lwjgl:lwjgl-glfw'
     api 'org.lwjgl:lwjgl-opengl'
-    //noinspection GradlePackageUpdate
     api 'org.lwjgl:lwjgl-stb'
     api 'org.joml:joml:1.10.1'
 
     testRuntimeOnly 'org.lwjgl:lwjgl::natives-windows'
-    //noinspection GradlePackageUpdate
     testRuntimeOnly 'org.lwjgl:lwjgl-glfw::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-opengl::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-stb::natives-windows'
-    testImplementation 'org.lwjgl:lwjgl-glfw'
 }
 
 tasks.withType(JavaCompile) {
