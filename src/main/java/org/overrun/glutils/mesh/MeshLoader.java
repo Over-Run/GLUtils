@@ -34,6 +34,7 @@ import java.util.function.Consumer;
 
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.overrun.glutils.ArrayHelper.removeNull;
 import static org.overrun.glutils.mesh.Assemblies.*;
 
@@ -123,7 +124,8 @@ public class MeshLoader {
                                  MeshMacro... macros)
             throws Exception {
         try (InputStream is = cl.getResourceAsStream(file);
-             Scanner sc = new Scanner(Objects.requireNonNull(is))) {
+             Scanner sc = new Scanner(Objects.requireNonNull(is),
+                     UTF_8.name())) {
             MeshFile mf = new MeshFile();
             List<String> definedMacros = new ArrayList<>();
             MapStr2Str mmap = def(macros);

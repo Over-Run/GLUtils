@@ -1,5 +1,8 @@
 Update Versions.java on adding new versions
 
+1.1.0
+Changed: `ShaderReader` and `MeshLoader` use UTF-8 not ANSI now
+
 1.0.0
 Release
 New feature: More docs

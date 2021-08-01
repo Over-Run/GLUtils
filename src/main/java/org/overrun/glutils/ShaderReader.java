@@ -30,6 +30,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Objects;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * @author squid233
  * @since 0.1.0
@@ -58,7 +60,7 @@ public class ShaderReader {
     public static String lines(InputStream stream)
             throws Exception {
         try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(Objects.requireNonNull(stream))
+                new InputStreamReader(Objects.requireNonNull(stream), UTF_8)
         )) {
             StringBuilder sb = new StringBuilder();
             String read;
