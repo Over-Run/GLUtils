@@ -26,6 +26,7 @@
 package org.overrun.glutils.mesh;
 
 import org.overrun.glutils.CompileException;
+import org.overrun.glutils.GLUtils;
 import org.overrun.glutils.MapStr2Str;
 
 import java.io.InputStream;
@@ -81,16 +82,39 @@ public class MeshLoader {
         return def(name, String.valueOf(value));
     }
 
-    private static void replaceByMacro(String[] arr,
-                                       List<String> definedMacros,
-                                       MapStr2Str macros) {
+    private static String[] replaceByMacro(String[] arr,
+                                           Set<String> definedMacros,
+                                           MapStr2Str macros) {
+        boolean hasSpace = false;
         for (int i = 1; i < arr.length; i++) {
+            // remove invalid chars and calculating signs
             String macro =
                     arr[i].replaceAll("[`~!@#%^&*()\\-=+\\[{}\\];'\\\\:\"|,./<>?]", "");
             if (definedMacros.contains(macro)) {
-                arr[i] = arr[i].replace(macro, macros.get(macro));
+                String v = macros.get(macro);
+                arr[i] = arr[i].replace(macro, v);
+                if (v.matches(".+\\s.+")) {
+                    hasSpace = true;
+                }
             }
         }
+        if (hasSpace) {
+            int l = 0;
+            for (String s : arr) {
+                l += removeNull(s.split("\\s")).length;
+            }
+            String[] arr1 = new String[l];
+            int i = 0;
+            for (String s : arr) {
+                String[] arr2 = removeNull(s.split("\\s"));
+                for (String value : arr2) {
+                    arr1[i] = value;
+                    ++i;
+                }
+            }
+            return arr1;
+        }
+        return arr;
     }
 
     /**
@@ -127,7 +151,7 @@ public class MeshLoader {
              Scanner sc = new Scanner(Objects.requireNonNull(is),
                      UTF_8.name())) {
             MeshFile mf = new MeshFile();
-            List<String> definedMacros = new ArrayList<>();
+            Set<String> definedMacros = new HashSet<>();
             MapStr2Str mmap = def(macros);
             int currLn = 0;
             while (sc.hasNextLine()) {
@@ -147,26 +171,49 @@ public class MeshLoader {
                     case DEFINE: {
                         // check length
                         if (arr.length < 2) {
-                            except("required 1 param at least but found 0",
+                            except("Required 1 param at least but found 0",
                                     currLn);
                         }
-                        for (int i = 1; i < arr.length; i++) {
-                            String macro = arr[i];
-                            if (!KEYWORDS.contains(macro)) {
-                                definedMacros.add(macro);
-                            }
+                        // check identifier whether valid
+                        if (!arr[1].matches("^[A-Za-z$_][^`~!@#%^&*()\\-=+\\[{}\\];'\\\\:\"|,./<>?]?[A-Za-z0-9$_]*")) {
+                            except("Invalid identifier",
+                                    currLn);
                         }
+                        String[] arr2 = removeNull(ln.split("\\s", 3));
+                        String macro = arr2[1];
+                        if (!KEYWORDS.contains(macro)) {
+                            definedMacros.add(macro);
+                        }
+                        if (arr2.length > 2) {
+                            mmap.put(macro, arr2[2]);
+                        }
+                        break;
+                    }
+                    case UNDEF: {
+                        // check length
+                        if (arr.length != 2) {
+                            except("Required 1 param but found 0",
+                                    currLn);
+                        }
+                        String macro = arr[1];
+                        // check whether defined
+                        if (!definedMacros.contains(macro)) {
+                            except("Macro " + macro + " not defined.",
+                                    currLn);
+                        }
+                        definedMacros.remove(macro);
+                        mmap.remove(macro);
                         break;
                     }
                     // macros end
                     // settings
                     case SET: {
                         // check length
-                        if (arr.length < 3) {
-                            except("required 2 params but found " +
+                        if (arr.length != 3) {
+                            except("Required 2 params but found " +
                                     (arr.length - 1) + " param", currLn);
                         }
-                        replaceByMacro(arr, definedMacros, mmap);
+                        arr = replaceByMacro(arr, definedMacros, mmap);
                         // set vertDim
                         String p2 = arr[2];
                         try {
@@ -191,10 +238,10 @@ public class MeshLoader {
                     case VERT: {
                         // check length
                         if (arr.length < 2) {
-                            except("required 1 param at least but found 0",
+                            except("Required 1 param at least but found 0",
                                     currLn);
                         }
-                        replaceByMacro(arr, definedMacros, mmap);
+                        arr = replaceByMacro(arr, definedMacros, mmap);
                         for (int i = 1; i < arr.length; i++) {
                             try {
                                 mf.vertices.add(parseFloat(arr[i]));
@@ -206,10 +253,10 @@ public class MeshLoader {
                     case VERT_COL: {
                         // check length
                         if (arr.length < 2) {
-                            except("required 1 param at least but found 0",
+                            except("Required 1 param at least but found 0",
                                     currLn);
                         }
-                        replaceByMacro(arr, definedMacros, mmap);
+                        arr = replaceByMacro(arr, definedMacros, mmap);
                         for (int i = 1; i < arr.length; i++) {
                             try {
                                 mf.colors.add(parseFloat(arr[i]));
@@ -221,10 +268,10 @@ public class MeshLoader {
                     case VERT_TEX: {
                         // check length
                         if (arr.length < 2) {
-                            except("required 1 param at least but found 0",
+                            except("Required 1 param at least but found 0",
                                     currLn);
                         }
-                        replaceByMacro(arr, definedMacros, mmap);
+                        arr = replaceByMacro(arr, definedMacros, mmap);
                         mf.textured = true;
                         for (int i = 1; i < arr.length; i++) {
                             try {
@@ -239,10 +286,10 @@ public class MeshLoader {
                     case FACE: {
                         // check length
                         if (arr.length < 2) {
-                            except("required 1 param at least but found 0",
+                            except("Required 1 param at least but found 0",
                                     currLn);
                         }
-                        replaceByMacro(arr, definedMacros, mmap);
+                        arr = replaceByMacro(arr, definedMacros, mmap);
                         mf.indexed = true;
                         for (int i = 1; i < arr.length; i++) {
                             try {
@@ -265,7 +312,7 @@ public class MeshLoader {
      * @param cl     class loader
      * @param file   filename
      * @param pre    pre-operations
-     * @param tClass target class
+     * @param clazz  target class
      * @param macros macros
      * @param <T>    mesh type
      * @return mesh
@@ -275,11 +322,11 @@ public class MeshLoader {
     T load(ClassLoader cl,
            String file,
            Consumer<T> pre,
-           Class<T> tClass,
+           Class<T> clazz,
            MeshMacro... macros)
             throws Exception {
         MeshFile mf = loadf(cl, file, macros);
-        T mesh = tClass.getDeclaredConstructor().newInstance();
+        T mesh = GLUtils.newClass(clazz);
         if (pre != null) {
             pre.accept(mesh);
         }

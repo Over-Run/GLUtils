@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.Math.*;
-import static org.lwjgl.opengl.GL12.*;
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * @author squid233
@@ -51,10 +51,10 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
 
     @Override
     public int load(ClassLoader loader,
-                     int defaultW,
-                     int defaultH,
-                     int mode,
-                     String... images) {
+                    int defaultW,
+                    int defaultH,
+                    int mode,
+                    String... images) {
         for (String img : images) {
             addImg(img);
         }

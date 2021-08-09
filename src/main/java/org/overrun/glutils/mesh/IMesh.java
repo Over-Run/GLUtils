@@ -25,13 +25,15 @@
 
 package org.overrun.glutils.mesh;
 
+import org.overrun.glutils.Drawable;
+
 import static org.lwjgl.opengl.GL15.*;
 
 /**
  * @author squid233
  * @since 0.2.0
  */
-public interface IMesh extends AutoCloseable {
+public interface IMesh extends Drawable, AutoCloseable {
     /**
      * get vertex count
      *
@@ -49,6 +51,7 @@ public interface IMesh extends AutoCloseable {
     /**
      * Render this mesh.
      */
+    @Override
     default void render() {
         render(GL_TRIANGLES);
     }

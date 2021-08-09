@@ -51,7 +51,8 @@ public class AWTImage {
      * @param isNull isNull
      * @param img    img
      */
-    public AWTImage(boolean isNull, BufferedImage img) {
+    public AWTImage(boolean isNull,
+                    BufferedImage img) {
         this.isNull = isNull;
         this.img = img;
     }
@@ -64,7 +65,8 @@ public class AWTImage {
      * @return loaded image
      * @throws Exception IOE on file not found, etc.
      */
-    public static BufferedImage load(ClassLoader loader, String name)
+    public static BufferedImage load(ClassLoader loader,
+                                     String name)
             throws Exception {
         try (InputStream is = loader.getResourceAsStream(name)) {
             return ImageIO.read(Objects.requireNonNull(is));

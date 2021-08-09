@@ -53,10 +53,10 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
 
     @Override
     public int load(ClassLoader loader,
-                     int defaultW,
-                     int defaultH,
-                     int mode,
-                     String... images) {
+                    int defaultW,
+                    int defaultH,
+                    int mode,
+                    String... images) {
         for (String img : images) {
             addImg(img);
         }

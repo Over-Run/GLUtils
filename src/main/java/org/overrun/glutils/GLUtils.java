@@ -167,6 +167,20 @@ public final class GLUtils {
     }
 
     /**
+     * new instance of a class with no params
+     *
+     * @param clazz class type
+     * @param <T>   type
+     * @return instance of clazz
+     * @throws Exception if params found
+     * @since 1.1.0
+     */
+    public static <T> T newClass(Class<T> clazz)
+            throws Exception {
+        return clazz.getDeclaredConstructor().newInstance();
+    }
+
+    /**
      * glGetError to string
      *
      * @return error name

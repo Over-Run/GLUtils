@@ -57,7 +57,7 @@ public class Framebuffer {
      *
      * @param parent parent window
      */
-    public Framebuffer(Window parent) {
+    public Framebuffer(GLFWindow parent) {
         this(parent.hWnd);
     }
 
@@ -91,7 +91,7 @@ public class Framebuffer {
      *
      * @param parent parent window
      */
-    public void init(Window parent) {
+    public void init(GLFWindow parent) {
         init(parent.hWnd);
     }
 

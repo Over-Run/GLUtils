@@ -23,58 +23,31 @@
  *
  */
 
-package org.overrun.glutils;
-
-import java.util.ArrayList;
+package org.overrun.glutest;
 
 /**
- * ArrayList of primitive float
- *
  * @author squid233
- * @since 0.7.0
  */
-public class FloatArray extends ArrayList<Float> {
-    /**
-     * Convert boxed-object type to primitive type
-     *
-     * @return float array
-     */
-    public float[] toFArray() {
-        Float[] floats = toArray(new Float[0]);
-        float[] floats1 = new float[floats.length];
-        for (int i = 0; i < floats1.length; i++) {
-            floats1[i] = floats[i];
-        }
-        return floats1;
+public class Timer {
+    private double lastLoopTime;
+    public int fps;
+
+    public void init() {
+        lastLoopTime = getTime();
     }
 
-    @Override
-    @Deprecated
-    public boolean add(Float aFloat) {
-        return super.add(aFloat);
+    public double getTime() {
+        return System.nanoTime() / 1_000_000_000.0;
     }
 
-    /**
-     * add a number to list
-     *
-     * @param aFloat primitive type float
-     * @return is changed
-     */
-    public boolean add(float aFloat) {
-        return super.add(aFloat);
+    public float getElapsedTime() {
+        double time = getTime();
+        float elapsedTime = (float) (time - lastLoopTime);
+        lastLoopTime = time;
+        return elapsedTime;
     }
 
-    /**
-     * add all float points
-     *
-     * @param floats float points
-     * @return true
-     * @since 1.1.0
-     */
-    public boolean addAll(float... floats) {
-        for (float f : floats) {
-            add(f);
-        }
-        return true;
+    public double getLastLoopTime() {
+        return lastLoopTime;
     }
 }

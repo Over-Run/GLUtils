@@ -40,12 +40,7 @@ public class IntArray extends ArrayList<Integer> {
      * @return int array
      */
     public int[] toIArray() {
-        Integer[] integers = toArray(new Integer[0]);
-        int[] ints = new int[integers.length];
-        for (int i = 0; i < ints.length; i++) {
-            ints[i] = integers[i];
-        }
-        return ints;
+        return stream().mapToInt(i -> i).toArray();
     }
 
     @Override
@@ -62,5 +57,19 @@ public class IntArray extends ArrayList<Integer> {
      */
     public boolean add(int anInt) {
         return super.add(anInt);
+    }
+
+    /**
+     * add all integers
+     *
+     * @param ints integers
+     * @return true
+     * @since 1.1.0
+     */
+    public boolean addAll(int... ints) {
+        for (int i : ints) {
+            add(i);
+        }
+        return true;
     }
 }

@@ -9,7 +9,7 @@ Utils for developing OpenGL for Java:coffee:.
 
 ```groovy
 dependencies {
-    implementation "io.github.over-run:glutils:1.0.0"
+    implementation "io.github.over-run:glutils:1.1.0"
 }
 ```
 

@@ -55,7 +55,9 @@ public class Textures {
      * @return The texture id.
      * @throws Exception When file not found.
      */
-    public static int loadAWT(ClassLoader loader, String name, int mode)
+    public static int loadAWT(ClassLoader loader,
+                              String name,
+                              int mode)
             throws Exception {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
@@ -80,7 +82,8 @@ public class Textures {
      * @param mode Processor mode.
      * @return The texture id.
      */
-    public static int loadFS(String name, int mode) {
+    public static int loadFS(String name,
+                             int mode) {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
         }
@@ -117,7 +120,9 @@ public class Textures {
      * @return The texture id.
      * @since 0.2.0
      */
-    public static int load(String identifier, ByteBuffer buffer, int mode) {
+    public static int load(String identifier,
+                           ByteBuffer buffer,
+                           int mode) {
         if (ID_MAP.containsKey(identifier)) {
             return ID_MAP.get(identifier);
         }
@@ -146,6 +151,31 @@ public class Textures {
     }
 
     /**
+     * Load texture by buffer.
+     *
+     * @param identifier The identifier of texture.
+     * @param buf        The ByteBuffer that contains pixel data.
+     * @param w          Texture width.
+     * @param h          Texture height
+     * @param mode       Processor mode.
+     * @return The texture id.
+     * @since 1.1.0
+     */
+    public static int load(String identifier,
+                           ByteBuffer buf,
+                           int w,
+                           int h,
+                           int mode) {
+        if (ID_MAP.containsKey(identifier)) {
+            return ID_MAP.get(identifier);
+        }
+        int id = glGenTextures();
+        pushToGL(id, mode, w, h, buf);
+        ID_MAP.put(identifier, id);
+        return id;
+    }
+
+    /**
      * Load texture by array.
      *
      * @param identifier The identifier of texture.
@@ -156,7 +186,11 @@ public class Textures {
      * @return The texture id.
      * @since 0.3.0
      */
-    public static int load(String identifier, int w, int h, int[] data, int mode) {
+    public static int load(String identifier,
+                           int w,
+                           int h,
+                           int[] data,
+                           int mode) {
         if (ID_MAP.containsKey(identifier)) {
             return ID_MAP.get(identifier);
         }
@@ -171,7 +205,8 @@ public class Textures {
      * @param mode mode
      * @since 0.3.0
      */
-    private static void processTexture(int id, int mode) {
+    private static void processTexture(int id,
+                                       int mode) {
         glBindTexture(GL_TEXTURE_2D, id);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mode);
@@ -187,7 +222,11 @@ public class Textures {
      * @param h    texture height
      * @param data pixel data
      */
-    public static void pushToGL(int id, int mode, int w, int h, ByteBuffer data) {
+    public static void pushToGL(int id,
+                                int mode,
+                                int w,
+                                int h,
+                                ByteBuffer data) {
         processTexture(id, mode);
         glTexImage2D(GL_TEXTURE_2D,
                 0,
@@ -211,7 +250,11 @@ public class Textures {
      * @param data pixel data
      * @since 0.3.0
      */
-    public static void pushToGL(int id, int mode, int w, int h, int[] data) {
+    public static void pushToGL(int id,
+                                int mode,
+                                int w,
+                                int h,
+                                int[] data) {
         processTexture(id, mode);
         glTexImage2D(GL_TEXTURE_2D,
                 0,

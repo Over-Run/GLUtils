@@ -32,8 +32,16 @@ package org.overrun.glutils.mesh;
 public class Assemblies {
     /**
      * define macro
+     *
+     * @since 1.0.0
      */
     public static final String DEFINE = "define";
+    /**
+     * undefine macro
+     *
+     * @since 1.1.0
+     */
+    public static final String UNDEF = "undef";
     /**
      * set an option
      */

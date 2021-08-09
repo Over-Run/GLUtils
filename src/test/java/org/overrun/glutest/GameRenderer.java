@@ -27,11 +27,14 @@ package org.overrun.glutest;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.overrun.glutils.GLProgram;
+import org.overrun.glutils.*;
 import org.overrun.glutils.mesh.Mesh3;
-import org.overrun.glutils.Textures;
+
+import java.awt.Font;
+import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutest.GLUTest.TIMER;
 import static org.overrun.glutils.ShaderReader.lines;
 import static org.overrun.glutils.math.Transform.*;
 import static org.overrun.glutils.mesh.MeshLoader.def;
@@ -47,9 +50,11 @@ public class GameRenderer implements AutoCloseable {
     public final Matrix4f view = new Matrix4f();
     public int texture;
     public GLProgram program;
-    public GLProgram program2d;
-    public Mesh3 mesh;
+    public Mesh3 cube;
     public Mesh3 crossing;
+    public Mesh3 text;
+    public FontTexture utf8;
+    public final DrawableText<Mesh3> fpsTip = new DrawableText<>();
 
     public void init() throws Exception {
         texture = Textures.loadAWT(cl, "face.png", GL_NEAREST);
@@ -57,14 +62,15 @@ public class GameRenderer implements AutoCloseable {
         program.createVsh(lines(cl, "shaders/scene.vsh"));
         program.createFsh(lines(cl, "shaders/scene.fsh"));
         program.link();
-        program2d = new GLProgram();
-        program2d.createVsh(lines(cl, "shaders/scene.vsh"));
-        program2d.createFsh(lines(cl, "shaders/scene.fsh"));
-        program2d.link();
-        mesh = load3(cl,
+        cube = load3(cl,
                 "cube.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2),
                 def("size", 1.0f)).texture(texture);
+        utf8 = FontTextures.builder("Consolas-UTF_8-2")
+                .font(Font.decode("Consolas"))
+                .charset(StandardCharsets.UTF_8)
+                .padding(2)
+                .build();
         float[] vert = {
                 -1, -9, 0, //0
                 1, -9, 0, //1
@@ -90,6 +96,9 @@ public class GameRenderer implements AutoCloseable {
                 4, 5, 6, 6, 5, 7
         };
         crossing = Mesh3.of(vert, 0, col, 1, idx);
+        text = new Mesh3();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public void render(int w,
@@ -102,8 +111,8 @@ public class GameRenderer implements AutoCloseable {
         glCullFace(GL_BACK);
         program.bind();
         program.setUniform("texSampler", 0);
-        program.setUniformMat4("proj", rotateY(rotateX(setPerspective(proj, 70, w, h, 0.05f, 1000.0f), -xRot), yRot));
         program.setUniform("textured", 1);
+        program.setUniformMat4("proj", rotateY(rotateX(setPerspective(proj, 70, w, h, 0.05f, 1000.0f), -xRot), yRot));
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
@@ -122,22 +131,40 @@ public class GameRenderer implements AutoCloseable {
         float fy = y == 0 ? -pos.y : -pos.y + (y * 0.9375f);
         float fz = z == 0 ? -pos.z : -pos.z + (z * 0.9375f);
         program.setUniformMat4("modelv", modelv.translation(fx, fy, fz));
-        mesh.render();
+        cube.render();
     }
 
     public void renderGui(int w, int h) {
-        program2d.bind();
-        program2d.setUniform("texSampler", 0);
-        program2d.setUniformMat4("proj", view.setOrtho2D(0, w, h, 0));
-        program2d.setUniformMat4("modelv", view.translation(w / 2f, h / 2f, 0));
+        program.bind();
+        program.setUniform("texSampler", 0);
+        program.setUniform("textured", 0);
+        program.setUniformMat4("proj", view.setOrtho2D(0, w, h, 0));
+        program.setUniformMat4("modelv", view.translation(w / 2f, h / 2f, 0));
         crossing.render();
-        program2d.unbind();
+        program.setUniform("texSampler", 0);
+        program.setUniform("textured", 1);
+        program.setUniformMat4("modelv", view.translation(2, 0, 0));
+        fpsTip.build(utf8,
+                "FPS: " + TIMER.fps,
+                text,
+                (vertices, colors, texCoord, tex, indices) ->
+                        text.vertIdx(0)
+                                .vertices(vertices)
+                                .colorIdx(1)
+                                .colors(colors)
+                                .texIdx(2)
+                                .texCoords(texCoord)
+                                .texture(tex)
+                                .indices(indices)
+        );
+        fpsTip.render();
+        program.unbind();
     }
 
     @Override
     public void close() {
-        if (mesh != null) {
-            mesh.close();
+        if (cube != null) {
+            cube.close();
         }
         if (program != null) {
             program.close();

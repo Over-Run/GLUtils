@@ -23,58 +23,28 @@
  *
  */
 
-package org.overrun.glutils;
-
-import java.util.ArrayList;
+package org.overrun.glutils.math;
 
 /**
- * ArrayList of primitive float
- *
  * @author squid233
- * @since 0.7.0
+ * @since 1.1.0
  */
-public class FloatArray extends ArrayList<Float> {
+public class Math extends org.joml.Math {
     /**
-     * Convert boxed-object type to primitive type
+     * Check that {@code i} is pow of 2.
      *
-     * @return float array
+     * @return is 2<sup>n</sup> == {@code i}
      */
-    public float[] toFArray() {
-        Float[] floats = toArray(new Float[0]);
-        float[] floats1 = new float[floats.length];
-        for (int i = 0; i < floats1.length; i++) {
-            floats1[i] = floats[i];
-        }
-        return floats1;
-    }
-
-    @Override
-    @Deprecated
-    public boolean add(Float aFloat) {
-        return super.add(aFloat);
+    public static boolean isPowOf2(int i) {
+        return (i & (i - 1)) == 0;
     }
 
     /**
-     * add a number to list
+     * Check that {@code i} is not pow of 2.
      *
-     * @param aFloat primitive type float
-     * @return is changed
+     * @return is 2<sup>n</sup> != {@code i}
      */
-    public boolean add(float aFloat) {
-        return super.add(aFloat);
-    }
-
-    /**
-     * add all float points
-     *
-     * @param floats float points
-     * @return true
-     * @since 1.1.0
-     */
-    public boolean addAll(float... floats) {
-        for (float f : floats) {
-            add(f);
-        }
-        return true;
+    public static boolean isNotPowOf2(int i) {
+        return (i & (i - 1)) != 0;
     }
 }

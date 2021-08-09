@@ -1,7 +1,13 @@
 Update Versions.java on adding new versions
 
 1.1.0
+New feature: `Math`
+New feature: `FontTexture`
+New feature: `FontTextures`
+New feature: `Drawable`
+New feature: `DrawableText`
 Changed: `ShaderReader` and `MeshLoader` use UTF-8 not ANSI now
+Changed: Rename `Window` to `GLFWindow`
 
 1.0.0
 Release
