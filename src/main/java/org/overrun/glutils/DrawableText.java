@@ -28,8 +28,10 @@ package org.overrun.glutils;
 import org.overrun.glutils.mesh.BaseMesh;
 
 /**
+ * vertex dimensions are 3
+ * <p>
  * fixme black
- * @apiNote vertex dimensions are 3
+ * </p>
  * @author squid233
  * @since 1.1.0
  */
@@ -41,6 +43,8 @@ public class DrawableText<T extends BaseMesh<T>> implements Drawable {
      *
      * @param fontTexture font texture
      * @param text text for rendering
+     * @param mesh Mesh object.
+     * @param consumer Consumer to set mesh.
      */
     public void build(FontTexture fontTexture,
                       String text,

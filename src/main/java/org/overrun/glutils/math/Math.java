@@ -33,6 +33,7 @@ public class Math extends org.joml.Math {
     /**
      * Check that {@code i} is pow of 2.
      *
+     * @param i Value for checking
      * @return is 2<sup>n</sup> == {@code i}
      */
     public static boolean isPowOf2(int i) {
@@ -42,6 +43,7 @@ public class Math extends org.joml.Math {
     /**
      * Check that {@code i} is not pow of 2.
      *
+     * @param i Value for checking
      * @return is 2<sup>n</sup> != {@code i}
      */
     public static boolean isNotPowOf2(int i) {

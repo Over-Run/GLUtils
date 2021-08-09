@@ -32,6 +32,8 @@ package org.overrun.glutils;
 public interface Drawable {
     /**
      * Render this object.
+     *
+     * @throws Exception Any exception.
      */
     void render() throws Exception;
 }
