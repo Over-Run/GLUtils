@@ -91,7 +91,7 @@ public class FontTextures {
         /**
          * set charset
          *
-         * @param charset charset
+         * @param charsetName charset name
          * @return this
          */
         public Builder charset(String charsetName) {
