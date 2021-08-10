@@ -48,12 +48,16 @@ public class GameRenderer implements AutoCloseable {
     public final Matrix4f proj = new Matrix4f();
     public final Matrix4f modelv = new Matrix4f();
     public final Matrix4f view = new Matrix4f();
+    public final FontTexture utf8 = FontTextures.builder("Consolas-UTF_8-2")
+            .font(Font.decode("Consolas"))
+            .charset(StandardCharsets.UTF_8)
+            .padding(2)
+            .build();
     public int texture;
     public GLProgram program;
     public Mesh3 cube;
     public Mesh3 crossing;
     public Mesh3 text;
-    public FontTexture utf8;
     public final DrawableText<Mesh3> fpsTip = new DrawableText<>();
 
     public void init() throws Exception {
@@ -66,11 +70,6 @@ public class GameRenderer implements AutoCloseable {
                 "cube.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2),
                 def("size", 1.0f)).texture(texture);
-        utf8 = FontTextures.builder("Consolas-UTF_8-2")
-                .font(Font.decode("Consolas"))
-                .charset(StandardCharsets.UTF_8)
-                .padding(2)
-                .build();
         float[] vert = {
                 -1, -9, 0, //0
                 1, -9, 0, //1
@@ -97,8 +96,6 @@ public class GameRenderer implements AutoCloseable {
         };
         crossing = Mesh3.of(vert, 0, col, 1, idx);
         text = new Mesh3();
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public void render(int w,
@@ -123,7 +120,10 @@ public class GameRenderer implements AutoCloseable {
         program.unbind();
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         renderGui(w, h);
+        glDisable(GL_BLEND);
     }
 
     private void renderMesh(Vector3f pos, float x, float y, float z) {
@@ -145,7 +145,7 @@ public class GameRenderer implements AutoCloseable {
         program.setUniform("textured", 1);
         program.setUniformMat4("modelv", view.translation(2, 0, 0));
         fpsTip.build(utf8,
-                "FPS: " + TIMER.fps,
+                "FPS: " + TIMER.lastFps,
                 text,
                 (vertices, colors, texCoord, tex, indices) ->
                         text.vertIdx(0)

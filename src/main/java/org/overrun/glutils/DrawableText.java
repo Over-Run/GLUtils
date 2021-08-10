@@ -29,9 +29,7 @@ import org.overrun.glutils.mesh.BaseMesh;
 
 /**
  * vertex dimensions are 3
- * <p>
- * fixme black
- * </p>
+ *
  * @author squid233
  * @since 1.1.0
  */
@@ -59,9 +57,10 @@ public class DrawableText<T extends BaseMesh<T>> implements Drawable {
         float startY = 0;
         int i = 0;
         int numChar = 0;
+        int ftw = fontTexture.getWidth();
+        int fth = fontTexture.getHeight();
+        int gh = fontTexture.getGlyphHeight();
         for (char c : ca) {
-            int ftw = fontTexture.getWidth();
-            int fth = fontTexture.getHeight();
             if (c == '\n') {
                 startY += fth;
                 numChar = 0;
@@ -69,13 +68,14 @@ public class DrawableText<T extends BaseMesh<T>> implements Drawable {
             FontTexture.Glyph glyph = fontTexture.getGlyph(c);
             int gw = glyph.getWidth();
             int gsx = glyph.getStartX();
+            int gsy = glyph.getStartY();
             float startX = gw * numChar;
             float endX = startX + gw;
-            float endY = startY + fontTexture.getGlyphHeight();
+            float endY = startY + gh;
             float texStartX = (float) gsx / (float) ftw;
-            float texStartY = 0;
+            float texStartY = (float) gsy / (float) fth;
             float texEndX = ((float) gsx + (float) gw) / (float) ftw;
-            float texEndY = 1;
+            float texEndY = ((float) gsy + (float) gh) / (float) fth;
             // indices
             int i0 = i * 4;
             int i1 = 1 + i * 4;

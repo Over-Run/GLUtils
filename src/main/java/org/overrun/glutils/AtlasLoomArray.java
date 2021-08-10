@@ -25,76 +25,55 @@
 
 package org.overrun.glutils;
 
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
-import org.overrun.glutils.StbImg.Recycler;
-
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.Map;
-
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.stb.STBImage.*;
 
 /**
+ * @deprecated experimentation
  * @author squid233
- * @since 0.4.0
+ * @since 1.1.0
  */
-public class AtlasLoomSTB extends AtlasLoom<StbImg> {
+@Deprecated
+public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
     /**
      * constructor
      *
      * @param name target id
      * @since 0.4.0
      */
-    public AtlasLoomSTB(String name) {
+    public AtlasLoomArray(String name) {
         super(name);
     }
 
-    @Override
-    public int load(ClassLoader loader,
-                    int defaultW,
+    /**
+     * load
+     *
+     * @param defaultW default width
+     * @param defaultH default height
+     * @param mode mipmap mode
+     * @param images images
+     * @param dims dimensions
+     * @return {@link #atlasId}
+     */
+    public int load(int defaultW,
                     int defaultH,
                     int mode,
-                    String... images) {
-        for (String img : images) {
-            addImg(img);
-        }
+                    int[][] images,
+                    Dimension[] dims) {
         int maxWper = defaultW, maxHper = defaultH;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer pw = stack.mallocInt(1);
-            IntBuffer ph = stack.mallocInt(1);
-            IntBuffer pc = stack.mallocInt(1);
-            for (String img : imageMap.keySet()) {
-                int w, h;
-                Recycler recycler;
-                ByteBuffer bb = stbi_load(img, pw, ph, pc, STBI_rgb_alpha);
-                boolean failed = false;
-                if (bb == null) {
-                    failed = true;
-                    GLUtils.getErrorCb().error("Can't load image \"" +
-                            img +
-                            "\": " +
-                            stbi_failure_reason());
-                    bb = MemoryUtil.memAlloc(defaultW * defaultH * 4);
-                    w = defaultW;
-                    h = defaultH;
-                    recycler = MemoryUtil::memFree;
-                } else {
-                    pw.flip();
-                    ph.flip();
-                    w = pw.get();
-                    h = ph.get();
-                    recycler = StbImg.defaultRecycler();
-                }
-                imageMap.put(img, new StbImg(w, h, bb, recycler, failed));
-                if (w > maxWper) {
-                    maxWper = w;
-                }
-                if (h > maxHper) {
-                    maxHper = h;
-                }
+        for (int i = 0; i < images.length; i++) {
+            int[] img = images[i];
+            if (img == null) {
+                dims[i] = new Dimension(defaultW, defaultH);
+            }
+            Dimension dim = dims[i];
+            int w = dim.getWidth();
+            int h = dim.getHeight();
+            if (w > maxWper) {
+                maxWper = w;
+            }
+            if (h > maxHper) {
+                maxHper = h;
             }
         }
         int siz = (int) ceil(sqrt(images.length));
@@ -105,12 +84,13 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                 new int[width * height],
                 mode);
         int u0 = 0, v0 = 0;
-        for (Map.Entry<String, StbImg> e : imageMap.entrySet()) {
-            StbImg si = e.getValue();
-            int w = si.getWidth();
-            int h = si.getHeight();
+        for (int i = 0; i < images.length; i++) {
+            int[] img = images[i];
+            Dimension dim = dims[i];
+            int w = dim.getWidth();
+            int h = dim.getHeight();
             int[] pixels;
-            if (si.isFailed()) {
+            if (img == null) {
                 pixels = new int[w * h];
                 if (u0 + w > width) {
                     u0 = 0;
@@ -134,7 +114,7 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                     }
                 }
             } else {
-                pixels = si.getData().asIntBuffer().array();
+                pixels = img;
                 if (u0 + w > width) {
                     u0 = 0;
                     v0 += maxHper;
@@ -150,8 +130,26 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                     GL_UNSIGNED_BYTE,
                     pixels);
             u0 += w;
-            uvMap.put(e.getKey(), new UV(u0, v0, u0 + w, v0 + h));
         }
         return atlasId;
+    }
+
+    /**
+     * throw {@link UnsupportedOperationException}
+     *
+     * @param loader class loader
+     * @param defaultW default width
+     * @param defaultH default height
+     * @param mode mipmap mode
+     * @param images images
+     * @return an exception
+     */
+    @Override
+    public int load(ClassLoader loader,
+                    int defaultW,
+                    int defaultH,
+                    int mode,
+                    String... images) {
+        throw new UnsupportedOperationException();
     }
 }

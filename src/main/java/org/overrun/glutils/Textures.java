@@ -151,31 +151,6 @@ public class Textures {
     }
 
     /**
-     * Load texture by buffer.
-     *
-     * @param identifier The identifier of texture.
-     * @param buf        The ByteBuffer that contains pixel data.
-     * @param w          Texture width.
-     * @param h          Texture height
-     * @param mode       Processor mode.
-     * @return The texture id.
-     * @since 1.1.0
-     */
-    public static int load(String identifier,
-                           ByteBuffer buf,
-                           int w,
-                           int h,
-                           int mode) {
-        if (ID_MAP.containsKey(identifier)) {
-            return ID_MAP.get(identifier);
-        }
-        int id = glGenTextures();
-        pushToGL(id, mode, w, h, buf);
-        ID_MAP.put(identifier, id);
-        return id;
-    }
-
-    /**
      * Load texture by array.
      *
      * @param identifier The identifier of texture.

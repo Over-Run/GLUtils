@@ -51,10 +51,10 @@ public class GLUTest implements AutoCloseable {
     public static final float SENSITIVITY = 0.05f;
     public static final int TARGET_UPS = 30;
     public static final Timer TIMER = new Timer();
-    public final GameRenderer renderer = new GameRenderer();
     public final Vector3f pos = new Vector3f(0.5f, 0.5f, 0.5f);
     public GLFWindow window;
     public Framebuffer fb;
+    public GameRenderer renderer;
     public float xRot, yRot;
     public boolean resized;
     public boolean grabbing;
@@ -76,9 +76,11 @@ public class GLUTest implements AutoCloseable {
 
     public void run() throws Exception {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        if (Boolean.parseBoolean(System.getProperty("GLUTest.coreProfile", "true"))) {
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        }
         window = new GLFWindow(854, 480, "Game");
         lastX = 854 / 2.0;
         lastY = 480 / 2.0;
@@ -131,7 +133,7 @@ public class GLUTest implements AutoCloseable {
                     (mode.height() - window.getHeight()) / 2);
         }
         window.makeCurr();
-        GL.createCapabilities(true);
+        GL.createCapabilities(Boolean.parseBoolean(System.getProperty("GLUTest.coreProfile", "true")));
         glfwSwapInterval(1);
         Color color = UIManager.getColor("control");
         glClearColor(color.getRed() / 255f,
@@ -140,7 +142,7 @@ public class GLUTest implements AutoCloseable {
                 color.getAlpha() / 255f);
         System.out.println("GL Version " + glGetString(GL_VERSION));
         TIMER.init();
-        renderer.init();
+        (renderer = new GameRenderer()).init();
         lastFps = TIMER.getTime();
         TIMER.fps = 0;
         window.show();
@@ -197,6 +199,7 @@ public class GLUTest implements AutoCloseable {
         int w = fb.getWidth(), h = fb.getHeight();
         if (TIMER.getLastLoopTime() - lastFps > 1) {
             lastFps = TIMER.getLastLoopTime();
+            TIMER.lastFps = TIMER.fps;
             TIMER.fps = 0;
         }
         TIMER.fps++;

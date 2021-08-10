@@ -25,18 +25,15 @@
 
 package org.overrun.glutils;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.lwjgl.opengl.GL11.GL_LINEAR;
-import static org.overrun.glutils.math.Math.isNotPowOf2;
+import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.AWTImage.getRGB;
 
 /**
  * @author squid233
@@ -45,7 +42,7 @@ import static org.overrun.glutils.math.Math.isNotPowOf2;
 public class FontTexture {
     private final Font font;
     private final Charset charset;
-    private final Map<Character, Glyph> charMap = new HashMap<>();
+    private final Map<Character, Glyph> charMap = new LinkedHashMap<>();
     private final int padding;
     private int textureId;
     private int width;
@@ -58,12 +55,10 @@ public class FontTexture {
      * @param font    font
      * @param charset charset
      * @param padding char padding
-     * @throws Exception error occurred when building texture
      */
     public FontTexture(Font font,
                        Charset charset,
-                       int padding)
-            throws Exception {
+                       int padding) {
         this.font = font;
         this.charset = charset;
         this.padding = padding;
@@ -75,11 +70,9 @@ public class FontTexture {
      *
      * @param font    font
      * @param charset charset
-     * @throws Exception error occurred when building texture
      */
     public FontTexture(Font font,
-                       Charset charset)
-            throws Exception {
+                       Charset charset) {
         this(font, charset, 0);
     }
 
@@ -89,12 +82,10 @@ public class FontTexture {
      * @param font        font
      * @param charsetName charset name
      * @param padding     char padding
-     * @throws Exception error occurred when building texture
      */
     public FontTexture(Font font,
                        String charsetName,
-                       int padding)
-            throws Exception {
+                       int padding) {
         this(font, Charset.forName(charsetName), padding);
     }
 
@@ -103,11 +94,9 @@ public class FontTexture {
      *
      * @param font        font
      * @param charsetName charset name
-     * @throws Exception error occurred when building texture
      */
     public FontTexture(Font font,
-                       String charsetName)
-            throws Exception {
+                       String charsetName) {
         this(font, charsetName, 0);
     }
 
@@ -122,52 +111,57 @@ public class FontTexture {
         return result.toString();
     }
 
-    private void buildTexture()
-            throws Exception {
+    private void buildTexture() {
         BufferedImage bi = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = bi.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setFont(font);
         FontMetrics fm = g.getFontMetrics();
-        String allChars = getAllAvailableChars();
-        height = fm.getHeight();
-        glyphHeight = height;
-        for (char c : allChars.toCharArray()) {
-            Glyph glyph = new Glyph(width, fm.charWidth(c));
+        char[] allChars = getAllAvailableChars().toCharArray();
+        glyphHeight = fm.getHeight();
+        int maxSize = glGetInteger(GL_MAX_TEXTURE_SIZE);
+        int startX = 0;
+        int y = 0;
+        for (char c : allChars) {
+            int cw = fm.charWidth(c);
+            if (startX > maxSize) {
+                int w = startX - cw - padding;
+                if (w > width) {
+                    width = w;
+                }
+                startX = 0;
+                y += glyphHeight;
+            }
+            Glyph glyph = new Glyph(startX, y, cw);
             charMap.put(c, glyph);
-            width += glyph.getWidth() + padding;
+            startX += glyph.getWidth() + padding;
         }
+        height = y + glyphHeight;
         g.dispose();
-        while (isNotPowOf2(width)) {
-            ++width;
-        }
-        while (isNotPowOf2(height)) {
-            ++height;
-        }
         bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g = bi.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setFont(font);
         fm = g.getFontMetrics();
         g.setColor(Color.WHITE);
-        int startX = 0;
-        for (char c : allChars.toCharArray()) {
-            Glyph glyph = charMap.get(c);
-            g.drawString(String.valueOf(c), startX, fm.getAscent());
+        startX = 0;
+        y = 0;
+        for (char c : allChars) {
+            int cw = fm.charWidth(c);
+            if (startX > maxSize) {
+                startX = 0;
+                y += glyphHeight;
+            }
+            Glyph glyph = new Glyph(startX, y, cw);
+            g.drawString(String.valueOf(c), startX, y + fm.getAscent());
             startX += glyph.getWidth() + padding;
         }
         g.dispose();
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            ImageIO.write(bi, "png", out);
-            out.flush();
-            byte[] data = out.toByteArray();
-            ByteBuffer buf = ByteBuffer.allocateDirect(data.length);
-            buf.put(data);
-            buf.flip();
-            textureId = Textures.load(font.toString() + charset,
-                    buf,
-                    GL_LINEAR);
-        }
+        textureId = Textures.load(font.toString() + charset + padding,
+                width,
+                height,
+                getRGB(bi),
+                GL_NEAREST);
     }
 
     /**
@@ -175,17 +169,21 @@ public class FontTexture {
      */
     public static class Glyph {
         private final int startX;
+        private final int startY;
         private final int width;
 
         /**
          * construct
          *
          * @param startX start x
+         * @param startY start y
          * @param width  char width
          */
         public Glyph(int startX,
+                     int startY,
                      int width) {
             this.startX = startX;
+            this.startY = startY;
             this.width = width;
         }
 
@@ -196,6 +194,15 @@ public class FontTexture {
          */
         public int getStartX() {
             return startX;
+        }
+
+        /**
+         * get start y
+         *
+         * @return start y
+         */
+        public int getStartY() {
+            return startY;
         }
 
         /**

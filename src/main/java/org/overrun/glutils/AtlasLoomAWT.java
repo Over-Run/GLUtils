@@ -44,13 +44,14 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
      * constructor
      *
      * @param name target id
+     * @since 0.4.0
      */
     public AtlasLoomAWT(String name) {
         super(name);
     }
 
     @Override
-    public int load(ClassLoader loader,
+    public int load(ClassLoader cl,
                     int defaultW,
                     int defaultH,
                     int mode,
@@ -62,7 +63,7 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
         for (String img : imageMap.keySet()) {
             BufferedImage bi;
             boolean isNull = false;
-            try (InputStream is = loader.getResourceAsStream(img)) {
+            try (InputStream is = cl.getResourceAsStream(img)) {
                 bi = ImageIO.read(Objects.requireNonNull(is));
             } catch (IOException e) {
                 GLUtils.getThrowableCb().accept(e);

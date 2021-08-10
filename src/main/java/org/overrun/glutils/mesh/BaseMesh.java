@@ -141,6 +141,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set vertices
+     *
      * @param vertices vertices
      * @return this
      */
@@ -151,6 +152,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set colors
+     *
      * @param colors colors
      * @return this
      */
@@ -164,6 +166,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set texture coordinates
+     *
      * @param texCoords texture coordinates
      * @return this
      */
@@ -177,6 +180,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set indices
+     *
      * @param indices indices
      * @return this
      */
@@ -191,6 +195,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set vert usage
+     *
      * @param vertUsage vert usage
      * @return this
      */
@@ -201,6 +206,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set vert dim
+     *
      * @param vertDim vert dim
      * @return this
      */
@@ -211,6 +217,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set vert normalized
+     *
      * @param vertNormalized vert normalized
      * @return this
      */
@@ -221,6 +228,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set vert stride
+     *
      * @param vertStride vert stride
      * @return this
      */
@@ -231,6 +239,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set color usage
+     *
      * @param colorUsage color usage
      * @return this
      */
@@ -241,6 +250,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set color dim
+     *
      * @param colorDim color dim
      * @return this
      */
@@ -251,6 +261,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set color normalized
+     *
      * @param colorNormalized color normalized
      * @return this
      */
@@ -261,6 +272,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set color stride
+     *
      * @param colorStride color stride
      * @return this
      */
@@ -271,6 +283,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set texture id
+     *
      * @param texture texture id
      * @return this
      */
@@ -281,6 +294,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set texture coord usage
+     *
      * @param texUsage texture coord usage
      * @return this
      */
@@ -291,6 +305,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set texture coord dim
+     *
      * @param texDim texture coord dim
      * @return this
      */
@@ -301,6 +316,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set texture coord normalized
+     *
      * @param texNormalized texture coord normalized
      * @return this
      */
@@ -311,6 +327,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set texture coord stride
+     *
      * @param texStride texture coord stride
      * @return this
      */
@@ -321,6 +338,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set index usage
+     *
      * @param indexUsage index usage
      * @return this
      */
@@ -331,6 +349,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
 
     /**
      * set vertex count
+     *
      * @param vertexCount vertex count
      * @return this
      */

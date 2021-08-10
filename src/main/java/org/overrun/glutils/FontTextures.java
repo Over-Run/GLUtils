@@ -114,9 +114,8 @@ public class FontTextures {
          * build font texture
          *
          * @return font texture
-         * @throws Exception IOE
          */
-        public FontTexture build() throws Exception {
+        public FontTexture build() {
             if (FONT_TEXTURES.containsKey(texName)) {
                 return FONT_TEXTURES.get(texName);
             }

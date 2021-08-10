@@ -23,32 +23,51 @@
  *
  */
 
-package org.overrun.glutest;
+package org.overrun.glutils;
+
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * @author squid233
+ * @since 1.1.0
  */
-public class Timer {
-    private double lastLoopTime;
-    public int fps;
-    public int lastFps;
+public class Dimension {
+    public final int width;
+    public final int height;
 
-    public void init() {
-        lastLoopTime = getTime();
+    public Dimension(int width, int height) {
+        this.width = width;
+        this.height = height;
     }
 
-    public double getTime() {
-        return System.nanoTime() / 1_000_000_000.0;
+    public int getWidth() {
+        return width;
     }
 
-    public float getElapsedTime() {
-        double time = getTime();
-        float elapsedTime = (float) (time - lastLoopTime);
-        lastLoopTime = time;
-        return elapsedTime;
+    public int getHeight() {
+        return height;
     }
 
-    public double getLastLoopTime() {
-        return lastLoopTime;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Dimension dimension = (Dimension) o;
+        return width == dimension.width && height == dimension.height;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(width, height);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ",
+                Dimension.class.getSimpleName() + "[", "]")
+                .add("width=" + width)
+                .add("height=" + height)
+                .toString();
     }
 }

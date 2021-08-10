@@ -9,7 +9,7 @@
 # todo
 #   - throw more CompileException
 #   - new syntax: repeat(count, "statement")
-#   - new syntax in Java code: `void eval(String statement, Object[] output)`
+#   - new syntax in Java code: `void eval(MacroFile f, String statement, Object[] output)`
 
 # this is a comment
 // this is a comment

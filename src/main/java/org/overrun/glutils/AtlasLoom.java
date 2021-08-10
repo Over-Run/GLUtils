@@ -91,6 +91,18 @@ public abstract class AtlasLoom<T> {
     }
 
     /**
+     * gen by int array
+     *
+     * @param name target id
+     * @return {@link AtlasLoomArray}
+     * @since 1.1.0
+     */
+    @Deprecated
+    public static AtlasLoomArray array(String name) {
+        return new AtlasLoomArray(name);
+    }
+
+    /**
      * load
      *
      * @param loader class loader
