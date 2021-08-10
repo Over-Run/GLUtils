@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 OverRun Organization
+ * Copyright (c) 2021 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -113,8 +113,22 @@ public class DrawableText<T extends BaseMesh<T>> implements Drawable {
                 indices.toIArray());
     }
 
+    /**
+     * Consumer for setting mesh
+     *
+     * @author squid233
+     */
     @FunctionalInterface
     public interface Consumer {
+        /**
+         * set mesh
+         *
+         * @param vertices vertices
+         * @param colors colors
+         * @param texCoord texture coordinates
+         * @param tex texture id
+         * @param indices indices
+         */
         void accept(float[] vertices,
                     float[] colors,
                     float[] texCoord,

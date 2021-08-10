@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 OverRun Organization
+ * Copyright (c) 2021 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,36 +48,74 @@ public class FontTextures {
         return new Builder(texName);
     }
 
+    /**
+     * font texture builder
+     */
     public static class Builder {
         private final String texName;
         private Font font;
         private Charset charset;
         private int padding = 0;
 
+        /**
+         * construct
+         *
+         * @param texName texture name
+         */
         public Builder(String texName) {
             this.texName = texName;
         }
 
+        /**
+         * set font
+         *
+         * @param font font
+         * @return this
+         */
         public Builder font(Font font) {
             this.font = font;
             return this;
         }
 
+        /**
+         * set charset
+         *
+         * @param charset charset
+         * @return this
+         */
         public Builder charset(Charset charset) {
             this.charset = charset;
             return this;
         }
 
+        /**
+         * set charset
+         *
+         * @param charset charset
+         * @return this
+         */
         public Builder charset(String charsetName) {
             this.charset = Charset.forName(charsetName);
             return this;
         }
 
+        /**
+         * set padding
+         *
+         * @param padding padding
+         * @return this
+         */
         public Builder padding(int padding) {
             this.padding = padding;
             return this;
         }
 
+        /**
+         * build font texture
+         *
+         * @return font texture
+         * @throws Exception IOE
+         */
         public FontTexture build() throws Exception {
             if (FONT_TEXTURES.containsKey(texName)) {
                 return FONT_TEXTURES.get(texName);
