@@ -47,9 +47,6 @@ public class MeshLoader {
     private static final List<String> KEYWORDS = Arrays.asList(
             DEFINE,
             SET,
-            OPT_VERT_DIM,
-            OPT_COL_DIM,
-            OPT_TEX_DIM,
             VERT,
             VERT_COL,
             VERT_TEX,
@@ -85,8 +82,15 @@ public class MeshLoader {
     private static String[] replaceByMacro(String[] arr,
                                            Set<String> definedMacros,
                                            MapStr2Str macros) {
+        return replaceByMacro(arr, definedMacros, 1, macros);
+    }
+
+    private static String[] replaceByMacro(String[] arr,
+                                           Set<String> definedMacros,
+                                           int offset,
+                                           MapStr2Str macros) {
         boolean hasSpace = false;
-        for (int i = 1; i < arr.length; i++) {
+        for (int i = offset; i < arr.length; i++) {
             // remove invalid chars and calculating signs
             String macro =
                     arr[i].replaceAll("[`~!@#%^&*()\\-=+\\[{}\\];'\\\\:\"|,./<>?]", "");
@@ -213,7 +217,7 @@ public class MeshLoader {
                             except("Required 2 params but found " +
                                     (arr.length - 1) + " param", currLn);
                         }
-                        arr = replaceByMacro(arr, definedMacros, mmap);
+                        arr = replaceByMacro(arr, definedMacros, 2, mmap);
                         // set vertDim
                         String p2 = arr[2];
                         try {

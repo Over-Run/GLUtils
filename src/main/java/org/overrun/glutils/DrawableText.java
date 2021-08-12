@@ -25,30 +25,31 @@
 
 package org.overrun.glutils;
 
-import org.overrun.glutils.mesh.BaseMesh;
-
 /**
  * vertex dimensions are 3
  *
  * @author squid233
  * @since 1.1.0
  */
-public class DrawableText<T extends BaseMesh<T>> implements Drawable {
-    private T mesh;
+public class DrawableText {
+    public static final float[] DEFAULT_COLOR = {
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f
+    };
 
     /**
      * build mesh
      *
      * @param fontTexture font texture
-     * @param text text for rendering
-     * @param mesh Mesh object.
-     * @param consumer Consumer to set mesh.
+     * @param text        text for rendering
+     * @param consumer    Consumer to set mesh.
      */
-    public void build(FontTexture fontTexture,
-                      String text,
-                      T mesh,
-                      Consumer consumer) {
-        this.mesh = mesh;
+    public static void build(FontTexture fontTexture,
+                             String text,
+                             ColorFunction color,
+                             Consumer consumer) {
         FloatArray vertices = new FloatArray();
         FloatArray colors = new FloatArray();
         FloatArray tex = new FloatArray();
@@ -83,23 +84,22 @@ public class DrawableText<T extends BaseMesh<T>> implements Drawable {
             int i3 = 3 + i * 4;
             // left top
             vertices.addAll(startX, startY, 0);
-            colors.addAll(1, 1, 1);
             tex.addAll(texStartX, texStartY);
             indices.add(i0);
             // left bottom
             vertices.addAll(startX, endY, 0);
-            colors.addAll(1, 1, 1);
             tex.addAll(texStartX, texEndY);
             indices.add(i1);
             // right bottom
             vertices.addAll(endX, endY, 0);
-            colors.addAll(1, 1, 1);
             tex.addAll(texEndX, texEndY);
             indices.add(i2);
             // right top
             vertices.addAll(endX, startY, 0);
-            colors.addAll(1, 1, 1);
             tex.addAll(texEndX, texStartY);
+            if (color != null) {
+                colors.addAll(color.accept(c, i));
+            }
             indices.add(i3);
             indices.add(i0);
             indices.add(i2);
@@ -124,10 +124,10 @@ public class DrawableText<T extends BaseMesh<T>> implements Drawable {
          * set mesh
          *
          * @param vertices vertices
-         * @param colors colors
+         * @param colors   colors
          * @param texCoord texture coordinates
-         * @param tex texture id
-         * @param indices indices
+         * @param tex      texture id
+         * @param indices  indices
          */
         void accept(float[] vertices,
                     float[] colors,
@@ -137,22 +137,24 @@ public class DrawableText<T extends BaseMesh<T>> implements Drawable {
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * Use {@link org.joml.Matrix4f#translate Matrix#translate}
-     * to set position for rendering
-     */
-    @Override
-    public void render() {
-        mesh.render();
-    }
-
-    /**
-     * get mesh
+     * Custom color per char
      *
-     * @return mesh
+     * @author squid233
      */
-    public T getMesh() {
-        return mesh;
+    @FunctionalInterface
+    public interface ColorFunction {
+        /**
+         * Add return value to color list
+         *
+         * @param c     current char
+         * @param index char index
+         * @return an array contains 4 vertices of color
+         * (maybe {@code [1, 1, 1,
+         * 1, 1, 1,
+         * 1, 1, 1,
+         * 1, 1, 1]} or {@link #DEFAULT_COLOR})
+         */
+        float[] accept(char c,
+                     int index);
     }
 }

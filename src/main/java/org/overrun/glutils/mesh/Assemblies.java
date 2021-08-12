@@ -53,7 +53,7 @@ public class Assemblies {
     /**
      * color dim option
      */
-    public static final String OPT_COL_DIM = "color";
+    public static final String OPT_COL_DIM = "colors";
     /**
      * texture dim option
      */

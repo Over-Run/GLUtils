@@ -119,7 +119,7 @@ public class FontTexture {
         FontMetrics fm = g.getFontMetrics();
         char[] allChars = getAllAvailableChars().toCharArray();
         glyphHeight = fm.getHeight();
-        int maxSize = glGetInteger(GL_MAX_TEXTURE_SIZE);
+        int maxSize = Textures.getMaxSize();
         int startX = 0;
         int y = 0;
         for (char c : allChars) {

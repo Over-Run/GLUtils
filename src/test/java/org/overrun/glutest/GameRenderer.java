@@ -26,14 +26,13 @@
 package org.overrun.glutest;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.overrun.glutils.*;
 import org.overrun.glutils.mesh.Mesh3;
 
 import java.awt.Font;
 import java.nio.charset.StandardCharsets;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
 import static org.overrun.glutest.GLUTest.TIMER;
 import static org.overrun.glutils.ShaderReader.lines;
 import static org.overrun.glutils.math.Transform.*;
@@ -44,6 +43,18 @@ import static org.overrun.glutils.mesh.MeshLoader.load3;
  * @author squid233
  */
 public class GameRenderer implements AutoCloseable {
+    public static final float[] LOW_FPS_COLOR = {
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0
+    };
+    public static final float[] HIGH_FPS_COLOR = {
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0
+    };
     public static final ClassLoader cl = GameRenderer.class.getClassLoader();
     public final Matrix4f proj = new Matrix4f();
     public final Matrix4f modelv = new Matrix4f();
@@ -53,15 +64,12 @@ public class GameRenderer implements AutoCloseable {
             .charset(StandardCharsets.UTF_8)
             .padding(2)
             .build();
-    public int texture;
     public GLProgram program;
     public Mesh3 cube;
     public Mesh3 crossing;
     public Mesh3 text;
-    public final DrawableText<Mesh3> fpsTip = new DrawableText<>();
 
     public void init() throws Exception {
-        texture = Textures.loadAWT(cl, "face.png", GL_NEAREST);
         program = new GLProgram();
         program.createVsh(lines(cl, "shaders/scene.vsh"));
         program.createFsh(lines(cl, "shaders/scene.fsh"));
@@ -69,51 +77,42 @@ public class GameRenderer implements AutoCloseable {
         cube = load3(cl,
                 "cube.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2),
-                def("size", 1.0f)).texture(texture);
-        float[] vert = {
-                -1, -9, 0, //0
-                1, -9, 0, //1
-                -1, 9, 0, //2
-                1, 9, 0, //3
-                -9, -1, 0, //4
-                -9, 1, 0, //5
-                9, -1, 0, //6
-                9, 1, 0 //7
-        };
-        float[] col = {
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1,
-                1, 1, 1
-        };
-        int[] idx = {
-                0, 2, 1, 1, 2, 3,
-                4, 5, 6, 6, 5, 7
-        };
-        crossing = Mesh3.of(vert, 0, col, 1, idx);
+                def("size", 1.0f))
+                .texture(Textures.loadAWT(cl, "face.png", GL_NEAREST));
+        crossing = load3(cl,
+                "crossing.mesh",
+                m -> m.vertIdx(0).colorIdx(1).texIdx(2))
+                .texture(Textures.loadAWT(cl, "crossing.png", GL_NEAREST));
         text = new Mesh3();
     }
 
     public void render(int w,
                        int h,
-                       float xRot,
-                       float yRot,
-                       Vector3f pos) {
+                       Player player) {
+        float xRot = player.xRot;
+        float yRot = player.yRot;
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         program.bind();
         program.setUniform("texSampler", 0);
         program.setUniform("textured", 1);
-        program.setUniformMat4("proj", rotateY(rotateX(setPerspective(proj, 70, w, h, 0.05f, 1000.0f), -xRot), yRot));
+        program.setUniformMat4("proj",
+                rotateY(rotateX(setPerspective(proj,
+                        70,
+                        w,
+                        h,
+                        0.05f,
+                        1000.0f), -xRot), yRot));
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    renderMesh(pos, x, y, z);
+                    renderMesh(player.x,
+                            player.y,
+                            player.z,
+                            x,
+                            y,
+                            z);
                 }
             }
         }
@@ -121,34 +120,45 @@ public class GameRenderer implements AutoCloseable {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         renderGui(w, h);
         glDisable(GL_BLEND);
     }
 
-    private void renderMesh(Vector3f pos, float x, float y, float z) {
-        float fx = x == 0 ? -pos.x : -pos.x + (x * 0.9375f);
-        float fy = y == 0 ? -pos.y : -pos.y + (y * 0.9375f);
-        float fz = z == 0 ? -pos.z : -pos.z + (z * 0.9375f);
+    private void renderMesh(float cameraX,
+                            float cameraY,
+                            float cameraZ,
+                            float x,
+                            float y,
+                            float z) {
+        float fx = x == 0 ? -cameraX : -cameraX + (x * 0.9375f);
+        float fy = y == 0 ? -cameraY : -cameraY + (y * 0.9375f);
+        float fz = z == 0 ? -cameraZ : -cameraZ + (z * 0.9375f);
         program.setUniformMat4("modelv", modelv.translation(fx, fy, fz));
         cube.render();
     }
 
     public void renderGui(int w, int h) {
+        glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
         program.bind();
-        program.setUniform("texSampler", 0);
-        program.setUniform("textured", 0);
         program.setUniformMat4("proj", view.setOrtho2D(0, w, h, 0));
         program.setUniformMat4("modelv", view.translation(w / 2f, h / 2f, 0));
         crossing.render();
-        program.setUniform("texSampler", 0);
-        program.setUniform("textured", 1);
-        program.setUniformMat4("modelv", view.translation(2, 0, 0));
-        fpsTip.build(utf8,
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        program.setUniformMat4("modelv", view.translation(2, 2, 0));
+        DrawableText.build(utf8,
                 "FPS: " + TIMER.lastFps,
-                text,
+                (c, index) -> {
+                    if (index > 3) {
+                        if (TIMER.lastFps < 30) {
+                            return LOW_FPS_COLOR;
+                        }
+                        return HIGH_FPS_COLOR;
+                    }
+                    return DrawableText.DEFAULT_COLOR;
+                },
                 (vertices, colors, texCoord, tex, indices) ->
-                        text.vertIdx(0)
+                        text.vertUsage(GL_DYNAMIC_DRAW)
+                                .vertIdx(0)
                                 .vertices(vertices)
                                 .colorIdx(1)
                                 .colors(colors)
@@ -157,7 +167,7 @@ public class GameRenderer implements AutoCloseable {
                                 .texture(tex)
                                 .indices(indices)
         );
-        fpsTip.render();
+        text.render();
         program.unbind();
     }
 

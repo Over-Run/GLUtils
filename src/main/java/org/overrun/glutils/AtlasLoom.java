@@ -25,6 +25,8 @@
 
 package org.overrun.glutils;
 
+import org.overrun.glutils.internal.AtlasLoomArray;
+
 import java.util.HashMap;
 import java.util.Map;
 

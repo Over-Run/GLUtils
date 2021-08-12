@@ -30,6 +30,8 @@ package org.overrun.glutils.math;
  * @since 1.1.0
  */
 public class Math extends org.joml.Math {
+    private static final float EPSINON = 0.00001f;
+
     /**
      * Check that {@code i} is pow of 2.
      *
@@ -48,5 +50,25 @@ public class Math extends org.joml.Math {
      */
     public static boolean isNotPowOf2(int i) {
         return (i & (i - 1)) != 0;
+    }
+
+    /**
+     * Check that {@code f} is 0.
+     *
+     * @param f Value for checking
+     * @return is {@code f} == 0
+     */
+    public static boolean isZero(float f) {
+        return (f >= - EPSINON) && (f <= EPSINON);
+    }
+
+    /**
+     * Check that {@code f} is not 0.
+     *
+     * @param f Value for checking
+     * @return is {@code f} != 0
+     */
+    public static boolean isNotZero(float f) {
+        return f < -EPSINON || f > EPSINON;
     }
 }

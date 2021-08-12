@@ -8,7 +8,7 @@
 
 # todo
 #   - throw more CompileException
-#   - new syntax: repeat(count, "statement")
+#   - new syntax: `repeat id count value`
 #   - new syntax in Java code: `void eval(MacroFile f, String statement, Object[] output)`
 
 # this is a comment
@@ -32,6 +32,9 @@ define bMacro 999
 
 # This is invalid
 # define 0macro
+# These are invalid, too
+# define aMacro
+# define bMacro
 
 define c
 # undefine a macro

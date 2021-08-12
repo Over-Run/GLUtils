@@ -23,54 +23,41 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static org.overrun.glutils.math.Math.*;
 
 /**
  * @author squid233
- * @since 0.7.0
  */
-public class ArrayHelper {
-    /**
-     * remove null or empty strings
-     *
-     * @param arr array
-     * @return new array
-     */
-    public static String[] removeNull(String[] arr) {
-        List<String> list = new ArrayList<>(arr.length);
-        list.addAll(Arrays.asList(arr));
-        while (list.remove(null) || list.remove("")) ;
-        return list.toArray(new String[0]);
-    }
+public class Player {
+    public float x = 1.5f;
+    public float y = 1.5f;
+    public float z = 4.5f;
+    public float xRot, yRot;
 
-    /**
-     * Convert String array to int array
-     *
-     * @param arr String array
-     * @return int array
-     * @since 0.9.0
-     */
-    public static int[] toIArray(String[] arr) {
-        int[] ia = new int[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            ia[i] = Integer.parseInt(arr[i]);
+    public void moveRelative(float xo, float yo, float zo) {
+        if (isNotZero(xo)) {
+            x -= sin(toRadians(yRot - 90)) * xo;
+            z += cos(toRadians(yRot - 90)) * xo;
         }
-        return ia;
+        if (isNotZero(yo)) {
+            y += yo;
+        }
+        if (isNotZero(zo)) {
+            x += sin(toRadians(yRot)) * zo;
+            z -= cos(toRadians(yRot)) * zo;
+        }
     }
 
-    /**
-     * Expand array length by number 0
-     *
-     * @param original original array
-     * @param newLength new length
-     * @return Copy of expanded array
-     * @since 0.9.0
-     */
-    public static int[] expand(int[] original, int newLength) {
-        return Arrays.copyOf(original, newLength);
+    public void rotate(double xOffset, double yOffset) {
+        xRot += yOffset;
+        yRot += xOffset;
+        if (xRot > 90) {
+            xRot = 90;
+        }
+        if (xRot < -90) {
+            xRot = -90;
+        }
     }
 }

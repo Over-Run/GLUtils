@@ -45,6 +45,7 @@ import static org.lwjgl.stb.STBImage.*;
  */
 public class Textures {
     private static final Map<String, Integer> ID_MAP = new HashMap<>();
+    private static int maxSize;
 
     /**
      * Load texture from stream by AWT.
@@ -241,6 +242,19 @@ public class Textures {
                 GL_UNSIGNED_BYTE,
                 data
         );
+    }
+
+    /**
+     * get max texture size
+     *
+     * @return max texture size
+     * @since 1.1.0
+     */
+    public static int getMaxSize() {
+        if (maxSize == 0) {
+            maxSize = glGetInteger(GL_MAX_TEXTURE_SIZE);
+        }
+        return maxSize;
     }
 
     /**

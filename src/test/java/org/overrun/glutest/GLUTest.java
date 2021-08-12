@@ -25,37 +25,29 @@
 
 package org.overrun.glutest;
 
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.system.MemoryStack;
 import org.overrun.glutils.GLUtils;
 import org.overrun.glutils.Textures;
 import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
 
-import javax.swing.UIManager;
-import java.awt.Color;
-import java.nio.DoubleBuffer;
-
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.math.Math.*;
 
 /**
  * @author squid233
  */
 public class GLUTest implements AutoCloseable {
-    public static final float STEP = 0.5f;
+    public static final float STEP = 1.0f;
     public static final float SENSITIVITY = 0.05f;
     public static final int TARGET_UPS = 30;
     public static final Timer TIMER = new Timer();
-    public final Vector3f pos = new Vector3f(0.5f, 0.5f, 0.5f);
+    public final Player player = new Player();
     public GLFWindow window;
     public Framebuffer fb;
     public GameRenderer renderer;
-    public float xRot, yRot;
     public boolean resized;
     public boolean grabbing;
     public double lastX, lastY;
@@ -75,8 +67,11 @@ public class GLUTest implements AutoCloseable {
     }
 
     public void run() throws Exception {
+        boolean coreProfile = Boolean.parseBoolean(System.getProperty(
+                "GLUTest.coreProfile", "true"
+        ));
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        if (Boolean.parseBoolean(System.getProperty("GLUTest.coreProfile", "true"))) {
+        if (coreProfile) {
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -87,25 +82,16 @@ public class GLUTest implements AutoCloseable {
         fb = new Framebuffer();
         fb.cb = (window1, width, height) -> resized = true;
         fb.init(window);
-        window.keyCb((window, key, scancode, action, mods) -> {
+        window.keyCb((hWnd, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {
                 if (key == GLFW_KEY_ESCAPE) {
-                    glfwSetWindowShouldClose(window, true);
+                    glfwSetWindowShouldClose(hWnd, true);
                 }
                 if (key == GLFW_KEY_GRAVE_ACCENT) {
                     grabbing = !grabbing;
-                    glfwSetInputMode(window,
+                    glfwSetInputMode(hWnd,
                             GLFW_CURSOR,
                             grabbing ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-                    if (grabbing) {
-                        try (MemoryStack stack = MemoryStack.stackPush()) {
-                            DoubleBuffer px = stack.mallocDouble(1);
-                            DoubleBuffer py = stack.mallocDouble(1);
-                            glfwGetCursorPos(window, px, py);
-                            lastX = px.get(0);
-                            lastY = py.get(0);
-                        }
-                    }
                 }
             }
         });
@@ -117,14 +103,7 @@ public class GLUTest implements AutoCloseable {
                 lastY = ypos;
                 xOffset *= SENSITIVITY;
                 yOffset *= SENSITIVITY;
-                xRot += yOffset;
-                yRot += xOffset;
-                if (xRot > 90) {
-                    xRot = 90;
-                }
-                if (xRot < -90) {
-                    xRot = -90;
-                }
+                player.rotate(xOffset, yOffset);
             }
         });
         GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -133,13 +112,9 @@ public class GLUTest implements AutoCloseable {
                     (mode.height() - window.getHeight()) / 2);
         }
         window.makeCurr();
-        GL.createCapabilities(Boolean.parseBoolean(System.getProperty("GLUTest.coreProfile", "true")));
+        GL.createCapabilities(coreProfile);
         glfwSwapInterval(1);
-        Color color = UIManager.getColor("control");
-        glClearColor(color.getRed() / 255f,
-                color.getGreen() / 255f,
-                color.getBlue() / 255f,
-                color.getAlpha() / 255f);
+        glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         System.out.println("GL Version " + glGetString(GL_VERSION));
         TIMER.init();
         (renderer = new GameRenderer()).init();
@@ -171,28 +146,31 @@ public class GLUTest implements AutoCloseable {
     }
 
     public void input(float delta) {
+        float xo = 0;
+        float yo = 0;
+        float zo = 0;
         if (pressing(GLFW_KEY_W)) {
-            pos.x += sin(toRadians(yRot)) * speed(delta);
-            pos.z -= cos(toRadians(yRot)) * speed(delta);
-        }
-        if (pressing(GLFW_KEY_S)) {
-            pos.x -= sin(toRadians(yRot)) * speed(delta);
-            pos.z += cos(toRadians(yRot)) * speed(delta);
+            if (!pressing(GLFW_KEY_S)) {
+                zo = speed(delta);
+            }
+        } else if (pressing(GLFW_KEY_S)) {
+            zo = -speed(delta);
         }
         if (pressing(GLFW_KEY_A)) {
-            pos.x += sin(toRadians(yRot - 90)) * speed(delta);
-            pos.z -= cos(toRadians(yRot - 90)) * speed(delta);
-        }
-        if (pressing(GLFW_KEY_D)) {
-            pos.x -= sin(toRadians(yRot - 90)) * speed(delta);
-            pos.z += cos(toRadians(yRot - 90)) * speed(delta);
+            if (!pressing(GLFW_KEY_D)) {
+                xo = -speed(delta);
+            }
+        } else if (pressing(GLFW_KEY_D)) {
+            xo = speed(delta);
         }
         if (pressing(GLFW_KEY_LEFT_SHIFT)) {
-            pos.y -= speed(delta);
+            if (!pressing(GLFW_KEY_SPACE)) {
+                yo = -speed(delta);
+            }
+        } else if (pressing(GLFW_KEY_SPACE)) {
+            yo = speed(delta);
         }
-        if (pressing(GLFW_KEY_SPACE)) {
-            pos.y += speed(delta);
-        }
+        player.moveRelative(xo, yo, zo);
     }
 
     public void render(float delta) {
@@ -203,7 +181,7 @@ public class GLUTest implements AutoCloseable {
             TIMER.fps = 0;
         }
         TIMER.fps++;
-        renderer.render(w, h, xRot, yRot, pos);
+        renderer.render(w, h, player);
         if (resized) {
             glViewport(0, 0, w, h);
             resized = false;
@@ -219,7 +197,6 @@ public class GLUTest implements AutoCloseable {
     }
 
     public void start() throws Exception {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         System.out.println("Testing GLUtils " + GLUtils.VERSION);
         GLFWErrorCallback.createPrint().set();
         glfwInit();

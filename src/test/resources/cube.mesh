@@ -37,30 +37,12 @@ define orange 1.0 0.5 0.0
 define red    1.0 0.1 0.0
 define yellow 1.0 1.0 0.0
 define white  1.0 1.0 1.0
-vc blue
-vc blue
-vc blue
-vc blue
-vc green
-vc green
-vc green
-vc green
-vc orange
-vc orange
-vc orange
-vc orange
-vc red
-vc red
-vc red
-vc red
-vc yellow
-vc yellow
-vc yellow
-vc yellow
-vc white
-vc white
-vc white
-vc white
+vc blue   blue   blue   blue
+vc green  green  green  green
+vc orange orange orange orange
+vc red    red    red    red
+vc yellow yellow yellow yellow
+vc white  white  white  white
 undef blue
 undef green
 undef orange
@@ -69,12 +51,7 @@ undef yellow
 undef white
 
 define tex 0 0 0 1 1 1 1 0
-vt tex
-vt tex
-vt tex
-vt tex
-vt tex
-vt tex
+vt tex tex tex tex tex tex
 undef tex
 
 # south
