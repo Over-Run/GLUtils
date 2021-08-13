@@ -379,7 +379,7 @@ public class MeshLoader {
                               Consumer<Mesh3> pre,
                               MeshMacro... macros)
             throws Exception {
-        return load(cl, file, pre, Mesh3.class, macros);
+        return load(cl, file, pre, Mesh3.class, macros).unbindVao();
     }
 
     /**

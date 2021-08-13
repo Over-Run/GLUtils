@@ -25,6 +25,8 @@
 
 package org.overrun.glutils;
 
+import java.util.function.BiFunction;
+
 /**
  * vertex dimensions are 3
  *
@@ -42,13 +44,14 @@ public class DrawableText {
     /**
      * build mesh
      *
-     * @param fontTexture font texture
-     * @param text        text for rendering
-     * @param consumer    Consumer to set mesh.
+     * @param texture  font texture
+     * @param text     text for rendering
+     * @param consumer Consumer to set mesh.
      */
-    public static void build(FontTexture fontTexture,
+    public static void build(FontTexture texture,
                              String text,
-                             ColorFunction color,
+                             BgColorFunction bgColor,
+                             ColorFunction fgColor,
                              Consumer consumer) {
         FloatArray vertices = new FloatArray();
         FloatArray colors = new FloatArray();
@@ -58,15 +61,26 @@ public class DrawableText {
         float startY = 0;
         int i = 0;
         int numChar = 0;
-        int ftw = fontTexture.getWidth();
-        int fth = fontTexture.getHeight();
-        int gh = fontTexture.getGlyphHeight();
+        int ftw = texture.getWidth();
+        int fth = texture.getHeight();
+        int gh = texture.getGlyphHeight();
+        // indices
+        int i0 = 0;
+        int i1 = 1;
+        int i2 = 2;
+        int i3 = 3;
         for (char c : ca) {
-            if (c == '\n') {
+            if (c == '\r') {
+                int next = i + 1;
+                if (ca.length > next && ca[next] == '\n') {
+                    startY += fth;
+                    numChar = 0;
+                }
+            } else if (c == '\n') {
                 startY += fth;
                 numChar = 0;
             }
-            FontTexture.Glyph glyph = fontTexture.getGlyph(c);
+            FontTexture.Glyph glyph = texture.getGlyph(c);
             int gw = glyph.getWidth();
             int gsx = glyph.getStartX();
             int gsy = glyph.getStartY();
@@ -77,11 +91,6 @@ public class DrawableText {
             float texStartY = (float) gsy / (float) fth;
             float texEndX = ((float) gsx + (float) gw) / (float) ftw;
             float texEndY = ((float) gsy + (float) gh) / (float) fth;
-            // indices
-            int i0 = i * 4;
-            int i1 = 1 + i * 4;
-            int i2 = 2 + i * 4;
-            int i3 = 3 + i * 4;
             // left top
             vertices.addAll(startX, startY, 0);
             tex.addAll(texStartX, texStartY);
@@ -97,19 +106,25 @@ public class DrawableText {
             // right top
             vertices.addAll(endX, startY, 0);
             tex.addAll(texEndX, texStartY);
-            if (color != null) {
-                colors.addAll(color.accept(c, i));
+            if (fgColor != null) {
+                colors.addAll(fgColor.apply(c, i));
             }
             indices.add(i3);
             indices.add(i0);
             indices.add(i2);
             ++i;
             ++numChar;
+            i0 += 4;
+            i1 += 4;
+            i2 += 4;
+            i3 += 4;
         }
-        consumer.accept(vertices.toFArray(),
+        float[] vtf = vertices.toFArray();
+        bgColor.accept(ca, vtf);
+        consumer.accept(vtf,
                 colors.toFArray(),
                 tex.toFArray(),
-                fontTexture.getTextureId(),
+                texture.getTextureId(),
                 indices.toIArray());
     }
 
@@ -137,12 +152,29 @@ public class DrawableText {
     }
 
     /**
+     * Custom background color
+     *
+     * @author squid233
+     */
+    @FunctionalInterface
+    public interface BgColorFunction {
+        /**
+         * Use params to set mesh
+         *
+         * @param text     text to char array
+         * @param vertices text vertices
+         */
+        void accept(char[] text, float[] vertices);
+    }
+
+    /**
      * Custom color per char
      *
      * @author squid233
      */
     @FunctionalInterface
-    public interface ColorFunction {
+    public interface ColorFunction
+            extends BiFunction<Character, Integer, float[]> {
         /**
          * Add return value to color list
          *
@@ -154,7 +186,13 @@ public class DrawableText {
          * 1, 1, 1,
          * 1, 1, 1]} or {@link #DEFAULT_COLOR})
          */
-        float[] accept(char c,
-                     int index);
+        float[] apply(char c,
+                      int index);
+
+        @Override
+        default float[] apply(Character c,
+                              Integer index) {
+            return apply(c.charValue(), index.intValue());
+        }
     }
 }

@@ -31,6 +31,8 @@ import org.overrun.glutils.mesh.Mesh3;
 
 import java.awt.Font;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.overrun.glutest.GLUTest.TIMER;
@@ -64,6 +66,7 @@ public class GameRenderer implements AutoCloseable {
             .charset(StandardCharsets.UTF_8)
             .padding(2)
             .build();
+    public final Map<Integer, Mesh3> textBgMap = new HashMap<>();
     public GLProgram program;
     public Mesh3 cube;
     public Mesh3 crossing;
@@ -83,7 +86,7 @@ public class GameRenderer implements AutoCloseable {
                 "crossing.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2))
                 .texture(Textures.loadAWT(cl, "crossing.png", GL_NEAREST));
-        text = new Mesh3();
+        text = new Mesh3().unbindVao();
     }
 
     public void render(int w,
@@ -143,10 +146,45 @@ public class GameRenderer implements AutoCloseable {
         program.setUniformMat4("proj", view.setOrtho2D(0, w, h, 0));
         program.setUniformMat4("modelv", view.translation(w / 2f, h / 2f, 0));
         crossing.render();
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         program.setUniformMat4("modelv", view.translation(2, 2, 0));
+        String st = "FPS: " + TIMER.lastFps;
+        int stl = st.length();
         DrawableText.build(utf8,
-                "FPS: " + TIMER.lastFps,
+                st,
+                (text, vertices) -> {
+                    if (textBgMap.containsKey(stl)) {
+                        return;
+                    }
+                    int cl = vertices.length;
+                    // len / 2
+                    int il = vertices.length >> 1;
+                    float[] colors = new float[cl];
+                    int[] indices = new int[il];
+                    for (int i = 0; i < cl; i++) {
+                        colors[i] = 1;
+                    }
+                    for (int i = 0; i < il; i += 6) {
+                        // i / 6 * 4
+                        int i0 = (int) (i * 0.6666666666666666);
+                        int i1 = i0 + 1;
+                        int i2 = i0 + 2;
+                        int i3 = i0 + 3;
+                        indices[i] = i0;
+                        indices[i + 1] = i1;
+                        indices[i + 2] = i2;
+                        indices[i + 3] = i3;
+                        indices[i + 4] = i0;
+                        indices[i + 5] = i2;
+                    }
+                    textBgMap.put(stl, new Mesh3()
+                            .vertUsage(GL_DYNAMIC_DRAW)
+                            .vertIdx(0)
+                            .vertices(vertices)
+                            .colorIdx(1)
+                            .colors(colors)
+                            .indices(indices)
+                            .unbindVao());
+                },
                 (c, index) -> {
                     if (index > 3) {
                         if (TIMER.lastFps < 30) {
@@ -157,7 +195,8 @@ public class GameRenderer implements AutoCloseable {
                     return DrawableText.DEFAULT_COLOR;
                 },
                 (vertices, colors, texCoord, tex, indices) ->
-                        text.vertUsage(GL_DYNAMIC_DRAW)
+                        text.bindVao()
+                                .vertUsage(GL_DYNAMIC_DRAW)
                                 .vertIdx(0)
                                 .vertices(vertices)
                                 .colorIdx(1)
@@ -166,7 +205,11 @@ public class GameRenderer implements AutoCloseable {
                                 .texCoords(texCoord)
                                 .texture(tex)
                                 .indices(indices)
+                                .unbindVao()
         );
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        textBgMap.get(stl).render();
+        glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
         text.render();
         program.unbind();
     }

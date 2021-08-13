@@ -40,8 +40,8 @@ jar {
     manifest {
         attributes 'Specification-Title': 'GLUtils',
                 'Specification-Vendor': 'OverRun Organization',
-                'Specification-Version': '0',
-                'Implementation-Title': 'GLUtils 0',
+                'Specification-Version': '1',
+                'Implementation-Title': 'GLUtils 1',
                 'Implementation-Vendor': 'OverRun Organization',
                 'Implementation-Version': archiveVersion
     }
@@ -49,14 +49,12 @@ jar {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     archiveClassifier.set 'sources'
-    from sourceSets.main.allSource
-    from 'LICENSE'
+    from sourceSets.main.allSource, 'LICENSE', 'changelog.txt'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier.set 'javadoc'
-    from javadoc
-    from 'LICENSE'
+    from javadoc, 'LICENSE', 'changelog.txt'
 }
 
 artifacts {
@@ -115,14 +113,6 @@ publishing.repositories {
         url = version.endsWith('SNAPSHOT')
                 ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
                 : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-    }
-    maven {
-        name = "GitHubPackages"
-        url = "https://maven.pkg.github.com/Over-Run/GLUtils"
-        credentials {
-            username = System.getenv("GITHUB_ACTOR")
-            password = System.getenv("GITHUB_TOKEN")
-        }
     }
 }
 

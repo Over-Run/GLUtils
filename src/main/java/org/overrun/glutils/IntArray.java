@@ -35,6 +35,24 @@ import java.util.ArrayList;
  */
 public class IntArray extends ArrayList<Integer> {
     /**
+     * Constructs an empty list with the specified initial capacity.
+     *
+     * @param initialCapacity the initial capacity of the list
+     * @throws IllegalArgumentException if the specified initial capacity
+     *                                  is negative
+     */
+    public IntArray(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    /**
+     * Constructs an empty list with an initial capacity of ten.
+     */
+    public IntArray() {
+        super();
+    }
+
+    /**
      * Convert boxed-object type to primitive type
      *
      * @return int array

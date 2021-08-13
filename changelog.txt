@@ -6,6 +6,7 @@ New feature: `FontTexture`
 New feature: `FontTextures`
 New feature: `Drawable`
 New feature: `DrawableText`
+New feature: `Mesh3#bindVao` and `Mesh3#unbindVao`
 Changed: `ShaderReader` and `MeshLoader` use UTF-8 not ANSI now
 Changed: Rename `Window` to `GLFWindow`
 
@@ -18,7 +19,7 @@ New feature: `Framebuffer`
 Changed: Rename `MeshVar` to `MeshMacro`
 Changed: Rename `idxVbo` to `ibo`
 Changed: `ShaderType#toString`: "vertexShader" -> "vertex shader"
-Changed: `BaseMesh#colorVbo` is not final now
+Changed: Mesh color is optional now
 
 0.9.0
 Beta
