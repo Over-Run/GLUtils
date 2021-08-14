@@ -40,19 +40,46 @@ public class DrawableText {
             1.0f, 1.0f, 1.0f,
             1.0f, 1.0f, 1.0f
     };
+    public static final float[] DEFAULT_COLOR_ALPHA = {
+            1.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f
+    };
 
     /**
      * build mesh
      *
      * @param texture  font texture
      * @param text     text for rendering
+     * @param bgColor  Background color function.
+     * @param fgColor  Foreground color function.
      * @param consumer Consumer to set mesh.
      */
-    public static void build(FontTexture texture,
-                             String text,
-                             BgColorFunction bgColor,
-                             ColorFunction fgColor,
-                             Consumer consumer) {
+    public static void build(final FontTexture texture,
+                             final String text,
+                             final BgColorFunction bgColor,
+                             final ColorFunction fgColor,
+                             final Consumer consumer) {
+        build(texture, text, 3, bgColor, fgColor, consumer);
+    }
+
+    /**
+     * build mesh
+     *
+     * @param texture  font texture
+     * @param text     text for rendering
+     * @param colorDim Color dimensions.
+     * @param bgColor  Background color function.
+     * @param fgColor  Foreground color function.
+     * @param consumer Consumer to set mesh.
+     */
+    public static void build(final FontTexture texture,
+                             final String text,
+                             final int colorDim,
+                             final BgColorFunction bgColor,
+                             final ColorFunction fgColor,
+                             final Consumer consumer) {
         FloatArray vertices = new FloatArray();
         FloatArray colors = new FloatArray();
         FloatArray tex = new FloatArray();
@@ -108,6 +135,12 @@ public class DrawableText {
             tex.addAll(texEndX, texStartY);
             if (fgColor != null) {
                 colors.addAll(fgColor.apply(c, i));
+            } else {
+                for (int j = 0; j < 4; j++) {
+                    for (int k = 0; k < colorDim; k++) {
+                        colors.add(1);
+                    }
+                }
             }
             indices.add(i3);
             indices.add(i0);
@@ -184,7 +217,8 @@ public class DrawableText {
          * (maybe {@code [1, 1, 1,
          * 1, 1, 1,
          * 1, 1, 1,
-         * 1, 1, 1]} or {@link #DEFAULT_COLOR})
+         * 1, 1, 1]}, {@link #DEFAULT_COLOR})
+         * or {@link #DEFAULT_COLOR_ALPHA})
          */
         float[] apply(char c,
                       int index);

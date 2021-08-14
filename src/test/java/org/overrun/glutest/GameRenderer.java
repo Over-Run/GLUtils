@@ -46,16 +46,16 @@ import static org.overrun.glutils.mesh.MeshLoader.load3;
  */
 public class GameRenderer implements AutoCloseable {
     public static final float[] LOW_FPS_COLOR = {
-            1, 0, 0,
-            1, 0, 0,
-            1, 0, 0,
-            1, 0, 0
+            1, 0, 0, 1,
+            1, 0, 0, 1,
+            1, 0, 0, 1,
+            1, 0, 0, 1
     };
     public static final float[] HIGH_FPS_COLOR = {
-            0, 1, 0,
-            0, 1, 0,
-            0, 1, 0,
-            0, 1, 0
+            0, 1, 0, 1,
+            0, 1, 0, 1,
+            0, 1, 0, 1,
+            0, 1, 0, 1
     };
     public static final ClassLoader cl = GameRenderer.class.getClassLoader();
     public final Matrix4f proj = new Matrix4f();
@@ -86,7 +86,13 @@ public class GameRenderer implements AutoCloseable {
                 "crossing.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2))
                 .texture(Textures.loadAWT(cl, "crossing.png", GL_NEAREST));
-        text = new Mesh3().unbindVao();
+        text = new Mesh3()
+                .vertUsage(GL_DYNAMIC_DRAW)
+                .vertIdx(0)
+                .colorIdx(1)
+                .colorDim(4)
+                .texIdx(2)
+                .unbindVao();
     }
 
     public void render(int w,
@@ -151,36 +157,36 @@ public class GameRenderer implements AutoCloseable {
         int stl = st.length();
         DrawableText.build(utf8,
                 st,
+                4,
                 (text, vertices) -> {
                     if (textBgMap.containsKey(stl)) {
                         return;
                     }
-                    int cl = vertices.length;
-                    // len / 2
-                    int il = vertices.length >> 1;
-                    float[] colors = new float[cl];
-                    int[] indices = new int[il];
-                    for (int i = 0; i < cl; i++) {
-                        colors[i] = 1;
-                    }
-                    for (int i = 0; i < il; i += 6) {
-                        // i / 6 * 4
-                        int i0 = (int) (i * 0.6666666666666666);
-                        int i1 = i0 + 1;
-                        int i2 = i0 + 2;
-                        int i3 = i0 + 3;
-                        indices[i] = i0;
-                        indices[i + 1] = i1;
-                        indices[i + 2] = i2;
-                        indices[i + 3] = i3;
-                        indices[i + 4] = i0;
-                        indices[i + 5] = i2;
+                    int pad = utf8.getPadding();
+                    int l = vertices.length;
+                    float[] v = new float[12];
+                    float[] colors = new float[16];
+                    int[] indices = {
+                            0, 1, 2, 3, 0, 2
+                    };
+                    v[0] = vertices[0] - pad;
+                    v[1] = vertices[1] - pad;
+                    v[3] = vertices[3] - pad;
+                    v[4] = vertices[4] + pad;
+                    v[6] = vertices[l - 6] + pad;
+                    v[7] = vertices[l - 5] + pad;
+                    v[9] = vertices[l - 3] + pad;
+                    v[10] = vertices[l - 2] - pad;
+                    for (int i = 0; i < colors.length; i++) {
+                        // 0xffffff80
+                        colors[i] = (i != 0 && (i + 1) % 4 == 0) ? 0.5019608f : 1;
                     }
                     textBgMap.put(stl, new Mesh3()
                             .vertUsage(GL_DYNAMIC_DRAW)
                             .vertIdx(0)
-                            .vertices(vertices)
+                            .vertices(v)
                             .colorIdx(1)
+                            .colorDim(4)
                             .colors(colors)
                             .indices(indices)
                             .unbindVao());
@@ -192,16 +198,12 @@ public class GameRenderer implements AutoCloseable {
                         }
                         return HIGH_FPS_COLOR;
                     }
-                    return DrawableText.DEFAULT_COLOR;
+                    return DrawableText.DEFAULT_COLOR_ALPHA;
                 },
                 (vertices, colors, texCoord, tex, indices) ->
                         text.bindVao()
-                                .vertUsage(GL_DYNAMIC_DRAW)
-                                .vertIdx(0)
                                 .vertices(vertices)
-                                .colorIdx(1)
                                 .colors(colors)
-                                .texIdx(2)
                                 .texCoords(texCoord)
                                 .texture(tex)
                                 .indices(indices)
@@ -209,7 +211,6 @@ public class GameRenderer implements AutoCloseable {
         );
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         textBgMap.get(stl).render();
-        glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
         text.render();
         program.unbind();
     }

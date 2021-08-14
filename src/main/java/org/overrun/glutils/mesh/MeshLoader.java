@@ -334,13 +334,10 @@ public class MeshLoader {
         if (pre != null) {
             pre.accept(mesh);
         }
-        mesh.vertDim(mf.vertDim)
-                .vertices(mf.vertices.toFArray())
-                .colorDim(mf.colorDim)
-                .colors(mf.colors.toFArray());
+        mesh.vertDim(mf.vertDim).vertices(mf.vertices.toFArray())
+                .colorDim(mf.colorDim).colors(mf.colors.toFArray());
         if (mf.textured) {
-            mesh.texDim(mf.texDim)
-                    .texCoords(mf.texCoords.toFArray());
+            mesh.texDim(mf.texDim).texCoords(mf.texCoords.toFArray());
         }
         if (mf.indexed) {
             mesh.indices(mf.indices.toIArray());
