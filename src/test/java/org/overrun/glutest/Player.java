@@ -25,7 +25,8 @@
 
 package org.overrun.glutest;
 
-import static org.overrun.glutils.math.Math.*;
+import static org.joml.Math.*;
+import static org.overrun.commonutils.Math.isNotZero;
 
 /**
  * @author squid233

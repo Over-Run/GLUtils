@@ -25,8 +25,8 @@
 
 package org.overrun.glutils.mesh;
 
-import org.overrun.glutils.FloatArray;
-import org.overrun.glutils.IntArray;
+import org.overrun.commonutils.FloatArray;
+import org.overrun.commonutils.IntArray;
 
 /**
  * @author squid233

@@ -25,6 +25,9 @@
 
 package org.overrun.glutils;
 
+import org.overrun.commonutils.FloatArray;
+import org.overrun.commonutils.IntArray;
+
 import java.util.function.BiFunction;
 
 /**

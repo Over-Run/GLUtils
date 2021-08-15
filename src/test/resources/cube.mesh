@@ -33,18 +33,13 @@ v 0 0 0
 v 0 0 -size
 undef size
 
-define blue   0.4 0.8 1.0 1.0
-define green  0.5 1.0 0.5 1.0
-define orange 1.0 0.5 0.0 1.0
-define red    1.0 0.1 0.0 1.0
-define yellow 1.0 1.0 0.0 1.0
-define white  1.0 1.0 1.0 1.0
-vc blue   blue   blue   blue
-vc green  green  green  green
-vc orange orange orange orange
-vc red    red    red    red
-vc yellow yellow yellow yellow
-vc white  white  white  white
+repeat blue   4 0.4 0.8 1.0 1.0
+repeat green  4 0.5 1.0 0.5 1.0
+repeat orange 4 1.0 0.5 0.0 1.0
+repeat red    4 1.0 0.1 0.0 1.0
+repeat yellow 4 1.0 1.0 0.0 1.0
+repeat white  4 1.0 1.0 1.0 1.0
+vc blue green orange red yellow white
 undef blue
 undef green
 undef orange
@@ -52,8 +47,8 @@ undef red
 undef yellow
 undef white
 
-define tex 0 0 0 1 1 1 1 0
-vt tex tex tex tex tex tex
+repeat tex 6 0 0 0 1 1 1 1 0
+vt tex
 undef tex
 
 # south

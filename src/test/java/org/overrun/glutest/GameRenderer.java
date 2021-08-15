@@ -153,7 +153,7 @@ public class GameRenderer implements AutoCloseable {
         program.setUniformMat4("modelv", view.translation(w / 2f, h / 2f, 0));
         crossing.render();
         program.setUniformMat4("modelv", view.translation(2, 2, 0));
-        String st = "FPS: " + TIMER.lastFps;
+        String st = "FPS: " + TIMER.fps;
         int stl = st.length();
         DrawableText.build(utf8,
                 st,
@@ -193,7 +193,7 @@ public class GameRenderer implements AutoCloseable {
                 },
                 (c, index) -> {
                     if (index > 3) {
-                        if (TIMER.lastFps < 30) {
+                        if (TIMER.fps < 30) {
                             return LOW_FPS_COLOR;
                         }
                         return HIGH_FPS_COLOR;

@@ -24,6 +24,7 @@ dependencies {
     api 'org.lwjgl:lwjgl-opengl'
     api 'org.lwjgl:lwjgl-stb'
     api 'org.joml:joml:1.10.1'
+    api 'io.github.over-run:common-utils:0.1.0'
 
     testRuntimeOnly 'org.lwjgl:lwjgl::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-glfw::natives-windows'

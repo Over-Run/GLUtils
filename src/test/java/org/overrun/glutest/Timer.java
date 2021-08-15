@@ -29,26 +29,38 @@ package org.overrun.glutest;
  * @author squid233
  */
 public class Timer {
-    private double lastLoopTime;
-    public int fps;
-    public int lastFps;
+    private static final long NS_PER_SECOND = 1_000_000_000;
+    private static final long MAX_NS_PER_UPDATE = 1_000_000_000;
+    private static final int MAX_TICKS_PER_UPDATE = 100;
+    private final float tps;
+    private long lastTime;
+    public int ticks;
+    public float delta;
+    public float timeScale = 1.0F;
+    public float fps = 0.0F;
+    public float passedTime = 0.0F;
 
-    public void init() {
-        lastLoopTime = getTime();
+    public Timer(float tps) {
+        this.tps = tps;
+        lastTime = System.nanoTime();
     }
 
-    public double getTime() {
-        return System.nanoTime() / 1_000_000_000.0;
-    }
-
-    public float getElapsedTime() {
-        double time = getTime();
-        float elapsedTime = (float) (time - lastLoopTime);
-        lastLoopTime = time;
-        return elapsedTime;
-    }
-
-    public double getLastLoopTime() {
-        return lastLoopTime;
+    public void advanceTime() {
+        long now = System.nanoTime();
+        long passedNs = now - lastTime;
+        lastTime = now;
+        if (passedNs < 0L) {
+            passedNs = 0L;
+        } else if (passedNs > MAX_NS_PER_UPDATE) {
+            passedNs = MAX_NS_PER_UPDATE;
+        }
+        fps = (float) (MAX_NS_PER_UPDATE / passedNs);
+        passedTime += (float) passedNs * timeScale * tps / NS_PER_SECOND;
+        ticks = (int) passedTime;
+        if (ticks > MAX_TICKS_PER_UPDATE) {
+            ticks = MAX_TICKS_PER_UPDATE;
+        }
+        passedTime -= (float) ticks;
+        delta = passedTime;
     }
 }

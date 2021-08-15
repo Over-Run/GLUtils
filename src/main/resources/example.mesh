@@ -8,7 +8,6 @@
 
 # todo
 #   - throw more CompileException
-#   - new syntax: `repeat id count value`
 #   - new syntax in Java code: `void eval(MacroFile f, String statement, Object[] output)`
 
 # this is a comment
@@ -32,9 +31,6 @@ define bMacro 999
 
 # This is invalid
 # define 0macro
-# These are invalid, too
-# define aMacro
-# define bMacro
 
 define c
 # undefine a macro
@@ -42,6 +38,14 @@ define c
 # KEYWORD: UNDEF
 # IDENTIFIER: c
 undef c
+
+# repeat value to and define a macro
+# syntax parsed:
+# KEYWORD: REPEAT
+# IDENTIFIER: dMacro
+# COUNT: 888
+# VALUE: 6f
+repeat dMacro 888 6f
 
 # set vertex dimension
 # default value is 3
@@ -88,9 +92,9 @@ vt 0.0 0.0
 
 # faces
 # it will replace to this:
-# f 0 1 2 3 aMacro 999
+# f 0 1 2 3 aMacro 999 6f 6f 6f 6f...
 # syntax parsed:
 # KEYWORD: FACE
 # IDENTIFIERS: aMacro, bMacro
-# VALUES: INT(0), INT(1), INT(2), INT(3), ID(aMacro), ID(bMacro)
-f 0 1 2 3 aMacro bMacro
+# VALUES: INT(0), INT(1), INT(2), INT(3), ID(aMacro), ID(bMacro), ID(dMacro)
+f 0 1 2 3 aMacro bMacro dMacro

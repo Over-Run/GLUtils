@@ -30,8 +30,8 @@ import org.overrun.glutils.callback.ThrowableCallback;
 import org.overrun.glutils.callback.WarningCallback;
 
 import static org.lwjgl.opengl.GL30.*;
-import static org.overrun.glutils.ArrayHelper.expand;
-import static org.overrun.glutils.ArrayHelper.toIArray;
+import static org.overrun.commonutils.ArrayHelper.expand;
+import static org.overrun.commonutils.ArrayHelper.toIArray;
 import static org.overrun.glutils.Versions.current;
 
 /**

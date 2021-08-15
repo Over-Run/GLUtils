@@ -25,9 +25,9 @@
 
 package org.overrun.glutils.mesh;
 
+import org.overrun.commonutils.MapStr2Str;
 import org.overrun.glutils.CompileException;
 import org.overrun.glutils.GLUtils;
-import org.overrun.glutils.MapStr2Str;
 
 import java.io.InputStream;
 import java.util.*;
@@ -36,7 +36,7 @@ import java.util.function.Consumer;
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.overrun.glutils.ArrayHelper.removeNull;
+import static org.overrun.commonutils.ArrayHelper.removeNull;
 import static org.overrun.glutils.mesh.Assemblies.*;
 
 /**
@@ -121,6 +121,14 @@ public class MeshLoader {
         return arr;
     }
 
+    private static boolean isIdValid(String id) {
+        return id.matches("^[A-Za-z$_][^`~!@#%^&*()\\-=+\\[{}\\];'\\\\:\"|,./<>?]?[A-Za-z0-9$_]*");
+    }
+
+    private static boolean isIdInvalid(String id) {
+        return !isIdValid(id);
+    }
+
     /**
      * define macros
      *
@@ -179,11 +187,11 @@ public class MeshLoader {
                                     currLn);
                         }
                         // check identifier whether valid
-                        if (!arr[1].matches("^[A-Za-z$_][^`~!@#%^&*()\\-=+\\[{}\\];'\\\\:\"|,./<>?]?[A-Za-z0-9$_]*")) {
+                        if (isIdInvalid(arr[1])) {
                             except("Invalid identifier",
                                     currLn);
                         }
-                        String[] arr2 = removeNull(ln.split("\\s", 3));
+                        String[] arr2 = removeNull(ln.replaceAll("\\s{2,}", " ").split("\\s", 3));
                         String macro = arr2[1];
                         if (!KEYWORDS.contains(macro)) {
                             definedMacros.add(macro);
@@ -196,7 +204,7 @@ public class MeshLoader {
                     case UNDEF: {
                         // check length
                         if (arr.length != 2) {
-                            except("Required 1 param but found 0",
+                            except("Required 1 param but found " + (arr.length - 2),
                                     currLn);
                         }
                         String macro = arr[1];
@@ -207,6 +215,37 @@ public class MeshLoader {
                         }
                         definedMacros.remove(macro);
                         mmap.remove(macro);
+                        break;
+                    }
+                    case REPEAT: {
+                        // check length
+                        if (arr.length < 4) {
+                            except("Required 3 param at least but found " + (arr.length - 1),
+                                    currLn);
+                        }
+                        // check identifier whether valid
+                        if (isIdInvalid(arr[1])) {
+                            except("Invalid identifier",
+                                    currLn);
+                        }
+                        String[] arr2 = removeNull(ln.replaceAll("\\s{2,}", " ").split("\\s", 4));
+                        String macro = arr2[1];
+                        if (!KEYWORDS.contains(macro)) {
+                            definedMacros.add(macro);
+                        }
+                        String p2 = arr[2];
+                        int count = 0;
+                        try {
+                            count = parseInt(p2);
+                        } catch (NumberFormatException e) {
+                            except(p2 + " isn't a integer", currLn);
+                        }
+                        String p3 = arr2[3];
+                        StringBuilder result = new StringBuilder(p3);
+                        for (int i = 1; i < count; i++) {
+                            result.append(" ").append(p3);
+                        }
+                        mmap.put(macro, result.toString());
                         break;
                     }
                     // macros end
@@ -386,7 +425,8 @@ public class MeshLoader {
      * @param currLn current line
      */
     public static void except(String msg,
-                              int currLn) {
+                              int currLn)
+            throws CompileException {
         throw new CompileException("Error loading mesh at line " +
                 currLn + ": " + msg);
     }

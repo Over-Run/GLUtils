@@ -40,10 +40,9 @@ import static org.lwjgl.opengl.GL11.*;
  * @author squid233
  */
 public class GLUTest implements AutoCloseable {
-    public static final float STEP = 1.0f;
+    public static final float STEP = 0.04f;
     public static final float SENSITIVITY = 0.05f;
-    public static final int TARGET_UPS = 30;
-    public static final Timer TIMER = new Timer();
+    public static final Timer TIMER = new Timer(20);
     public final Player player = new Player();
     public GLFWindow window;
     public Framebuffer fb;
@@ -51,13 +50,12 @@ public class GLUTest implements AutoCloseable {
     public boolean resized;
     public boolean grabbing;
     public double lastX, lastY;
-    public double lastFps;
 
     public boolean pressing(int key) {
         return window.key(key) == GLFW_PRESS;
     }
 
-    public float speed(float delta) {
+    public float speed(double delta) {
         double base = STEP * delta;
         if (pressing(GLFW_KEY_LEFT_CONTROL)
                 || pressing(GLFW_KEY_RIGHT_CONTROL)) {
@@ -105,6 +103,8 @@ public class GLUTest implements AutoCloseable {
                 yOffset *= SENSITIVITY;
                 player.rotate(xOffset, yOffset);
             }
+            lastX = xpos;
+            lastY = ypos;
         });
         GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         if (mode != null) {
@@ -116,10 +116,8 @@ public class GLUTest implements AutoCloseable {
         glfwSwapInterval(1);
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         System.out.println("GL Version " + glGetString(GL_VERSION));
-        TIMER.init();
+        TIMER.advanceTime();
         (renderer = new GameRenderer()).init();
-        lastFps = TIMER.getTime();
-        TIMER.fps = 0;
         window.show();
         window.focus();
         grabbing = true;
@@ -128,24 +126,18 @@ public class GLUTest implements AutoCloseable {
     }
 
     public void loop() {
-        float elapsedTime;
-        float accumulator = 0f;
-        float interval = 1f / TARGET_UPS;
         while (!window.shouldClose()) {
-            elapsedTime = TIMER.getElapsedTime();
-            accumulator += elapsedTime;
-            while (accumulator >= interval) {
-                accumulator -= interval;
-            }
-            input(accumulator);
+            TIMER.advanceTime();
+            float delta = TIMER.delta;
+            input(delta);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            render(accumulator);
+            render(delta);
             window.swapBuffers();
             glfwPollEvents();
         }
     }
 
-    public void input(float delta) {
+    public void input(double delta) {
         float xo = 0;
         float yo = 0;
         float zo = 0;
@@ -173,14 +165,8 @@ public class GLUTest implements AutoCloseable {
         player.moveRelative(xo, yo, zo);
     }
 
-    public void render(float delta) {
+    public void render(double delta) {
         int w = fb.getWidth(), h = fb.getHeight();
-        if (TIMER.getLastLoopTime() - lastFps > 1) {
-            lastFps = TIMER.getLastLoopTime();
-            TIMER.lastFps = TIMER.fps;
-            TIMER.fps = 0;
-        }
-        TIMER.fps++;
         renderer.render(w, h, player);
         if (resized) {
             glViewport(0, 0, w, h);

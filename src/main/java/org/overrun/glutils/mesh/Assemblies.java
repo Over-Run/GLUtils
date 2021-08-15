@@ -43,6 +43,12 @@ public class Assemblies {
      */
     public static final String UNDEF = "undef";
     /**
+     * repeat macro
+     *
+     * @since 1.1.0
+     */
+    public static final String REPEAT = "repeat";
+    /**
      * set an option
      */
     public static final String SET = "set";
