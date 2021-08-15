@@ -39,10 +39,10 @@ jar {
     from 'LICENSE'
     manifest {
         attributes 'Specification-Title': 'GLUtils',
-                'Specification-Vendor': 'OverRun Organization',
+                'Specification-Vendor': 'Overrun Organization',
                 'Specification-Version': '1',
                 'Implementation-Title': 'GLUtils 1',
-                'Implementation-Vendor': 'OverRun Organization',
+                'Implementation-Vendor': 'Overrun Organization',
                 'Implementation-Version': archiveVersion
     }
 }
@@ -80,7 +80,7 @@ publishing.publications {
             licenses {
                 license {
                     name = 'The MIT License'
-                    url = 'https://raw.githubusercontent.com/Over-Run/GLUtils/pre-alpha/LICENSE'
+                    url = 'https://raw.githubusercontent.com/Over-Run/GLUtils/1.x/LICENSE'
                 }
             }
             developers {
