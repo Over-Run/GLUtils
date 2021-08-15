@@ -41,7 +41,7 @@ public class Example {
 
 ## Who are using
 
-- [OverRun Organization](https://github.com/Over-Run/)
+- [Overrun Organization](https://github.com/Over-Run/)
 
 ##
 
