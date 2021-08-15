@@ -2,6 +2,7 @@ Update Versions.java on adding new versions
 
 1.1.0
 New feature: `Math`
+New feature: `MeshManager`
 New feature: `FontTexture`
 New feature: `FontTextures`
 New feature: `Drawable`

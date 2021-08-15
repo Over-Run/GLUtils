@@ -15,15 +15,17 @@ dependencies {
 
 ## Example
 
+[https://github.com/squid233/lwjgl-example](https://github.com/squid233/lwjgl-example)
+
 ```java
 import org.overrun.glutils.*;
 public class Example {
-    static GlProgram prg;
+    static GLProgram prg;
     public static void main(String[] args) {
         init();
         ClassLoader cl = Example.class.getClassLoader();
         try {
-            prg = new GlProgram();
+            prg = new GLProgram();
             prg.createVsh(ShaderReader.lines(cl, "shaders/scene.vsh"));
             prg.createFsh(ShaderReader.lines(cl, "shaders/scene.fsh"));
             prg.link();

@@ -37,7 +37,7 @@ import static org.lwjgl.opengl.GL30.*;
 public class Mesh3 extends BaseMesh<Mesh3> {
     private final int vao;
     private int vertIdx;
-    private int colorIdx;
+    private int colorIdx = -1;
     private int texIdx = -1;
 
     /**
@@ -238,7 +238,9 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     @Override
     public void close() {
         glDisableVertexAttribArray(vertIdx);
-        glDisableVertexAttribArray(colorIdx);
+        if (colorIdx != -1) {
+            glDisableVertexAttribArray(colorIdx);
+        }
         if (texIdx != -1) {
             glDisableVertexAttribArray(texIdx);
         }
