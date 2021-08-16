@@ -2,12 +2,15 @@ Update Versions.java on adding new versions
 
 1.1.0
 New feature: `Math`
-New feature: `MeshManager`
+New internal feature: `MeshManager`
+New internal feature: `MeshManager3`
+New internal feature: `MeshManagerConstant`
 New feature: `FontTexture`
 New feature: `FontTextures`
 New feature: `Drawable`
 New feature: `DrawableText`
 New feature: `Mesh3#bindVao` and `Mesh3#unbindVao`
+New feature: Mesh supported to normal vertex
 Changed: Use common utils now
 Changed: `ShaderReader` and `MeshLoader` use UTF-8 not ANSI now
 Changed: Rename `Window` to `GLFWindow`

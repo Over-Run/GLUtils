@@ -181,6 +181,27 @@ public final class GLUtils {
     }
 
     /**
+     * new instance of a class with params
+     *
+     * @param clazz          class type
+     * @param <T>            type
+     * @param parameterTypes the parameter array
+     * @param initArgs       array of objects to be passed as arguments to
+     *                       the constructor call; values of primitive types are wrapped in
+     *                       a wrapper object of the appropriate type (e.g. a {@code float}
+     *                       in a {@link Float})
+     * @return instance of clazz
+     * @throws Exception if params found
+     * @since 1.1.0
+     */
+    public static <T> T newClass(Class<T> clazz,
+                                 Class<?>[] parameterTypes,
+                                 Object... initArgs)
+            throws Exception {
+        return clazz.getDeclaredConstructor(parameterTypes).newInstance(initArgs);
+    }
+
+    /**
      * glGetError to string
      *
      * @return error name

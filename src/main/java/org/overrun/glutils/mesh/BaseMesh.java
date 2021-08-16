@@ -45,6 +45,12 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      */
     protected int texVbo;
     /**
+     * normal vbo
+     *
+     * @since 1.1.0
+     */
+    protected int normalVbo;
+    /**
      * ibo
      */
     protected int ibo;
@@ -60,6 +66,11 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      * texture coordinates
      */
     protected float[] texCoords;
+    /**
+     * normal vertices
+     * @since 1.1.0
+     */
+    protected float[] normalVert;
     /**
      * indices
      */
@@ -77,6 +88,11 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      */
     protected int texUsage = GL_STATIC_DRAW;
     /**
+     * normal vertex usage
+     * @since 1.1.0
+     */
+    protected int normalUsage = GL_STATIC_DRAW;
+    /**
      * index usage
      */
     protected int indexUsage = GL_STATIC_DRAW;
@@ -93,6 +109,11 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      */
     protected int texDim = 2;
     /**
+     * normal dimensions
+     * @since 1.1.0
+     */
+    protected int normalDim = 3;
+    /**
      * vertex normalized
      */
     protected boolean vertNormalized;
@@ -105,6 +126,11 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      */
     protected boolean texNormalized;
     /**
+     * normals normalized
+     * @since 1.1.0
+     */
+    protected boolean normalNormalized;
+    /**
      * vertex stride
      */
     protected int vertStride;
@@ -116,6 +142,11 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      * texture stride
      */
     protected int texStride;
+    /**
+     * normal stride
+     * @since 1.1.0
+     */
+    protected int normalStride;
     /**
      * texture id
      */
@@ -147,49 +178,6 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      */
     public T vertices(float[] vertices) {
         this.vertices = vertices;
-        return getThis();
-    }
-
-    /**
-     * set colors
-     *
-     * @param colors colors
-     * @return this
-     */
-    public T colors(float[] colors) {
-        this.colors = colors;
-        if (colorVbo == 0) {
-            colorVbo = glGenBuffers();
-        }
-        return getThis();
-    }
-
-    /**
-     * set texture coordinates
-     *
-     * @param texCoords texture coordinates
-     * @return this
-     */
-    public T texCoords(float[] texCoords) {
-        this.texCoords = texCoords;
-        if (texVbo == 0) {
-            texVbo = glGenBuffers();
-        }
-        return getThis();
-    }
-
-    /**
-     * set indices
-     *
-     * @param indices indices
-     * @return this
-     */
-    public T indices(int[] indices) {
-        this.indices = indices;
-        vertexCount = indices.length;
-        if (ibo == 0) {
-            ibo = glGenBuffers();
-        }
         return getThis();
     }
 
@@ -234,6 +222,20 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      */
     public T vertStride(int vertStride) {
         this.vertStride = vertStride;
+        return getThis();
+    }
+
+    /**
+     * set colors
+     *
+     * @param colors colors
+     * @return this
+     */
+    public T colors(float[] colors) {
+        this.colors = colors;
+        if (colorVbo == 0) {
+            colorVbo = glGenBuffers();
+        }
         return getThis();
     }
 
@@ -293,6 +295,20 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     }
 
     /**
+     * set texture coordinates
+     *
+     * @param texCoords texture coordinates
+     * @return this
+     */
+    public T texCoords(float[] texCoords) {
+        this.texCoords = texCoords;
+        if (texVbo == 0) {
+            texVbo = glGenBuffers();
+        }
+        return getThis();
+    }
+
+    /**
      * set texture coord usage
      *
      * @param texUsage texture coord usage
@@ -337,6 +353,84 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     }
 
     /**
+     * set normals
+     *
+     * @param normalVert normal vertex
+     * @return this
+     * @since 1.1.0
+     */
+    public T normalVert(float[] normalVert) {
+        this.normalVert = normalVert;
+        if (normalVbo == 0) {
+            normalVbo = glGenBuffers();
+        }
+        return getThis();
+    }
+
+    /**
+     * set normal usage
+     *
+     * @param normalUsage normal usage
+     * @return this
+     * @since 1.1.0
+     */
+    public T normalUsage(int normalUsage) {
+        this.normalUsage = normalUsage;
+        return getThis();
+    }
+
+    /**
+     * set normal dim
+     *
+     * @param normalDim normal dim
+     * @return this
+     * @since 1.1.0
+     */
+    public T normalDim(int normalDim) {
+        this.normalDim = normalDim;
+        return getThis();
+    }
+
+    /**
+     * set normal normalized
+     *
+     * @param normalNormalized normal normalized
+     * @return this
+     * @since 1.1.0
+     */
+    public T normalNormalized(boolean normalNormalized) {
+        this.normalNormalized = normalNormalized;
+        return getThis();
+    }
+
+    /**
+     * set normal stride
+     *
+     * @param normalStride normal stride
+     * @return this
+     * @since 1.1.0
+     */
+    public T normalStride(int normalStride) {
+        this.normalStride = normalStride;
+        return getThis();
+    }
+
+    /**
+     * set indices
+     *
+     * @param indices indices
+     * @return this
+     */
+    public T indices(int[] indices) {
+        this.indices = indices;
+        vertexCount = indices.length;
+        if (ibo == 0) {
+            ibo = glGenBuffers();
+        }
+        return getThis();
+    }
+
+    /**
      * set index usage
      *
      * @param indexUsage index usage
@@ -368,66 +462,12 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     }
 
     /**
-     * get color vbo
-     *
-     * @return color vbo
-     */
-    public int getColorVbo() {
-        return colorVbo;
-    }
-
-    /**
-     * get texture vbo
-     *
-     * @return texture vbo
-     */
-    public int getTexVbo() {
-        return texVbo;
-    }
-
-    /**
-     * get ibo
-     *
-     * @return ibo
-     */
-    public int getIbo() {
-        return ibo;
-    }
-
-    /**
      * get vertices
      *
      * @return vertices
      */
     public float[] getVertices() {
         return vertices;
-    }
-
-    /**
-     * get colors
-     *
-     * @return colors
-     */
-    public float[] getColors() {
-        return colors;
-    }
-
-    /**
-     * get texture coordinates
-     *
-     * @return texture coordinates
-     */
-    public float[] getTexCoords() {
-        return texCoords;
-    }
-
-    /**
-     * get indices
-     *
-     * @return indices
-     */
-    public int[] getIndices() {
-        return indices;
     }
 
     /**
@@ -440,57 +480,12 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     }
 
     /**
-     * get color usage
-     *
-     * @return color usage
-     */
-    public int getColorUsage() {
-        return colorUsage;
-    }
-
-    /**
-     * get texture usage
-     *
-     * @return texture usage
-     */
-    public int getTexUsage() {
-        return texUsage;
-    }
-
-    /**
-     * get index usage
-     *
-     * @return index usage
-     */
-    public int getIndexUsage() {
-        return indexUsage;
-    }
-
-    /**
      * get vertex dim
      *
      * @return vertex dim
      */
     public int getVertDim() {
         return vertDim;
-    }
-
-    /**
-     * get color dim
-     *
-     * @return color dim
-     */
-    public int getColorDim() {
-        return colorDim;
-    }
-
-    /**
-     * get texture dim
-     *
-     * @return texture dim
-     */
-    public int getTexDim() {
-        return texDim;
     }
 
     /**
@@ -503,30 +498,57 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     }
 
     /**
-     * is color normalized
-     *
-     * @return color normalized
-     */
-    public boolean isColorNormalized() {
-        return colorNormalized;
-    }
-
-    /**
-     * is texture normalized
-     *
-     * @return texture normalized
-     */
-    public boolean isTexNormalized() {
-        return texNormalized;
-    }
-
-    /**
      * get vertex stride
      *
      * @return vertex stride
      */
     public int getVertStride() {
         return vertStride;
+    }
+
+    /**
+     * get color vbo
+     *
+     * @return color vbo
+     */
+    public int getColorVbo() {
+        return colorVbo;
+    }
+
+    /**
+     * get colors
+     *
+     * @return colors
+     */
+    public float[] getColors() {
+        return colors;
+    }
+
+    /**
+     * get color usage
+     *
+     * @return color usage
+     */
+    public int getColorUsage() {
+        return colorUsage;
+    }
+
+    /**
+     * get color dim
+     *
+     * @return color dim
+     */
+    public int getColorDim() {
+        return colorDim;
+    }
+
+    /**
+     * is color normalized
+     *
+     * @return color normalized
+     */
+    public boolean isColorNormalized() {
+        return colorNormalized;
     }
 
     /**
@@ -539,12 +561,144 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     }
 
     /**
+     * get texture vbo
+     *
+     * @return texture vbo
+     */
+    public int getTexVbo() {
+        return texVbo;
+    }
+
+    /**
+     * get texture coordinates
+     *
+     * @return texture coordinates
+     */
+    public float[] getTexCoords() {
+        return texCoords;
+    }
+
+    /**
+     * get texture usage
+     *
+     * @return texture usage
+     */
+    public int getTexUsage() {
+        return texUsage;
+    }
+
+    /**
+     * get texture dim
+     *
+     * @return texture dim
+     */
+    public int getTexDim() {
+        return texDim;
+    }
+
+    /**
+     * is texture normalized
+     *
+     * @return texture normalized
+     */
+    public boolean isTexNormalized() {
+        return texNormalized;
+    }
+
+    /**
      * get texture stride
      *
      * @return texture stride
      */
     public int getTexStride() {
         return texStride;
+    }
+
+    /**
+     * get ibo
+     *
+     * @return ibo
+     */
+    public int getIbo() {
+        return ibo;
+    }
+
+    /**
+     * get indices
+     *
+     * @return indices
+     */
+    public int[] getIndices() {
+        return indices;
+    }
+
+    /**
+     * get index usage
+     *
+     * @return index usage
+     */
+    public int getIndexUsage() {
+        return indexUsage;
+    }
+
+    /**
+     * get normal vbo
+     *
+     * @return normal vbo
+     * @since 1.1.0
+     */
+    public int getNormalVbo() {
+        return normalVbo;
+    }
+
+    /**
+     * get normal vertices
+     *
+     * @return normal vertices
+     * @since 1.1.0
+     */
+    public float[] getNormalVert() {
+        return normalVert;
+    }
+
+    /**
+     * get normal usage
+     *
+     * @return normal usage
+     * @since 1.1.0
+     */
+    public int getNormalUsage() {
+        return normalUsage;
+    }
+
+    /**
+     * get normal dim
+     *
+     * @return normal dim
+     * @since 1.1.0
+     */
+    public int getNormalDim() {
+        return normalDim;
+    }
+
+    /**
+     * is normal normalized
+     *
+     * @return normal normalized
+     * @since 1.1.0
+     */
+    public boolean isNormalNormalized() {
+        return normalNormalized;
+    }
+
+    /**
+     * get normal stride
+     *
+     * @return normal stride
+     * @since 1.1.0
+     */
+    public int getNormalStride() {
+        return normalStride;
     }
 
     /**

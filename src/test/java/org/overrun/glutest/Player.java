@@ -26,29 +26,103 @@
 package org.overrun.glutest;
 
 import static org.joml.Math.*;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.overrun.commonutils.Math.isNotZero;
 
 /**
  * @author squid233
  */
 public class Player {
+    //private static final int RATE = 8;
+    public static final float STEP = 0.02f;
     public float x = 1.5f;
     public float y = 1.5f;
     public float z = 4.5f;
+    public float xa;
+    public float ya;
+    public float za;
+    /*public float xv;
+    public float yv;
+    public float zv;
+    private int xvRate = RATE;
+    private int yvRate = RATE;
+    private int zvRate = RATE;
+    private float lastSpeed;*/
     public float xRot, yRot;
 
-    public void moveRelative(float xo, float yo, float zo) {
-        if (isNotZero(xo)) {
-            x -= sin(toRadians(yRot - 90)) * xo;
-            z += cos(toRadians(yRot - 90)) * xo;
+    public boolean pressing(int key) {
+        return glfwGetKey(glfwGetCurrentContext(), key) == GLFW_PRESS;
+    }
+
+    public void tick() {
+        xa = 0;
+        ya = 0;
+        za = 0;
+        if (pressing(GLFW_KEY_W)) {
+            ++za;
         }
-        if (isNotZero(yo)) {
-            y += yo;
+        if (pressing(GLFW_KEY_S)) {
+            --za;
         }
-        if (isNotZero(zo)) {
-            x += sin(toRadians(yRot)) * zo;
-            z -= cos(toRadians(yRot)) * zo;
+        if (pressing(GLFW_KEY_A)) {
+            --xa;
         }
+        if (pressing(GLFW_KEY_D)) {
+            ++xa;
+        }
+        if (pressing(GLFW_KEY_LEFT_SHIFT)) {
+            --ya;
+        }
+        if (pressing(GLFW_KEY_SPACE)) {
+            ++ya;
+        }
+        moveRelative(pressing(GLFW_KEY_LEFT_CONTROL) || pressing(GLFW_KEY_RIGHT_CONTROL)
+                ? STEP * 2
+                : STEP);
+    }
+
+    public void moveRelative(float speed) {
+        /*if (speed != lastSpeed) {
+            xv = 0;
+            yv = 0;
+            zv = 0;
+            xvRate = RATE;
+            yvRate = RATE;
+            zvRate = RATE;
+        }
+        lastSpeed = speed;*/
+        if (isNotZero(xa)) {
+            /*if (--xvRate != 0 && xv < speed) {
+                xv += speed / xvRate;
+            }*/
+            x -= sin(toRadians(yRot - 90)) * xa * speed /* xv*/;
+            z += cos(toRadians(yRot - 90)) * xa * speed /* xv*/;
+        }
+        /*else {
+            xv = 0;
+            xvRate = RATE;
+        }*/
+        if (isNotZero(ya)) {
+            /*if (--yvRate != 0 && yv < speed) {
+                yv += speed / yvRate;
+            }*/
+            y += ya * speed /* yv*/;
+        }
+        /*else {
+            yv = 0;
+            yvRate = RATE;
+        }*/
+        if (isNotZero(za)) {
+            /*if (--zvRate != 0 && zv < speed) {
+                zv += speed / zvRate;
+            }*/
+            x += sin(toRadians(yRot)) * za * speed /* zv*/;
+            z -= cos(toRadians(yRot)) * za * speed /* zv*/;
+        }
+        /*else {
+            zv = 0;
+            zvRate = RATE;
+        }*/
     }
 
     public void rotate(double xOffset, double yOffset) {

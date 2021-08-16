@@ -40,9 +40,8 @@ import static org.lwjgl.opengl.GL11.*;
  * @author squid233
  */
 public class GLUTest implements AutoCloseable {
-    public static final float STEP = 0.04f;
     public static final float SENSITIVITY = 0.05f;
-    public static final Timer TIMER = new Timer(20);
+    public static final Timer TIMER = new Timer(60);
     public final Player player = new Player();
     public GLFWindow window;
     public Framebuffer fb;
@@ -50,19 +49,6 @@ public class GLUTest implements AutoCloseable {
     public boolean resized;
     public boolean grabbing;
     public double lastX, lastY;
-
-    public boolean pressing(int key) {
-        return window.key(key) == GLFW_PRESS;
-    }
-
-    public float speed(double delta) {
-        double base = STEP * delta;
-        if (pressing(GLFW_KEY_LEFT_CONTROL)
-                || pressing(GLFW_KEY_RIGHT_CONTROL)) {
-            return (float) (base * 2);
-        }
-        return (float) base;
-    }
 
     public void run() throws Exception {
         boolean coreProfile = Boolean.parseBoolean(System.getProperty(
@@ -126,52 +112,34 @@ public class GLUTest implements AutoCloseable {
     }
 
     public void loop() {
+        long lastTime = System.currentTimeMillis();
+        int frames = 0;
         while (!window.shouldClose()) {
             TIMER.advanceTime();
             float delta = TIMER.delta;
-            input(delta);
+            for (int i = 0; i < TIMER.ticks; i++) {
+                player.tick();
+            }
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             render(delta);
             window.swapBuffers();
             glfwPollEvents();
-        }
-    }
-
-    public void input(double delta) {
-        float xo = 0;
-        float yo = 0;
-        float zo = 0;
-        if (pressing(GLFW_KEY_W)) {
-            if (!pressing(GLFW_KEY_S)) {
-                zo = speed(delta);
+            ++frames;
+            while(System.currentTimeMillis() >= lastTime + 1000L) {
+                TIMER.fps = frames;
+                lastTime += 1000L;
+                frames = 0;
             }
-        } else if (pressing(GLFW_KEY_S)) {
-            zo = -speed(delta);
         }
-        if (pressing(GLFW_KEY_A)) {
-            if (!pressing(GLFW_KEY_D)) {
-                xo = -speed(delta);
-            }
-        } else if (pressing(GLFW_KEY_D)) {
-            xo = speed(delta);
-        }
-        if (pressing(GLFW_KEY_LEFT_SHIFT)) {
-            if (!pressing(GLFW_KEY_SPACE)) {
-                yo = -speed(delta);
-            }
-        } else if (pressing(GLFW_KEY_SPACE)) {
-            yo = speed(delta);
-        }
-        player.moveRelative(xo, yo, zo);
     }
 
     public void render(double delta) {
         int w = fb.getWidth(), h = fb.getHeight();
-        renderer.render(w, h, player);
         if (resized) {
             glViewport(0, 0, w, h);
             resized = false;
         }
+        renderer.render(w, h, player);
     }
 
     @Override

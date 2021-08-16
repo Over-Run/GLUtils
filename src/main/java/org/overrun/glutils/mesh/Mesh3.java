@@ -39,6 +39,7 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     private int vertIdx;
     private int colorIdx = -1;
     private int texIdx = -1;
+    private int normalIdx = -1;
 
     /**
      * construct
@@ -75,6 +76,16 @@ public class Mesh3 extends BaseMesh<Mesh3> {
      */
     public Mesh3 texIdx(int texIdx) {
         this.texIdx = texIdx;
+        return this;
+    }
+
+    /**
+     * @param normalIdx normal vertices index
+     * @since 1.1.0
+     * @return this
+     */
+    public Mesh3 normalIdx(int normalIdx) {
+        this.normalIdx = normalIdx;
         return this;
     }
 
@@ -148,6 +159,22 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     }
 
     @Override
+    public Mesh3 normalVert(float[] normalVert) {
+        super.normalVert(normalVert);
+        glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
+        glBufferData(GL_ARRAY_BUFFER, normalVert, normalUsage);
+        glEnableVertexAttribArray(normalIdx);
+        glVertexAttribPointer(normalIdx,
+                normalDim,
+                GL_FLOAT,
+                normalNormalized,
+                normalStride,
+                0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        return this;
+    }
+
+    @Override
     public Mesh3 indices(int[] indices) {
         super.indices(indices);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -213,6 +240,8 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     }
 
     /**
+     * construct without texture
+     *
      * @param vertices vertices
      * @param vertIdx vertices index
      * @param colors colors
@@ -244,6 +273,9 @@ public class Mesh3 extends BaseMesh<Mesh3> {
         if (texIdx != -1) {
             glDisableVertexAttribArray(texIdx);
         }
+        if (normalIdx != -1) {
+            glDisableVertexAttribArray(normalIdx);
+        }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         if (vertVbo != 0) {
             glDeleteBuffers(vertVbo);
@@ -253,6 +285,9 @@ public class Mesh3 extends BaseMesh<Mesh3> {
         }
         if (texVbo != 0) {
             glDeleteBuffers(texVbo);
+        }
+        if (normalVbo != 0) {
+            glDeleteBuffers(normalVbo);
         }
         if (ibo != 0) {
             glDeleteBuffers(ibo);

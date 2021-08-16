@@ -38,6 +38,7 @@ public class Mesh extends BaseMesh<Mesh> {
     private int vertIdx;
     private int colorIdx;
     private int texIdx;
+    private int normalIdx;
 
     /**
      * @param program program
@@ -80,6 +81,16 @@ public class Mesh extends BaseMesh<Mesh> {
     }
 
     /**
+     * @param normalIdx normal vertices index name
+     * @return this
+     * @since 1.1.0
+     */
+    public Mesh normalIdx(String normalIdx) {
+        this.normalIdx = program.getAttrib(normalIdx);
+        return this;
+    }
+
+    /**
      * construct
      *
      * @param program   program
@@ -111,6 +122,33 @@ public class Mesh extends BaseMesh<Mesh> {
                 .texture(texture)
                 .texIdx(texIdx)
                 .texCoords(texCoords)
+                .indices(indices);
+    }
+
+    /**
+     * construct without texture
+     *
+     * @param program   program
+     * @param vertices  vertices
+     * @param vertIdx   vertIdx
+     * @param colors    colors
+     * @param colorIdx  colorIdx
+     * @param indices   indices
+     * @return mesh
+     * @since 1.1.0
+     */
+    public static Mesh of(GLProgram program,
+                          float[] vertices,
+                          String vertIdx,
+                          float[] colors,
+                          String colorIdx,
+                          int[] indices) {
+        return new Mesh()
+                .program(program)
+                .vertIdx(vertIdx)
+                .vertices(vertices)
+                .colorIdx(colorIdx)
+                .colors(colors)
                 .indices(indices);
     }
 
@@ -147,6 +185,17 @@ public class Mesh extends BaseMesh<Mesh> {
                     texStride,
                     0);
         }
+        if (normalVbo != 0) {
+            glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
+            glBufferData(GL_ARRAY_BUFFER, normalVert, normalUsage);
+            glEnableVertexAttribArray(normalIdx);
+            glVertexAttribPointer(normalIdx,
+                    normalDim,
+                    GL_FLOAT,
+                    normalNormalized,
+                    normalStride,
+                    0);
+        }
         if (ibo != 0) {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, indexUsage);
@@ -175,6 +224,9 @@ public class Mesh extends BaseMesh<Mesh> {
         if (texIdx >= 0) {
             glDisableVertexAttribArray(texIdx);
         }
+        if (normalIdx >= 0) {
+            glDisableVertexAttribArray(normalIdx);
+        }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         if (vertVbo != 0) {
             glDeleteBuffers(vertVbo);
@@ -184,6 +236,9 @@ public class Mesh extends BaseMesh<Mesh> {
         }
         if (texVbo != 0) {
             glDeleteBuffers(texVbo);
+        }
+        if (normalVbo != 0) {
+            glDeleteBuffers(normalVbo);
         }
         if (ibo != 0) {
             glDeleteBuffers(ibo);

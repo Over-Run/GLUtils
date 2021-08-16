@@ -60,7 +60,6 @@ public class GameRenderer implements AutoCloseable {
     public static final ClassLoader cl = GameRenderer.class.getClassLoader();
     public final Matrix4f proj = new Matrix4f();
     public final Matrix4f modelv = new Matrix4f();
-    public final Matrix4f view = new Matrix4f();
     public final FontTexture utf8 = FontTextures.builder("Consolas-UTF_8-2")
             .font(Font.decode("Consolas"))
             .charset(StandardCharsets.UTF_8)
@@ -149,10 +148,11 @@ public class GameRenderer implements AutoCloseable {
     public void renderGui(int w, int h) {
         glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
         program.bind();
-        program.setUniformMat4("proj", view.setOrtho2D(0, w, h, 0));
-        program.setUniformMat4("modelv", view.translation(w / 2f, h / 2f, 0));
+        //todo scale
+        program.setUniformMat4("proj", proj.setOrtho2D(0, w, h, 0));
+        program.setUniformMat4("modelv", modelv.translation(w / 2f, h / 2f, 0));
         crossing.render();
-        program.setUniformMat4("modelv", view.translation(2, 2, 0));
+        program.setUniformMat4("modelv", modelv.translation(2, 2, 0));
         String st = "FPS: " + TIMER.fps;
         int stl = st.length();
         DrawableText.build(utf8,

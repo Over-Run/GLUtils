@@ -23,44 +23,31 @@
  *
  */
 
-package org.overrun.glutest;
+package org.overrun.glutils.internal;
 
 /**
  * @author squid233
+ * @since 1.1.0
  */
-public class Timer {
-    private static final long NS_PER_SECOND = 1_000_000_000;
-    private static final long MAX_NS_PER_UPDATE = 1_000_000_000;
-    private static final int MAX_TICKS_PER_UPDATE = 100;
-    private final float tps;
-    private long lastTime;
-    public int ticks;
-    public float delta;
-    public long lastFps = 0;
-    public int fps = 0;
-    public float passedTime = 0;
+public class MeshManagerConstant {
+    public static final byte COLORED = 0b1000;
+    public static final byte TEXTURED = 0b0100;
+    public static final byte INDEXED = 0b0010;
+    public static final byte NORMALIZED = 0b0001;
 
-    public Timer(float tps) {
-        this.tps = tps;
-        lastTime = System.nanoTime();
+    public static boolean colored(byte bit) {
+        return (bit & COLORED) == COLORED;
     }
 
-    public void advanceTime() {
-        long now = System.nanoTime();
-        long passedNs = now - lastTime;
-        lastTime = now;
-        if (passedNs < 0L) {
-            passedNs = 0L;
-        } else if (passedNs > MAX_NS_PER_UPDATE) {
-            passedNs = MAX_NS_PER_UPDATE;
-        }
-        lastFps = MAX_NS_PER_UPDATE / passedNs;
-        passedTime += (float) passedNs * tps / NS_PER_SECOND;
-        ticks = (int) passedTime;
-        if (ticks > MAX_TICKS_PER_UPDATE) {
-            ticks = MAX_TICKS_PER_UPDATE;
-        }
-        passedTime -= (float) ticks;
-        delta = passedTime;
+    public static boolean textured(byte bit) {
+        return (bit & TEXTURED) == TEXTURED;
+    }
+
+    public static boolean indexed(byte bit) {
+        return (bit & INDEXED) == INDEXED;
+    }
+
+    public static boolean normalized(byte bit) {
+        return (bit & NORMALIZED) == NORMALIZED;
     }
 }

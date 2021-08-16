@@ -25,7 +25,7 @@
 
 package org.overrun.glutils.internal;
 
-import org.overrun.glutils.mesh.Mesh;
+import org.overrun.glutils.mesh.Mesh3;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +36,8 @@ import static org.overrun.glutils.internal.MeshManagerConstant.*;
  * @author squid233
  * @since 1.1.0
  */
-public class MeshManager {
-    private static final Map<Byte, Mesh> meshes = new HashMap<>();
+public class MeshManager3 {
+    private static final Map<Byte, Mesh3> meshes = new HashMap<>();
 
     /**
      * push a mesh to manager
@@ -46,11 +46,11 @@ public class MeshManager {
      *            (colored << 3 | textured << 2 | indexed << 1 | normalized)
      * @return a mesh
      */
-    public static Mesh putOrGet(byte bit) {
+    public static Mesh3 putOrGet(byte bit) {
         if (meshes.containsKey(bit)) {
             return meshes.get(bit);
         }
-        Mesh mesh = new Mesh();
+        Mesh3 mesh = new Mesh3();
         meshes.put(bit, mesh);
         return mesh;
     }
@@ -64,10 +64,10 @@ public class MeshManager {
      * @param normalized enable normals
      * @return a mesh
      */
-    public static Mesh putOrGet(boolean colored,
-                         boolean textured,
-                         boolean indexed,
-                         boolean normalized) {
+    public static Mesh3 putOrGet(boolean colored,
+                          boolean textured,
+                          boolean indexed,
+                          boolean normalized) {
         byte bit = 0b0000;
         if (colored) {
             bit |= COLORED;
