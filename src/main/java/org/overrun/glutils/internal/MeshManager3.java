@@ -43,7 +43,10 @@ public class MeshManager3 {
      * push a mesh to manager
      *
      * @param bit bits that contains 4 bits
-     *            (colored << 3 | textured << 2 | indexed << 1 | normalized)
+     *            (colored &lt;&lt; 3
+     *            | textured &lt;&lt; 2
+     *            | indexed &lt;&lt; 1
+     *            | normalized)
      * @return a mesh
      */
     public static Mesh3 putOrGet(byte bit) {

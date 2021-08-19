@@ -26,10 +26,11 @@
 package org.overrun.glutest;
 
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.overrun.glutils.*;
 import org.overrun.glutils.mesh.Mesh3;
 
-import java.awt.Font;
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class GameRenderer implements AutoCloseable {
     };
     public static final ClassLoader cl = GameRenderer.class.getClassLoader();
     public final Matrix4f proj = new Matrix4f();
-    public final Matrix4f modelv = new Matrix4f();
+    public final Matrix4fStack modelv = new Matrix4fStack(16).pushMatrix();
     public final FontTexture utf8 = FontTextures.builder("Consolas-UTF_8-2")
             .font(Font.decode("Consolas"))
             .charset(StandardCharsets.UTF_8)
