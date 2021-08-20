@@ -60,7 +60,7 @@ public class Timer {
         if (ticks > MAX_TICKS_PER_UPDATE) {
             ticks = MAX_TICKS_PER_UPDATE;
         }
-        passedTime -= (float) ticks;
+        passedTime -= ticks;
         delta = passedTime;
     }
 }

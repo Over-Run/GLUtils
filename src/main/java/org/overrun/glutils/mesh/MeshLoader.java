@@ -46,7 +46,12 @@ import static org.overrun.glutils.mesh.Assemblies.*;
 public class MeshLoader {
     private static final List<String> KEYWORDS = Arrays.asList(
             DEFINE,
+            UNDEF,
+            REPEAT,
             SET,
+            OPT_VERT_DIM,
+            OPT_COL_DIM,
+            OPT_TEX_DIM,
             VERT,
             VERT_COL,
             VERT_TEX,
@@ -170,7 +175,7 @@ public class MeshLoader {
                 ++currLn;
                 String ln = sc.nextLine().trim();
                 // ignore comment
-                if (ln.startsWith("#") || ln.startsWith("||")) {
+                if (ln.startsWith("#") || ln.startsWith("//")) {
                     continue;
                 }
                 String[] arr = removeNull(ln.split("\\s+"));
@@ -300,6 +305,7 @@ public class MeshLoader {
                                     currLn);
                         }
                         arr = replaceByMacro(arr, definedMacros, mmap);
+                        mf.colored = true;
                         for (int i = 1; i < arr.length; i++) {
                             try {
                                 mf.colors.add(parseFloat(arr[i]));
@@ -373,8 +379,10 @@ public class MeshLoader {
         if (pre != null) {
             pre.accept(mesh);
         }
-        mesh.vertDim(mf.vertDim).vertices(mf.vertices.toFArray())
-                .colorDim(mf.colorDim).colors(mf.colors.toFArray());
+        mesh.vertDim(mf.vertDim).vertices(mf.vertices.toFArray());
+        if (mf.colored) {
+            mesh.colorDim(mf.colorDim).colors(mf.colors.toFArray());
+        }
         if (mf.textured) {
             mesh.texDim(mf.texDim).texCoords(mf.texCoords.toFArray());
         }

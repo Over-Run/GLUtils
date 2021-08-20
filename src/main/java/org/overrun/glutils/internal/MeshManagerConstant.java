@@ -30,23 +30,59 @@ package org.overrun.glutils.internal;
  * @since 1.1.0
  */
 public class MeshManagerConstant {
+    /**
+     * Colored mesh
+     */
     public static final byte COLORED = 0b1000;
+    /**
+     * Textured mesh
+     */
     public static final byte TEXTURED = 0b0100;
+    /**
+     * Indexed mesh
+     */
     public static final byte INDEXED = 0b0010;
+    /**
+     * Normalized mesh
+     */
     public static final byte NORMALIZED = 0b0001;
 
+    /**
+     * Is mesh colored
+     *
+     * @param bit bits that contains status
+     * @return colored
+     */
     public static boolean colored(byte bit) {
         return (bit & COLORED) == COLORED;
     }
 
+    /**
+     * Is mesh textured
+     *
+     * @param bit bits that contains status
+     * @return textured
+     */
     public static boolean textured(byte bit) {
         return (bit & TEXTURED) == TEXTURED;
     }
 
+    /**
+     * Is mesh indexed
+     *
+     * @param bit bits that contains status
+     * @return indexed
+     */
     public static boolean indexed(byte bit) {
         return (bit & INDEXED) == INDEXED;
     }
 
+    /**
+     * Is mesh normalized
+     *
+     * @param bit bits that contains status
+     * @return normalized
+     */
     public static boolean normalized(byte bit) {
         return (bit & NORMALIZED) == NORMALIZED;
     }

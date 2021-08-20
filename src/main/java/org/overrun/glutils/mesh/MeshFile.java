@@ -34,6 +34,12 @@ import org.overrun.commonutils.IntArray;
  */
 public class MeshFile {
     /**
+     * is colored
+     *
+     * @since 1.1.0
+     */
+    public boolean colored = false;
+    /**
      * is textured
      */
     public boolean textured = false;

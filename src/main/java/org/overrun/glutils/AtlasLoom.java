@@ -25,8 +25,6 @@
 
 package org.overrun.glutils;
 
-import org.overrun.glutils.internal.AtlasLoomArray;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,18 +88,6 @@ public abstract class AtlasLoom<T> {
      */
     public static AtlasLoomSTB stb(String name) {
         return new AtlasLoomSTB(name);
-    }
-
-    /**
-     * gen by int array
-     *
-     * @param name target id
-     * @return {@link AtlasLoomArray}
-     * @since 1.1.0
-     */
-    @Deprecated
-    public static AtlasLoomArray array(String name) {
-        return new AtlasLoomArray(name);
     }
 
     /**
