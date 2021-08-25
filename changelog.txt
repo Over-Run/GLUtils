@@ -1,5 +1,8 @@
 Update Versions.java on adding new versions
 
+1.2.0
+ready
+
 1.1.0
 New feature: `Math`
 New internal feature: `AtlasLoomArray`

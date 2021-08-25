@@ -37,12 +37,18 @@ import java.util.function.BiFunction;
  * @since 1.1.0
  */
 public class DrawableText {
+    /**
+     * white color
+     */
     public static final float[] DEFAULT_COLOR = {
             1.0f, 1.0f, 1.0f,
             1.0f, 1.0f, 1.0f,
             1.0f, 1.0f, 1.0f,
             1.0f, 1.0f, 1.0f
     };
+    /**
+     * white color with alpha value
+     */
     public static final float[] DEFAULT_COLOR_ALPHA = {
             1.0f, 1.0f, 1.0f, 1.0f,
             1.0f, 1.0f, 1.0f, 1.0f,
