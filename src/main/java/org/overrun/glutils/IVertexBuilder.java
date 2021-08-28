@@ -25,50 +25,66 @@
 
 package org.overrun.glutils;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Objects;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 /**
  * @author squid233
- * @since 0.1.0
+ * @since 1.2.0
  */
-public class ShaderReader {
+public interface IVertexBuilder {
     /**
-     * Read lines from stream by loader.
+     * Add a vertex
      *
-     * @param loader The ClassLoader.
-     * @param name   The filename.
-     * @return File contents.
-     * @throws Exception When file not found.
+     * @param x x
+     * @param y y
+     * @param z z
+     * @return this
      */
-    public static String lines(ClassLoader loader,
-                               String name)
-            throws Exception {
-        return lines(loader.getResourceAsStream(name));
+    IVertexBuilder vertex(float x, float y, float z);
+
+    /**
+     * Add a vertex color
+     *
+     * @param r red
+     * @param g green
+     * @param b blue
+     * @param a alpha
+     * @return this
+     */
+    IVertexBuilder color(float r, float g, float b, float a);
+
+    /**
+     * Add a vertex color
+     *
+     * @param r red
+     * @param g green
+     * @param b blue
+     * @return this
+     */
+    default IVertexBuilder color(float r, float g, float b) {
+        return color(r, g, b, 1);
     }
 
     /**
-     * Read lines from stream.
+     * Add a vertex texture
      *
-     * @param stream The InputStream.
-     * @return File contents.
-     * @throws Exception When file not found.
+     * @param x x
+     * @param y y
+     * @return this
      */
-    public static String lines(InputStream stream)
-            throws Exception {
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(Objects.requireNonNull(stream), UTF_8)
-        )) {
-            StringBuilder sb = new StringBuilder();
-            String read;
-            while ((read = br.readLine()) != null) {
-                sb.append(read).append("\n");
-            }
-            return sb.toString();
-        }
+    IVertexBuilder texture(float x, float y);
+
+    /**
+     * Add a vertex normal
+     *
+     * @param x x
+     * @param y y
+     * @param z z
+     * @return this
+     */
+    IVertexBuilder normal(float x, float y, float z);
+
+    /**
+     * No effect
+     */
+    default void next() {
     }
 }

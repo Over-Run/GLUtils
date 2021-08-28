@@ -13,6 +13,7 @@ version = '1.2.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/releases' }
     maven { url 'https://maven.aliyun.com/repository/central' }
 }
 
@@ -24,7 +25,9 @@ dependencies {
     api 'org.lwjgl:lwjgl-opengl'
     api 'org.lwjgl:lwjgl-stb'
     api 'org.joml:joml:1.10.1'
-    api 'io.github.over-run:common-utils:0.1.0'
+    api 'io.github.over-run:common-utils:0.2.0'
+
+    compileOnly 'org.jetbrains:annotations:22.0.0'
 
     testRuntimeOnly 'org.lwjgl:lwjgl::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-glfw::natives-windows'

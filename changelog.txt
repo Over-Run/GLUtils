@@ -1,7 +1,16 @@
 Update Versions.java on adding new versions
 
 1.2.0
-ready
+New feature: `IVertexBuilder`
+New feature: `BaseMeshVertexBuilder`
+New feature: `MeshVertexBuilder`
+New feature: `Mesh3VertexBuilder`
+New feature: `BaseObjLoader`
+New feature: `ObjLoader`
+New feature: `ObjModel`
+New feature: `Cube`
+New feature: `Face`
+New feature: `MaterialLib`
 
 1.1.0
 New feature: `Math`

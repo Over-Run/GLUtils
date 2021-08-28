@@ -163,7 +163,7 @@ public class Mesh extends BaseMesh<Mesh> {
                 vertNormalized,
                 vertStride,
                 0);
-        if (colorVbo != 0) {
+        if (colorVbo != 0 && colorIdx >= -1) {
             glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
             glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
             glEnableVertexAttribArray(colorIdx);
@@ -174,7 +174,7 @@ public class Mesh extends BaseMesh<Mesh> {
                     colorStride,
                     0);
         }
-        if (texVbo != 0) {
+        if (texVbo != 0 && texIdx >= -1) {
             glBindBuffer(GL_ARRAY_BUFFER, texVbo);
             glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
             glEnableVertexAttribArray(texIdx);
@@ -185,7 +185,7 @@ public class Mesh extends BaseMesh<Mesh> {
                     texStride,
                     0);
         }
-        if (normalVbo != 0) {
+        if (normalVbo != 0 && normalIdx >= -1) {
             glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
             glBufferData(GL_ARRAY_BUFFER, normalVert, normalUsage);
             glEnableVertexAttribArray(normalIdx);

@@ -51,8 +51,8 @@ public class Mesh3 extends BaseMesh<Mesh3> {
 
     /**
      * @param vertIdx vertices index
-     * @since 0.6.0
      * @return this
+     * @since 0.6.0
      */
     public Mesh3 vertIdx(int vertIdx) {
         this.vertIdx = vertIdx;
@@ -61,8 +61,8 @@ public class Mesh3 extends BaseMesh<Mesh3> {
 
     /**
      * @param colorIdx colors index
-     * @since 0.6.0
      * @return this
+     * @since 0.6.0
      */
     public Mesh3 colorIdx(int colorIdx) {
         this.colorIdx = colorIdx;
@@ -71,8 +71,8 @@ public class Mesh3 extends BaseMesh<Mesh3> {
 
     /**
      * @param texIdx texture coordinates index
-     * @since 0.6.0
      * @return this
+     * @since 0.6.0
      */
     public Mesh3 texIdx(int texIdx) {
         this.texIdx = texIdx;
@@ -81,8 +81,8 @@ public class Mesh3 extends BaseMesh<Mesh3> {
 
     /**
      * @param normalIdx normal vertices index
-     * @since 1.1.0
      * @return this
+     * @since 1.1.0
      */
     public Mesh3 normalIdx(int normalIdx) {
         this.normalIdx = normalIdx;
@@ -113,64 +113,72 @@ public class Mesh3 extends BaseMesh<Mesh3> {
 
     @Override
     public Mesh3 vertices(float[] vertices) {
-        glBindBuffer(GL_ARRAY_BUFFER, vertVbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices, vertUsage);
-        glEnableVertexAttribArray(vertIdx);
-        glVertexAttribPointer(vertIdx,
-                vertDim,
-                GL_FLOAT,
-                vertNormalized,
-                vertStride,
-                0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        if (vertIdx > -1) {
+            glBindBuffer(GL_ARRAY_BUFFER, vertVbo);
+            glBufferData(GL_ARRAY_BUFFER, vertices, vertUsage);
+            glEnableVertexAttribArray(vertIdx);
+            glVertexAttribPointer(vertIdx,
+                    vertDim,
+                    GL_FLOAT,
+                    vertNormalized,
+                    vertStride,
+                    0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
         return super.vertices(vertices);
     }
 
     @Override
     public Mesh3 colors(float[] colors) {
         super.colors(colors);
-        glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
-        glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
-        glEnableVertexAttribArray(colorIdx);
-        glVertexAttribPointer(colorIdx,
-                colorDim,
-                GL_FLOAT,
-                colorNormalized,
-                colorStride,
-                0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        if (colorIdx > -1) {
+            glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
+            glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
+            glEnableVertexAttribArray(colorIdx);
+            glVertexAttribPointer(colorIdx,
+                    colorDim,
+                    GL_FLOAT,
+                    colorNormalized,
+                    colorStride,
+                    0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
         return this;
     }
 
     @Override
     public Mesh3 texCoords(float[] texCoords) {
         super.texCoords(texCoords);
-        glBindBuffer(GL_ARRAY_BUFFER, texVbo);
-        glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
-        glEnableVertexAttribArray(texIdx);
-        glVertexAttribPointer(texIdx,
-                texDim,
-                GL_FLOAT,
-                texNormalized,
-                texStride,
-                0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        if (texIdx > -1) {
+            glBindBuffer(GL_ARRAY_BUFFER, texVbo);
+            glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
+            glEnableVertexAttribArray(texIdx);
+            glVertexAttribPointer(texIdx,
+                    texDim,
+                    GL_FLOAT,
+                    texNormalized,
+                    texStride,
+                    0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
         return this;
     }
 
     @Override
     public Mesh3 normalVert(float[] normalVert) {
         super.normalVert(normalVert);
-        glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
-        glBufferData(GL_ARRAY_BUFFER, normalVert, normalUsage);
-        glEnableVertexAttribArray(normalIdx);
-        glVertexAttribPointer(normalIdx,
-                normalDim,
-                GL_FLOAT,
-                normalNormalized,
-                normalStride,
-                0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        if (normalIdx > -1) {
+            glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
+            glBufferData(GL_ARRAY_BUFFER, normalVert, normalUsage);
+            glEnableVertexAttribArray(normalIdx);
+            glVertexAttribPointer(normalIdx,
+                    normalDim,
+                    GL_FLOAT,
+                    normalNormalized,
+                    normalStride,
+                    0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
         return this;
     }
 
@@ -200,6 +208,7 @@ public class Mesh3 extends BaseMesh<Mesh3> {
 
     /**
      * get vao
+     *
      * @return {@link #vao}
      */
     public int getVao() {
@@ -243,12 +252,12 @@ public class Mesh3 extends BaseMesh<Mesh3> {
      * construct without texture
      *
      * @param vertices vertices
-     * @param vertIdx vertices index
-     * @param colors colors
+     * @param vertIdx  vertices index
+     * @param colors   colors
      * @param colorIdx colors index
-     * @param indices indices
-     * @since 0.6.0
+     * @param indices  indices
      * @return this
+     * @since 0.6.0
      */
     public static Mesh3 of(float[] vertices,
                            int vertIdx,

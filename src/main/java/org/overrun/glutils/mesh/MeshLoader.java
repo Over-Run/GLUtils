@@ -110,12 +110,12 @@ public class MeshLoader {
         if (hasSpace) {
             int l = 0;
             for (String s : arr) {
-                l += removeNull(s.split("\\s+")).length;
+                l += s.split("\\s+").length;
             }
             String[] arr1 = new String[l];
             int i = 0;
             for (String s : arr) {
-                String[] arr2 = removeNull(s.split("\\s+"));
+                String[] arr2 = s.split("\\s+");
                 for (String value : arr2) {
                     arr1[i] = value;
                     ++i;
@@ -178,7 +178,7 @@ public class MeshLoader {
                 if (ln.startsWith("#") || ln.startsWith("//")) {
                     continue;
                 }
-                String[] arr = removeNull(ln.split("\\s+"));
+                String[] arr = ln.split("\\s+");
                 // ignore empty line
                 if (arr.length == 0) {
                     continue;
@@ -196,7 +196,7 @@ public class MeshLoader {
                             except("Invalid identifier",
                                     currLn);
                         }
-                        String[] arr2 = removeNull(ln.split("\\s+", 3));
+                        String[] arr2 = ln.split("\\s+", 3);
                         String macro = arr2[1];
                         if (!KEYWORDS.contains(macro)) {
                             definedMacros.add(macro);
@@ -233,7 +233,7 @@ public class MeshLoader {
                             except("Invalid identifier",
                                     currLn);
                         }
-                        String[] arr2 = removeNull(ln.split("\\s+", 4));
+                        String[] arr2 = ln.split("\\s+", 4);
                         String macro = arr2[1];
                         if (!KEYWORDS.contains(macro)) {
                             definedMacros.add(macro);
