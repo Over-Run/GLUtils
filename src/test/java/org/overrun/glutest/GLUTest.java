@@ -139,6 +139,12 @@ public class GLUTest implements AutoCloseable {
             glViewport(0, 0, w, h);
             resized = false;
         }
+        if (w == 0) {
+            w = 1;
+        }
+        if (h == 0) {
+            h = 1;
+        }
         renderer.render(w, h, player);
     }
 
