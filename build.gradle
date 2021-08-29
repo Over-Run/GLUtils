@@ -13,8 +13,11 @@ version = '1.2.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven { url 'https://s01.oss.sonatype.org/content/repositories/releases' }
+    maven { url 'https://repo1.maven.org/maven2' }
     maven { url 'https://maven.aliyun.com/repository/central' }
+    maven { url 'https://jitpack.io' }
+    // temporary maven repository
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/releases' }
 }
 
 dependencies {
@@ -24,6 +27,7 @@ dependencies {
     api 'org.lwjgl:lwjgl-glfw'
     api 'org.lwjgl:lwjgl-opengl'
     api 'org.lwjgl:lwjgl-stb'
+    api 'org.lwjgl:lwjgl-assimp'
     api 'org.joml:joml:1.10.1'
     api 'io.github.over-run:common-utils:0.2.0'
 
@@ -33,6 +37,7 @@ dependencies {
     testRuntimeOnly 'org.lwjgl:lwjgl-glfw::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-opengl::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-stb::natives-windows'
+    testRuntimeOnly 'org.lwjgl:lwjgl-assimp::natives-windows'
 }
 
 tasks.withType(JavaCompile) {

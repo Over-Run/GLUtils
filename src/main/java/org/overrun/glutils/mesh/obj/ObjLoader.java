@@ -25,18 +25,19 @@
 
 package org.overrun.glutils.mesh.obj;
 
+import org.lwjgl.assimp.AIScene;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
 import org.overrun.commonutils.MapStr2Obj;
 import org.overrun.glutils.mesh.Mesh;
 
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.Float.parseFloat;
 import static java.util.Objects.requireNonNull;
+import static org.lwjgl.assimp.Assimp.*;
 import static org.overrun.commonutils.ArrayHelper.toIArray;
 
 /**
@@ -44,14 +45,56 @@ import static org.overrun.commonutils.ArrayHelper.toIArray;
  * @since 1.2.0
  */
 public class ObjLoader {
+    private static File tempDir;
+
+    /**
+     * Load object file with default flags.
+     *
+     * @param cl       Class loader
+     * @param filename Object filename in classpath.
+     * @return Mesh.
+     * @throws Exception IOE or RE
+     */
+    public static Mesh load2(ClassLoader cl,
+                             String filename)
+            throws Exception {
+        return load2(cl,
+                filename,
+                aiProcess_JoinIdenticalVertices
+                        | aiProcess_Triangulate
+                        | aiProcess_FixInfacingNormals);
+    }
+
     /**
      * Load object file.
      *
      * @param cl       Class loader
-     * @param filename Object filename.
-     * @return Object model.
+     * @param filename Object filename in classpath (in relative path).
+     * @param flags    Assimp flags.
+     * @return Mesh.
+     * @throws Exception IOE or RE
      */
     public static Mesh load2(ClassLoader cl,
-                             String filename) {
+                             String filename,
+                             int flags)
+            throws Exception {
+        if (tempDir == null) {
+            tempDir = File.createTempFile("overrun_glutils", "obj_loader");
+            tempDir.deleteOnExit();
+        }
+        String ffn = tempDir + filename;
+        try (InputStream is = cl.getResourceAsStream(filename);
+             Reader isr = new InputStreamReader(requireNonNull(is),
+                     StandardCharsets.UTF_8);
+             BufferedReader br = new BufferedReader(isr);
+             Writer w = new FileWriter(ffn);
+             Writer bw = new BufferedWriter(w)) {
+            bw.write(br.readLine());
+        }
+        AIScene scene = aiImportFile(ffn, flags);
+        if (scene == null) {
+            throw new RuntimeException("Error loading model");
+            // TODO: 2021/8/28
+        }
     }
 }
