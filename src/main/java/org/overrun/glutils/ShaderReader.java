@@ -28,9 +28,9 @@ package org.overrun.glutils;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author squid233
@@ -60,12 +60,17 @@ public class ShaderReader {
      */
     public static String lines(InputStream stream)
             throws Exception {
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(Objects.requireNonNull(stream), UTF_8)
-        )) {
+        try (InputStream is = requireNonNull(stream);
+             BufferedReader br = new BufferedReader(
+                     new InputStreamReader(is, UTF_8)
+             )
+        ) {
             StringBuilder sb = new StringBuilder();
             String read;
             while ((read = br.readLine()) != null) {
+                if (read.isEmpty()) {
+                    continue;
+                }
                 sb.append(read).append("\n");
             }
             return sb.toString();

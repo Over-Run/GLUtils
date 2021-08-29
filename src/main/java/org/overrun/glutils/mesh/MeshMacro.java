@@ -31,6 +31,7 @@ package org.overrun.glutils.mesh;
  * @author squid233
  * @since 0.7.0
  */
+@Deprecated
 public class MeshMacro {
     /**
      * macro name

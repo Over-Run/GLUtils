@@ -29,6 +29,7 @@ package org.overrun.glutils.mesh;
  * @author squid233
  * @since 1.0.0
  */
+@Deprecated
 public class Assemblies {
     /**
      * define macro

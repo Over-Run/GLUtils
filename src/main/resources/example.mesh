@@ -3,6 +3,9 @@
 # This file shows all of the valid syntax
 # Parser: org.overrun.glutils.mesh.MeshLoader
 
+# WARNING:
+# Mesh file format is deprecated. Use Wavefront model.
+
 # Note: Suffixes of float point "f", "F", "d", "D" are optional;
 # like "1.0", "1.0f", "1.0F", "1.0d", "1.0D" are both valid.
 

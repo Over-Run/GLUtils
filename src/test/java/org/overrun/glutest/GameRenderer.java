@@ -27,10 +27,14 @@ package org.overrun.glutest;
 
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
+import org.joml.Vector3f;
 import org.overrun.glutils.*;
+import org.overrun.glutils.light.DirectionalLight;
+import org.overrun.glutils.light.PointLight;
+import org.overrun.glutils.light.PointLight.Attenuation;
 import org.overrun.glutils.mesh.Mesh3;
 
-import java.awt.*;
+import java.awt.Font;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +71,11 @@ public class GameRenderer implements AutoCloseable {
             .padding(2)
             .build();
     public final Map<Integer, Mesh3> textBgMap = new HashMap<>();
+    private Vector3f ambientLight;
+    private PointLight pointLight;
+    private DirectionalLight directionalLight;
     public GLProgram program;
+    public GLProgram guiProgram;
     public Mesh3 cube;
     public Mesh3 crossing;
     public Mesh3 text;
@@ -77,6 +85,10 @@ public class GameRenderer implements AutoCloseable {
         program.createVsh(lines(cl, "shaders/scene.vsh"));
         program.createFsh(lines(cl, "shaders/scene.fsh"));
         program.link();
+        guiProgram = new GLProgram();
+        guiProgram.createVsh(lines(cl, "shaders/gui.vsh"));
+        guiProgram.createFsh(lines(cl, "shaders/gui.fsh"));
+        guiProgram.link();
         cube = load3(cl,
                 "cube.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2),
@@ -93,6 +105,17 @@ public class GameRenderer implements AutoCloseable {
                 .colorDim(4)
                 .texIdx(2)
                 .unbindVao();
+        float reflectance = 1.0f;
+        float lightIntensity = 1.0f;
+        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+        Vector3f lightColor = new Vector3f(1, 1, 1);
+        Vector3f lightPosition = new Vector3f(0, 0, 1);
+        pointLight = new PointLight(lightColor, lightPosition, lightIntensity);
+        Attenuation att = new Attenuation(0.0f, 0.0f, 1.0f);
+        pointLight.setAttenuation(att);
+        lightPosition = new Vector3f(-1, 0, 0);
+        lightColor = new Vector3f(1, 1, 1);
+        directionalLight = new DirectionalLight(lightColor, lightPosition, lightIntensity);
     }
 
     public void render(int w,
@@ -100,12 +123,13 @@ public class GameRenderer implements AutoCloseable {
                        Player player) {
         float xRot = player.xRot;
         float yRot = player.yRot;
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         program.bind();
         program.setUniform("texSampler", 0);
-        program.setUniform("textured", 1);
+        program.setUniform("textured", true);
         program.setUniformMat4("proj",
                 rotateY(rotateX(setPerspective(proj,
                         70,
@@ -148,12 +172,14 @@ public class GameRenderer implements AutoCloseable {
 
     public void renderGui(int w, int h) {
         glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-        program.bind();
+        guiProgram.bind();
+        guiProgram.setUniform("texSampler", 0);
+        guiProgram.setUniform("textured", true);
         //todo scale
-        program.setUniformMat4("proj", proj.setOrtho2D(0, w, h, 0));
-        program.setUniformMat4("modelv", modelv.translation(w / 2f, h / 2f, 0));
+        guiProgram.setUniformMat4("proj", proj.setOrtho2D(0, w, h, 0));
+        guiProgram.setUniformMat4("modelv", modelv.translation(w / 2f, h / 2f, 0));
         crossing.render();
-        program.setUniformMat4("modelv", modelv.translation(2, 2, 0));
+        guiProgram.setUniformMat4("modelv", modelv.translation(2, 2, 0));
         String st = "FPS: " + TIMER.fps;
         int stl = st.length();
         DrawableText.build(utf8,
@@ -213,7 +239,7 @@ public class GameRenderer implements AutoCloseable {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         textBgMap.get(stl).render();
         text.render();
-        program.unbind();
+        guiProgram.unbind();
     }
 
     @Override
@@ -223,6 +249,9 @@ public class GameRenderer implements AutoCloseable {
         }
         if (program != null) {
             program.close();
+        }
+        if (guiProgram != null) {
+            guiProgram.close();
         }
     }
 }

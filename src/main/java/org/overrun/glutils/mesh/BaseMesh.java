@@ -25,6 +25,8 @@
 
 package org.overrun.glutils.mesh;
 
+import org.overrun.glutils.light.Material;
+
 import static org.lwjgl.opengl.GL15.*;
 
 /**
@@ -68,6 +70,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     protected float[] texCoords;
     /**
      * normal vertices
+     *
      * @since 1.1.0
      */
     protected float[] normalVert;
@@ -89,6 +92,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     protected int texUsage = GL_STATIC_DRAW;
     /**
      * normal vertex usage
+     *
      * @since 1.1.0
      */
     protected int normalUsage = GL_STATIC_DRAW;
@@ -110,6 +114,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     protected int texDim = 2;
     /**
      * normal dimensions
+     *
      * @since 1.1.0
      */
     protected int normalDim = 3;
@@ -127,6 +132,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     protected boolean texNormalized;
     /**
      * normals normalized
+     *
      * @since 1.1.0
      */
     protected boolean normalNormalized;
@@ -144,13 +150,16 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     protected int texStride;
     /**
      * normal stride
+     *
      * @since 1.1.0
      */
     protected int normalStride;
     /**
-     * texture id
+     * material
+     *
+     * @since 1.2.0
      */
-    protected int texture;
+    protected Material material;
     /**
      * vertex count
      */
@@ -290,7 +299,23 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      * @return this
      */
     public T texture(int texture) {
-        this.texture = texture;
+        if (material == null) {
+            material = new Material(texture, 1);
+        } else {
+            material.setTexture(texture);
+        }
+        return getThis();
+    }
+
+    /**
+     * set material
+     *
+     * @param material material
+     * @return this
+     * @since 1.2.0
+     */
+    public T material(Material material) {
+        this.material = material;
         return getThis();
     }
 
@@ -707,7 +732,17 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      * @return texture id
      */
     public int getTexture() {
-        return texture;
+        return material.getTexture();
+    }
+
+    /**
+     * get material
+     *
+     * @return {@link #material}
+     * @since 1.2.0
+     */
+    public Material getMaterial() {
+        return material;
     }
 
     @Override

@@ -103,12 +103,17 @@ public class GLUTest implements AutoCloseable {
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         System.out.println("GL Version " + glGetString(GL_VERSION));
         TIMER.advanceTime();
-        (renderer = new GameRenderer()).init();
+        init();
         window.show();
         window.focus();
         grabbing = true;
         window.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         loop();
+    }
+
+    private void init()
+            throws Exception {
+        (renderer = new GameRenderer()).init();
     }
 
     public void loop() {
@@ -118,9 +123,9 @@ public class GLUTest implements AutoCloseable {
             TIMER.advanceTime();
             float delta = TIMER.delta;
             for (int i = 0; i < TIMER.ticks; i++) {
-                player.tick();
+                // TODO: 2021/8/29 0029
+                tick();
             }
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             render(delta);
             window.swapBuffers();
             glfwPollEvents();
@@ -131,6 +136,10 @@ public class GLUTest implements AutoCloseable {
                 frames = 0;
             }
         }
+    }
+
+    public void tick() {
+        player.tick();
     }
 
     public void render(double delta) {

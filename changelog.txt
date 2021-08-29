@@ -6,6 +6,7 @@ New feature: `BaseMeshVertexBuilder`
 New feature: `MeshVertexBuilder`
 New feature: `Mesh3VertexBuilder`
 New feature: `ObjLoader`
+New feature: Lighting system
 
 1.1.0
 New feature: `Math`

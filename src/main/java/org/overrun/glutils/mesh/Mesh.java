@@ -26,6 +26,7 @@
 package org.overrun.glutils.mesh;
 
 import org.overrun.glutils.GLProgram;
+import org.overrun.glutils.light.Material;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -99,6 +100,41 @@ public class Mesh extends BaseMesh<Mesh> {
      * @param colors    colors
      * @param colorIdx  colorIdx
      * @param texCoords texCoords
+     * @param material  material
+     * @param texIdx    texIdx
+     * @param indices   indices
+     * @return mesh
+     * @since 1.2.0
+     */
+    public static Mesh of(GLProgram program,
+                          float[] vertices,
+                          String vertIdx,
+                          float[] colors,
+                          String colorIdx,
+                          float[] texCoords,
+                          Material material,
+                          String texIdx,
+                          int[] indices) {
+        return of(program,
+                vertices,
+                vertIdx,
+                colors,
+                colorIdx,
+                indices)
+                .material(material)
+                .texIdx(texIdx)
+                .texCoords(texCoords);
+    }
+
+    /**
+     * construct
+     *
+     * @param program   program
+     * @param vertices  vertices
+     * @param vertIdx   vertIdx
+     * @param colors    colors
+     * @param colorIdx  colorIdx
+     * @param texCoords texCoords
      * @param texture   texture
      * @param texIdx    texIdx
      * @param indices   indices
@@ -113,27 +149,26 @@ public class Mesh extends BaseMesh<Mesh> {
                           int texture,
                           String texIdx,
                           int[] indices) {
-        return new Mesh()
-                .program(program)
-                .vertIdx(vertIdx)
-                .vertices(vertices)
-                .colorIdx(colorIdx)
-                .colors(colors)
-                .texture(texture)
-                .texIdx(texIdx)
-                .texCoords(texCoords)
-                .indices(indices);
+        return of(program,
+                vertices,
+                vertIdx,
+                colors,
+                colorIdx,
+                texCoords,
+                new Material(texture, 1),
+                texIdx,
+                indices);
     }
 
     /**
      * construct without texture
      *
-     * @param program   program
-     * @param vertices  vertices
-     * @param vertIdx   vertIdx
-     * @param colors    colors
-     * @param colorIdx  colorIdx
-     * @param indices   indices
+     * @param program  program
+     * @param vertices vertices
+     * @param vertIdx  vertIdx
+     * @param colors   colors
+     * @param colorIdx colorIdx
+     * @param indices  indices
      * @return mesh
      * @since 1.1.0
      */
@@ -201,9 +236,9 @@ public class Mesh extends BaseMesh<Mesh> {
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, indexUsage);
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        if (texture != 0) {
+        if (material != null) {
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture);
+            glBindTexture(GL_TEXTURE_2D, material.getTexture());
         }
         if (ibo == 0) {
             glDrawArrays(mode, 0, getVertexCount());

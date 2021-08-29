@@ -25,58 +25,32 @@
 
 package org.overrun.glutils.mesh.obj;
 
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIScene;
-import org.overrun.commonutils.FloatArray;
-import org.overrun.commonutils.IntArray;
-import org.overrun.commonutils.MapStr2Obj;
+import org.overrun.glutils.light.Material;
 import org.overrun.glutils.mesh.Mesh;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.stream.Collectors;
 
-import static java.lang.Float.parseFloat;
 import static java.util.Objects.requireNonNull;
 import static org.lwjgl.assimp.Assimp.*;
-import static org.overrun.commonutils.ArrayHelper.toIArray;
 
 /**
  * @author squid233
  * @since 1.2.0
  */
 public class ObjLoader {
+    public static final int DEFAULT_FLAGS = aiProcess_JoinIdenticalVertices
+            | aiProcess_Triangulate
+            | aiProcess_FixInfacingNormals;
     private static File tempDir;
 
-    /**
-     * Load object file with default flags.
-     *
-     * @param cl       Class loader
-     * @param filename Object filename in classpath.
-     * @return Mesh.
-     * @throws Exception IOE or RE
-     */
-    public static Mesh load2(ClassLoader cl,
-                             String filename)
-            throws Exception {
-        return load2(cl,
-                filename,
-                aiProcess_JoinIdenticalVertices
-                        | aiProcess_Triangulate
-                        | aiProcess_FixInfacingNormals);
-    }
-
-    /**
-     * Load object file.
-     *
-     * @param cl       Class loader
-     * @param filename Object filename in classpath (in relative path).
-     * @param flags    Assimp flags.
-     * @return Mesh.
-     * @throws Exception IOE or RE
-     */
-    public static Mesh load2(ClassLoader cl,
-                             String filename,
-                             int flags)
+    private static AIScene load(ClassLoader cl,
+                                String filename,
+                                int flags)
             throws Exception {
         if (tempDir == null) {
             tempDir = File.createTempFile("overrun_glutils", "obj_loader");
@@ -89,12 +63,58 @@ public class ObjLoader {
              BufferedReader br = new BufferedReader(isr);
              Writer w = new FileWriter(ffn);
              Writer bw = new BufferedWriter(w)) {
-            bw.write(br.readLine());
+            for (String s : br.lines().collect(Collectors.toList())) {
+                bw.write(s + "\n");
+            }
         }
         AIScene scene = aiImportFile(ffn, flags);
         if (scene == null) {
-            throw new RuntimeException("Error loading model");
-            // TODO: 2021/8/28
+            throw new RuntimeException(
+                    "Error loading model" +
+                            aiGetErrorString());
         }
+        return scene;
+    }
+
+    private static Mesh processMesh(AIMesh aiMesh,
+                                    Material material) {}
+
+    /**
+     * Load object file with default flags.
+     *
+     * @param cl       Class loader
+     * @param filename Object filename in classpath.
+     * @return Meshes.
+     * @throws Exception IOE or RE
+     */
+    public static Mesh[] load2(ClassLoader cl,
+                               String filename)
+            throws Exception {
+        return load2(cl, filename, DEFAULT_FLAGS);
+    }
+
+    /**
+     * Load object file.
+     *
+     * @param cl       Class loader
+     * @param filename Object filename in classpath (in relative path).
+     * @param flags    Assimp flags.
+     * @return Meshes.
+     * @throws Exception IOE or RE
+     */
+    public static Mesh[] load2(ClassLoader cl,
+                               String filename,
+                               int flags)
+            throws Exception {
+        AIScene scene = load(cl, filename, flags);
+        int numMeshes = scene.mNumMeshes();
+        PointerBuffer aiMeshes = scene.mMeshes();
+        Mesh[] meshes = new Mesh[numMeshes];
+        for (int i = 0; i < numMeshes; i++) {
+            AIMesh aiMesh = AIMesh.create(requireNonNull(aiMeshes).get(i));
+            Mesh mesh = processMesh(aiMesh, material);
+            meshes[i] = mesh;
+        }
+        return meshes;
     }
 }

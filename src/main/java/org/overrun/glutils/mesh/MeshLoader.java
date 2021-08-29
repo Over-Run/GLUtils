@@ -36,13 +36,13 @@ import java.util.function.Consumer;
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.overrun.commonutils.ArrayHelper.removeNull;
 import static org.overrun.glutils.mesh.Assemblies.*;
 
 /**
  * @author squid233
  * @since 0.7.0
  */
+@Deprecated
 public class MeshLoader {
     private static final List<String> KEYWORDS = Arrays.asList(
             DEFINE,

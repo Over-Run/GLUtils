@@ -192,9 +192,9 @@ public class Mesh3 extends BaseMesh<Mesh3> {
 
     @Override
     public void render(int mode) {
-        if (texture != 0) {
+        if (material != null) {
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture);
+            glBindTexture(GL_TEXTURE_2D, material.getTexture());
         }
         glBindVertexArray(vao);
         if (ibo == 0) {

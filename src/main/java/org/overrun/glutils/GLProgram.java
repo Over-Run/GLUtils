@@ -25,8 +25,13 @@
 
 package org.overrun.glutils;
 
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector3fc;
+import org.joml.Vector4fc;
 import org.lwjgl.system.MemoryStack;
+import org.overrun.glutils.light.DirectionalLight;
+import org.overrun.glutils.light.Material;
+import org.overrun.glutils.light.PointLight;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
@@ -214,6 +219,124 @@ public class GLProgram implements AutoCloseable {
     /**
      * setUniform
      *
+     * @param name  uniform name
+     * @param value value
+     * @since 1.2.0
+     */
+    public void setUniform(String name, float value) {
+        glUniform1f(getUniform(name), value);
+    }
+
+    /**
+     * setUniform
+     *
+     * @param name  uniform name
+     * @param value value
+     * @since 1.2.0
+     */
+    public void setUniform(String name, boolean value) {
+        glUniform1f(getUniform(name), value ? 1 : 0);
+    }
+
+    /**
+     * setUniform
+     *
+     * @param name  uniform name
+     * @param value value
+     * @since 1.2.0
+     */
+    public void setUniform(String name, Vector3fc value) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            glUniform3fv(getUniform(name), value.get(stack.mallocFloat(3)));
+        }
+    }
+
+    /**
+     * setUniform
+     *
+     * @param name  uniform name
+     * @param value value
+     * @since 1.2.0
+     */
+    public void setUniform(String name, Vector4fc value) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            glUniform4fv(getUniform(name), value.get(stack.mallocFloat(4)));
+        }
+    }
+
+    /**
+     * set material uniform
+     *
+     * @param ambientName     uniform ambient name
+     * @param diffuseName     uniform diffuse name
+     * @param specularName    uniform specular name
+     * @param texturedName    uniform textured name
+     * @param reflectanceName uniform reflectance name
+     * @param material        material
+     * @since 1.2.0
+     */
+    public void setUniform(String ambientName,
+                           String diffuseName,
+                           String specularName,
+                           String texturedName,
+                           String reflectanceName,
+                           Material material) {
+        setUniform(ambientName, material.getAmbientColor());
+        setUniform(diffuseName, material.getDiffuseColor());
+        setUniform(specularName, material.getSpecularColor());
+        setUniform(texturedName, material.isTextured());
+        setUniform(reflectanceName, material.getReflectance());
+    }
+
+    /**
+     * set point light uniform
+     *
+     * @param colorName     uniform color name
+     * @param positionName  uniform position name
+     * @param intensityName uniform intensity name
+     * @param constantName  uniform constant name
+     * @param linearName    uniform linear name
+     * @param exponentName  uniform exponent name
+     * @param light         point light
+     * @since 1.2.0
+     */
+    public void setUniform(String colorName,
+                           String positionName,
+                           String intensityName,
+                           String constantName,
+                           String linearName,
+                           String exponentName,
+                           PointLight light) {
+        setUniform(colorName, light.getColor());
+        setUniform(positionName, light.getPosition());
+        setUniform(intensityName, light.getIntensity());
+        PointLight.Attenuation att = light.getAttenuation();
+        setUniform(constantName, att.getConstant());
+        setUniform(linearName, att.getLinear());
+        setUniform(exponentName, att.getExponent());
+    }
+
+    /**
+     * set directional light uniform
+     *
+     * @param colorName     uniform color name
+     * @param directionName uniform direction name
+     * @param intensityName uniform intensity name
+     * @param light         light
+     * @since 1.2.0
+     */
+    public void setUniform(String colorName,
+                           String directionName,
+                           String intensityName,
+                           DirectionalLight light) {
+        setUniform(colorName, light.getColor());
+        setUniform(directionName, light.getDirection().toVector());
+        setUniform(intensityName, light.getIntensity());
+    }
+
+    /**
+     * setUniform
+     *
      * @param name     uniform name
      * @param matrix4f matrix as FloatBuffer
      * @since 0.4.0
@@ -244,7 +367,7 @@ public class GLProgram implements AutoCloseable {
      * @since 0.5.0
      */
     public void setUniformMat4(String name,
-                               Matrix4f matrix4f) {
+                               Matrix4fc matrix4f) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             setUniformMat4(name, matrix4f.get(stack.mallocFloat(16)));
         }
