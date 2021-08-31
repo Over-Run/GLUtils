@@ -32,7 +32,7 @@ import org.joml.Vector4f;
  * @since 1.2.0
  */
 public class Material {
-    private static final Vector4f DEFAULT_COLOR = new Vector4f(1, 1, 1, 1);
+    public static final Vector4f DEFAULT_COLOR = new Vector4f(1, 1, 1, 1);
     private Vector4f ambientColor = DEFAULT_COLOR;
     private Vector4f diffuseColor = DEFAULT_COLOR;
     private Vector4f specularColor = DEFAULT_COLOR;

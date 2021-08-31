@@ -23,32 +23,16 @@
  *
  */
 
-package org.overrun.glutils.mesh;
+package org.overrun.glutils.mesh.obj;
+
+import org.overrun.glutils.mesh.Mesh3;
 
 /**
- * #define name value
- *
  * @author squid233
- * @since 0.7.0
+ * @since 1.2.0
  */
-public class MeshMacro {
-    /**
-     * macro name
-     */
-    public final String name;
-    /**
-     * macro value
-     */
-    public final String value;
-
-    /**
-     * construct
-     *
-     * @param name  macro name
-     * @param value macro value
-     */
-    public MeshMacro(String name, String value) {
-        this.name = name;
-        this.value = value;
+public class ObjModel3 extends ObjModel<Mesh3> {
+    public ObjModel3(Mesh3[] meshes) {
+        super(meshes);
     }
 }

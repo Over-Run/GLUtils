@@ -238,7 +238,7 @@ public class Mesh extends BaseMesh<Mesh> {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         if (material != null) {
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, material.getTexture());
+            glBindTexture(GL_TEXTURE_2D, getTexture());
         }
         if (ibo == 0) {
             glDrawArrays(mode, 0, getVertexCount());

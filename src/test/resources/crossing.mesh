@@ -5,7 +5,9 @@ v -9 9 0
 v 9 9 0
 v 9 -9 0
 
-vc 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+repeat c 16 1
+vc c
+undef c
 
 vt 0      0
 vt 0      0.5625

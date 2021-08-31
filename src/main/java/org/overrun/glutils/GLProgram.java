@@ -125,7 +125,7 @@ public class GLProgram implements AutoCloseable {
         glShaderSource(shader, src);
         glCompileShader(shader);
         if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
-            throw new CompileException("Error compiling shader src: " +
+            throw new CompileException("Error compiling shader src: \n" +
                     toJava(glGetShaderInfoLog(shader)));
         }
         glAttachShader(id, shader);
@@ -141,7 +141,7 @@ public class GLProgram implements AutoCloseable {
             throws RuntimeException {
         glLinkProgram(id);
         if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE) {
-            throw new RuntimeException("Error linking GL program: " +
+            throw new RuntimeException("Error linking GL program: \n" +
                     toJava(glGetProgramInfoLog(id)));
         }
         if (vshId != 0) {
@@ -330,7 +330,7 @@ public class GLProgram implements AutoCloseable {
                            String intensityName,
                            DirectionalLight light) {
         setUniform(colorName, light.getColor());
-        setUniform(directionName, light.getDirection().toVector());
+        setUniform(directionName, light.getDirection());
         setUniform(intensityName, light.getIntensity());
     }
 

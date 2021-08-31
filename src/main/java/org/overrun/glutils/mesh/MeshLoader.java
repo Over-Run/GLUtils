@@ -42,7 +42,6 @@ import static org.overrun.glutils.mesh.Assemblies.*;
  * @author squid233
  * @since 0.7.0
  */
-@Deprecated
 public class MeshLoader {
     private static final List<String> KEYWORDS = Arrays.asList(
             DEFINE,

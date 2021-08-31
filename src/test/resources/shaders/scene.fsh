@@ -27,18 +27,16 @@ struct Material {
     float reflectance;
 };
 
-in vec4 out_color;
 in vec2 out_tex;
 in vec3 mvVertexNormal;
 in vec3 mvVertexPos;
 out vec4 fragColor;
-uniform int textured;
 uniform sampler2D texSampler;
+uniform vec3 ambientLight;
 uniform float specularPower;
 uniform Material material;
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLight;
-uniform vec3 cameraPos;
 vec4 ambientC;
 vec4 diffuseC;
 vec4 speculrC;
@@ -52,12 +50,12 @@ vec4 calcLightColor(vec3 light_color, float light_intensity, vec3 position, vec3
     diffuseColor = diffuseC * vec4(light_color, 1.0) * light_intensity * diffuseFactor;
 
     // specular reflection light
-    vec3 camera_direction = normalize(camera_pos - position);
+    vec3 camera_direction = normalize(-position);
     vec3 from_light_dir = -to_light_dir;
     vec3 reflected_light = normalize(reflect(from_light_dir, normal));
     float specularFactor = max(dot(camera_direction, reflected_light), 0.0);
     specularFactor = pow(specularFactor, specularPower);
-    specColor = speculrC * light_intensity  * specularFactor * material.reflectance * vec4(light_color, 1.0);
+    specColor = speculrC * light_intensity * specularFactor * material.reflectance * vec4(light_color, 1.0);
 
     return (diffuseColor + specColor);
 }
@@ -76,7 +74,7 @@ vec4 calcPointLight(PointLight light, vec3 position, vec3 normal) {
 }
 
 vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal) {
-    return calcLightColour(light.color, light.intensity, position, normalize(light.direction), normal);
+    return calcLightColor(light.color, light.intensity, position, normalize(light.direction), normal);
 }
 
 void setupColors(Material material, vec2 texCoord) {
@@ -84,8 +82,7 @@ void setupColors(Material material, vec2 texCoord) {
         ambientC = texture(texSampler, texCoord);
         diffuseC = ambientC;
         speculrC = ambientC;
-    }
-    else {
+    } else {
         ambientC = material.ambient;
         diffuseC = material.diffuse;
         speculrC = material.specular;

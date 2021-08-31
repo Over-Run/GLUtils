@@ -25,7 +25,9 @@
 
 package org.overrun.glutils.light;
 
-import org.joml.Vector3f;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 /**
  * @author squid233
@@ -39,6 +41,7 @@ public enum Direction {
     WEST(4, 5, -1, 0, 0),
     EAST(5, 4, 1, 0, 0);
 
+    private static final Vector3i[] CACHE_VECTOR = new Vector3i[6];
     private final int id;
     private final int oppositeId;
     private final int axisX;
@@ -55,6 +58,22 @@ public enum Direction {
         this.axisX = axisX;
         this.axisY = axisY;
         this.axisZ = axisZ;
+    }
+
+    /**
+     * get direction by id
+     *
+     * @param vector vector contains axis
+     * @return a direction
+     */
+    @Nullable
+    public static Direction getByVector(Vector3ic vector) {
+        for (Direction c : values()) {
+            if (c.toVector().equals(vector.x(), vector.y(), vector.z())) {
+                return c;
+            }
+        }
+        return null;
     }
 
     /**
@@ -124,9 +143,12 @@ public enum Direction {
     /**
      * convert to vector
      *
-     * @return Vector3f contains vec xyz
+     * @return Vector3i contains vec xyz
      */
-    public Vector3f toVector() {
-        return new Vector3f(axisX, axisY, axisZ);
+    public Vector3i toVector() {
+        if (CACHE_VECTOR[id] == null) {
+            CACHE_VECTOR[id] = new Vector3i(axisX, axisY, axisZ);
+        }
+        return CACHE_VECTOR[id];
     }
 }

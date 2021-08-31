@@ -28,11 +28,14 @@ package org.overrun.glutest;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.overrun.glutils.*;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.PointLight;
-import org.overrun.glutils.light.PointLight.Attenuation;
 import org.overrun.glutils.mesh.Mesh3;
+import org.overrun.glutils.mesh.MeshLoader;
+import org.overrun.glutils.mesh.obj.ObjLoader;
+import org.overrun.glutils.mesh.obj.ObjModel3;
 
 import java.awt.Font;
 import java.nio.charset.StandardCharsets;
@@ -43,8 +46,6 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.overrun.glutest.GLUTest.TIMER;
 import static org.overrun.glutils.ShaderReader.lines;
 import static org.overrun.glutils.math.Transform.*;
-import static org.overrun.glutils.mesh.MeshLoader.def;
-import static org.overrun.glutils.mesh.MeshLoader.load3;
 
 /**
  * @author squid233
@@ -64,19 +65,17 @@ public class GameRenderer implements AutoCloseable {
     };
     public static final ClassLoader cl = GameRenderer.class.getClassLoader();
     public final Matrix4f proj = new Matrix4f();
-    public final Matrix4fStack modelv = new Matrix4fStack(16).pushMatrix();
+    public final Matrix4fStack modelv = new Matrix4fStack(32);
     public final FontTexture utf8 = FontTextures.builder("Consolas-UTF_8-2")
             .font(Font.decode("Consolas"))
             .charset(StandardCharsets.UTF_8)
             .padding(2)
             .build();
     public final Map<Integer, Mesh3> textBgMap = new HashMap<>();
-    private Vector3f ambientLight;
-    private PointLight pointLight;
-    private DirectionalLight directionalLight;
+    public static final float SPECULAR_POWER = 10;
     public GLProgram program;
     public GLProgram guiProgram;
-    public Mesh3 cube;
+    public ObjModel3 cube;
     public Mesh3 crossing;
     public Mesh3 text;
 
@@ -89,14 +88,19 @@ public class GameRenderer implements AutoCloseable {
         guiProgram.createVsh(lines(cl, "shaders/gui.vsh"));
         guiProgram.createFsh(lines(cl, "shaders/gui.fsh"));
         guiProgram.link();
-        cube = load3(cl,
-                "cube.mesh",
-                m -> m.vertIdx(0).colorIdx(1).texIdx(2),
-                def("size", 1.0f))
-                .texture(Textures.loadAWT(cl, "face.png", GL_NEAREST));
-        crossing = load3(cl,
-                "crossing.mesh",
-                m -> m.vertIdx(0).colorIdx(1).texIdx(2))
+        cube = ObjLoader.load3(cl,
+                "model/cube/cube.obj",
+                m -> m.vertIdx(0).texIdx(1).normalIdx(2)
+        );
+        cube.setPreRender(m -> program.setUniform("material.ambient",
+                "material.diffuse",
+                "material.specular",
+                "material.textured",
+                "material.reflectance",
+                m.getMaterial()));
+        crossing = MeshLoader.load3(cl,
+                        "crossing.mesh",
+                        m -> m.vertIdx(0).colorIdx(1).texIdx(2))
                 .texture(Textures.loadAWT(cl, "crossing.png", GL_NEAREST));
         text = new Mesh3()
                 .vertUsage(GL_DYNAMIC_DRAW)
@@ -105,22 +109,15 @@ public class GameRenderer implements AutoCloseable {
                 .colorDim(4)
                 .texIdx(2)
                 .unbindVao();
-        float reflectance = 1.0f;
-        float lightIntensity = 1.0f;
-        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
-        Vector3f lightColor = new Vector3f(1, 1, 1);
-        Vector3f lightPosition = new Vector3f(0, 0, 1);
-        pointLight = new PointLight(lightColor, lightPosition, lightIntensity);
-        Attenuation att = new Attenuation(0.0f, 0.0f, 1.0f);
-        pointLight.setAttenuation(att);
-        lightPosition = new Vector3f(-1, 0, 0);
-        lightColor = new Vector3f(1, 1, 1);
-        directionalLight = new DirectionalLight(lightColor, lightPosition, lightIntensity);
     }
 
     public void render(int w,
                        int h,
-                       Player player) {
+                       Player player,
+                       Vector3f ambientLight,
+                       PointLight pointLight,
+                       DirectionalLight light) {
+        modelv.pushMatrix();
         float xRot = player.xRot;
         float yRot = player.yRot;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -128,15 +125,46 @@ public class GameRenderer implements AutoCloseable {
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         program.bind();
-        program.setUniform("texSampler", 0);
-        program.setUniform("textured", true);
+        modelv.pushMatrix();
+        Matrix4f viewMatrix = new Matrix4f(rotateY(rotateX(modelv, -xRot), yRot));
+        modelv.popMatrix();
+        modelv.mul(viewMatrix);
         program.setUniformMat4("proj",
-                rotateY(rotateX(setPerspective(proj,
+                setPerspective(proj,
                         70,
                         w,
                         h,
                         0.05f,
-                        1000.0f), -xRot), yRot));
+                        1000.0f));
+        DirectionalLight currDirLight = new DirectionalLight(light);
+        Vector4f dir = new Vector4f(currDirLight.getDirection(), 0)
+                .mul(viewMatrix);
+        currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
+        // Get a copy of the point light object and transform its position to view coordinates
+        PointLight currPointLight = new PointLight(pointLight);
+        Vector3f lightPos = currPointLight.getPosition();
+        Vector4f aux = new Vector4f(lightPos, 1);
+        aux.mul(viewMatrix);
+        lightPos.x = aux.x;
+        lightPos.y = aux.y;
+        lightPos.z = aux.z;
+        // Update Light Uniforms
+        program.setUniform("ambientLight", ambientLight);
+        program.setUniform("specularPower", SPECULAR_POWER);
+        program.setUniform(
+                "pointLight.color",
+                "pointLight.position",
+                "pointLight.intensity",
+                "pointLight.att.constant",
+                "pointLight.att.linear",
+                "pointLight.att.exponent",
+                currPointLight);
+        program.setUniform(
+                "directionalLight.color",
+                "directionalLight.direction",
+                "directionalLight.intensity",
+                currDirLight);
+        program.setUniform("texSampler", 0);
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
@@ -155,6 +183,7 @@ public class GameRenderer implements AutoCloseable {
         glEnable(GL_BLEND);
         renderGui(w, h);
         glDisable(GL_BLEND);
+        modelv.popMatrix();
     }
 
     private void renderMesh(float cameraX,
@@ -166,17 +195,20 @@ public class GameRenderer implements AutoCloseable {
         float fx = x == 0 ? -cameraX : -cameraX + (x * 0.9375f);
         float fy = y == 0 ? -cameraY : -cameraY + (y * 0.9375f);
         float fz = z == 0 ? -cameraZ : -cameraZ + (z * 0.9375f);
-        program.setUniformMat4("modelv", modelv.translation(fx, fy, fz));
+        modelv.pushMatrix();
+        program.setUniformMat4("modelv", modelv.translate(fx, fy, fz));
         cube.render();
+        modelv.popMatrix();
     }
 
     public void renderGui(int w, int h) {
+        modelv.pushMatrix();
         glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
         guiProgram.bind();
         guiProgram.setUniform("texSampler", 0);
         guiProgram.setUniform("textured", true);
         //todo scale
-        guiProgram.setUniformMat4("proj", proj.setOrtho2D(0, w, h, 0));
+        guiProgram.setUniformMat4("proj", modelv.setOrtho2D(0, w, h, 0));
         guiProgram.setUniformMat4("modelv", modelv.translation(w / 2f, h / 2f, 0));
         crossing.render();
         guiProgram.setUniformMat4("modelv", modelv.translation(2, 2, 0));
@@ -240,12 +272,19 @@ public class GameRenderer implements AutoCloseable {
         textBgMap.get(stl).render();
         text.render();
         guiProgram.unbind();
+        modelv.popMatrix();
     }
 
     @Override
     public void close() {
         if (cube != null) {
             cube.close();
+        }
+        if (crossing != null) {
+            crossing.close();
+        }
+        if (text != null) {
+            text.close();
         }
         if (program != null) {
             program.close();

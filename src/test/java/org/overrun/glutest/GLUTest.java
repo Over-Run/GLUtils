@@ -25,11 +25,14 @@
 
 package org.overrun.glutest;
 
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.overrun.glutils.GLUtils;
 import org.overrun.glutils.Textures;
+import org.overrun.glutils.light.DirectionalLight;
+import org.overrun.glutils.light.PointLight;
 import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
 
@@ -43,6 +46,10 @@ public class GLUTest implements AutoCloseable {
     public static final float SENSITIVITY = 0.05f;
     public static final Timer TIMER = new Timer(60);
     public final Player player = new Player();
+    private float lightAngle;
+    private Vector3f ambientLight;
+    private PointLight pointLight;
+    private DirectionalLight directionalLight;
     public GLFWindow window;
     public Framebuffer fb;
     public GameRenderer renderer;
@@ -114,6 +121,16 @@ public class GLUTest implements AutoCloseable {
     private void init()
             throws Exception {
         (renderer = new GameRenderer()).init();
+        float lightIntensity = 1.0f;
+        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+        Vector3f lightColor = new Vector3f(1, 1, 1);
+        Vector3f lightPosition = new Vector3f(0, 0, 1);
+        pointLight = new PointLight(lightColor, lightPosition, lightIntensity);
+        PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
+        pointLight.setAttenuation(att);
+        lightPosition = new Vector3f(-1, 0, 0);
+        lightColor = new Vector3f(1, 1, 1);
+        directionalLight = new DirectionalLight(lightColor, lightPosition, lightIntensity);
     }
 
     public void loop() {
@@ -121,16 +138,15 @@ public class GLUTest implements AutoCloseable {
         int frames = 0;
         while (!window.shouldClose()) {
             TIMER.advanceTime();
-            float delta = TIMER.delta;
+            //float delta = TIMER.delta;
             for (int i = 0; i < TIMER.ticks; i++) {
-                // TODO: 2021/8/29 0029
                 tick();
             }
-            render(delta);
+            render();
             window.swapBuffers();
             glfwPollEvents();
             ++frames;
-            while(System.currentTimeMillis() >= lastTime + 1000L) {
+            while (System.currentTimeMillis() >= lastTime + 1000L) {
                 TIMER.fps = frames;
                 lastTime += 1000L;
                 frames = 0;
@@ -140,9 +156,30 @@ public class GLUTest implements AutoCloseable {
 
     public void tick() {
         player.tick();
+        // Update directional light direction, intensity and color
+        lightAngle += 1f;
+        if (lightAngle > 90f) {
+            directionalLight.setIntensity(0);
+            if (lightAngle >= 360) {
+                lightAngle = -90;
+            }
+        } else if (lightAngle <= -80 || lightAngle >= 80) {
+            float factor = 1 - (Math.abs(lightAngle) - 80) / 10.0f;
+            directionalLight.setIntensity(factor);
+            directionalLight.getColor().y = Math.max(factor, 0.9f);
+            directionalLight.getColor().z = Math.max(factor, 0.5f);
+        } else {
+            directionalLight.setIntensity(1);
+            directionalLight.getColor().x = 1;
+            directionalLight.getColor().y = 1;
+            directionalLight.getColor().z = 1;
+        }
+        double angRad = Math.toRadians(lightAngle);
+        directionalLight.getDirection().x = (float) Math.sin(angRad);
+        directionalLight.getDirection().y = (float) Math.cos(angRad);
     }
 
-    public void render(double delta) {
+    public void render() {
         int w = fb.getWidth(), h = fb.getHeight();
         if (resized) {
             glViewport(0, 0, w, h);
@@ -154,7 +191,12 @@ public class GLUTest implements AutoCloseable {
         if (h == 0) {
             h = 1;
         }
-        renderer.render(w, h, player);
+        renderer.render(w,
+                h,
+                player,
+                ambientLight,
+                pointLight,
+                directionalLight);
     }
 
     @Override

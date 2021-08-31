@@ -32,7 +32,6 @@ import org.overrun.commonutils.IntArray;
  * @author squid233
  * @since 0.7.0
  */
-@Deprecated
 public class MeshFile {
     /**
      * is colored
