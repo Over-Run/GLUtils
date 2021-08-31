@@ -25,6 +25,7 @@
 
 package org.overrun.glutils;
 
+import org.jetbrains.annotations.Nullable;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
 
@@ -67,7 +68,7 @@ public class DrawableText {
      */
     public static void build(final FontTexture texture,
                              final String text,
-                             final BgColorFunction bgColor,
+                             final ColorFunction bgColor,
                              final ColorFunction fgColor,
                              final Consumer consumer) {
         build(texture, text, 3, bgColor, fgColor, consumer);
@@ -86,13 +87,16 @@ public class DrawableText {
     public static void build(final FontTexture texture,
                              final String text,
                              final int colorDim,
-                             final BgColorFunction bgColor,
-                             final ColorFunction fgColor,
+                             @Nullable final ColorFunction bgColor,
+                             @Nullable final ColorFunction fgColor,
                              final Consumer consumer) {
         FloatArray vertices = new FloatArray();
         FloatArray colors = new FloatArray();
         FloatArray tex = new FloatArray();
         IntArray indices = new IntArray();
+        FloatArray bvertices = new FloatArray();
+        FloatArray bcolors = new FloatArray();
+        IntArray bindices = new IntArray();
         char[] ca = text.toCharArray();
         float startY = 0;
         int i = 0;
@@ -107,14 +111,18 @@ public class DrawableText {
         int i3 = 3;
         for (char c : ca) {
             if (c == '\r') {
+                // TODO: 2021/8/31 test
                 int next = i + 1;
                 if (ca.length > next && ca[next] == '\n') {
-                    startY += fth;
-                    numChar = 0;
+                    i++;
                 }
-            } else if (c == '\n') {
-                startY += fth;
+                startY += gh;
                 numChar = 0;
+                continue;
+            } else if (c == '\n') {
+                startY += gh;
+                numChar = 0;
+                continue;
             }
             FontTexture.Glyph glyph = texture.getGlyph(c);
             int gw = glyph.getWidth();
@@ -127,6 +135,26 @@ public class DrawableText {
             float texStartY = (float) gsy / (float) fth;
             float texEndX = ((float) gsx + (float) gw) / (float) ftw;
             float texEndY = ((float) gsy + (float) gh) / (float) fth;
+            if (bgColor != null) {
+                // background
+                // left top
+                bvertices.addAll(startX, startY, 0);
+                bindices.add(i0);
+                // left bottom
+                bvertices.addAll(startX, endY, 0);
+                bindices.add(i1);
+                // right bottom
+                bvertices.addAll(endX, endY, 0);
+                bindices.add(i2);
+                // right top
+                bvertices.addAll(endX, startY, 0);
+                bcolors.addAll(bgColor.apply(c, i));
+                bindices.add(i3);
+                bindices.add(i0);
+                bindices.add(i2);
+            }
+
+            // foreground
             // left top
             vertices.addAll(startX, startY, 0);
             tex.addAll(texStartX, texStartY);
@@ -162,12 +190,15 @@ public class DrawableText {
             i3 += 4;
         }
         float[] vtf = vertices.toFArray();
-        bgColor.accept(ca, vtf);
+        int[] idi = indices.toIArray();
         consumer.accept(vtf,
                 colors.toFArray(),
                 tex.toFArray(),
                 texture.getTextureId(),
-                indices.toIArray());
+                idi,
+                bvertices.toFArray(),
+                bcolors.toFArray(),
+                bindices.toIArray());
     }
 
     /**
@@ -180,33 +211,23 @@ public class DrawableText {
         /**
          * set mesh
          *
-         * @param vertices vertices
-         * @param colors   colors
-         * @param texCoord texture coordinates
-         * @param tex      texture id
-         * @param indices  indices
+         * @param vertices  vertices
+         * @param colors    colors
+         * @param texCoord  texture coordinates
+         * @param tex       texture id
+         * @param indices   indices
+         * @param bvertices background vertices
+         * @param bcolors   background colors
+         * @param bindices  background indices
          */
         void accept(float[] vertices,
                     float[] colors,
                     float[] texCoord,
                     int tex,
-                    int[] indices);
-    }
-
-    /**
-     * Custom background color
-     *
-     * @author squid233
-     */
-    @FunctionalInterface
-    public interface BgColorFunction {
-        /**
-         * Use params to set mesh
-         *
-         * @param text     text to char array
-         * @param vertices text vertices
-         */
-        void accept(char[] text, float[] vertices);
+                    int[] indices,
+                    float[] bvertices,
+                    float[] bcolors,
+                    int[] bindices);
     }
 
     /**

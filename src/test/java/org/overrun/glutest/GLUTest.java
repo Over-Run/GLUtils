@@ -67,7 +67,9 @@ public class GLUTest implements AutoCloseable {
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         }
-        window = new GLFWindow(854, 480, "Game");
+        window = new GLFWindow(854,
+                480,
+                "Testing texture, lighting and HUD");
         lastX = 854 / 2.0;
         lastY = 480 / 2.0;
         fb = new Framebuffer();
@@ -196,7 +198,8 @@ public class GLUTest implements AutoCloseable {
                 player,
                 ambientLight,
                 pointLight,
-                directionalLight);
+                directionalLight,
+                lightAngle);
     }
 
     @Override

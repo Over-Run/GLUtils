@@ -1,26 +1,4 @@
 # Made in Blockbench 3.9.3
 newmtl m_0
-# orange
-Kd 1.0 0.5 0.0
-map_Kd face.png
-newmtl m_1
-# red
-Kd 1.0 0.1 0.0
-map_Kd face.png
-newmtl m_2
-# yellow
-Kd 1.0 1.0 0.0
-map_Kd face.png
-newmtl m_3
-# white
-Kd 1.0 1.0 1.0
-map_Kd face.png
-newmtl m_4
-# blue
-Kd 0.4 0.8 1.0
-map_Kd face.png
-newmtl m_5
-# green
-Kd 0.5 1.0 0.5
-map_Kd face.png
+map_Kd cube.png 
 newmtl none

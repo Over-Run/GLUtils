@@ -235,7 +235,7 @@ public class GLProgram implements AutoCloseable {
      * @since 1.2.0
      */
     public void setUniform(String name, boolean value) {
-        glUniform1f(getUniform(name), value ? 1 : 0);
+        glUniform1i(getUniform(name), value ? 1 : 0);
     }
 
     /**

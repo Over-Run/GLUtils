@@ -25,6 +25,7 @@
 
 package org.overrun.glutils.mesh.obj;
 
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -46,7 +47,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -75,13 +75,17 @@ public class ObjLoader {
      * @author squid233
      */
     @FunctionalInterface
-    public interface PreReturn extends Consumer<Mesh3> {
+    public interface PreReturn {
         /**
          * Set attribute index before return.
          *
-         * @param mesh Mesh to set
+         * @param mesh      Mesh to set
+         * @param vertices  Vertices
+         * @param meshIndex The order of the index of the mesh
          */
-        void accept(Mesh3 mesh);
+        void accept(Mesh3 mesh,
+                    float[] vertices,
+                    int meshIndex);
     }
 
     private static AIScene load(ClassLoader cl,
@@ -276,7 +280,8 @@ public class ObjLoader {
 
     private static Mesh3 processMesh(AIMesh aiMesh,
                                      List<Material> materials,
-                                     PreReturn preReturn) {
+                                     @Nullable PreReturn preReturn,
+                                     int index) {
         FloatArray vertices = new FloatArray();
         FloatArray colors = new FloatArray();
         FloatArray textures = new FloatArray();
@@ -298,9 +303,14 @@ public class ObjLoader {
         }
 
         Mesh3 mesh = new Mesh3();
-        preReturn.accept(mesh);
-        return mesh.vertices(vertices.toFArray())
-                .colors(colors.toFArray())
+        float[] v = vertices.toFArray();
+        if (preReturn != null) {
+            preReturn.accept(mesh, v, index);
+        }
+        if (!colors.isEmpty()) {
+            mesh.colors(colors.toFArray());
+        }
+        return mesh.vertices(v)
                 .texCoords(textures.toFArray())
                 .normalVert(normals.toFArray())
                 .indices(indices.toIArray())
@@ -358,7 +368,7 @@ public class ObjLoader {
      */
     public static ObjModel3 load3(ClassLoader cl,
                                   String filename,
-                                  PreReturn preReturn)
+                                  @Nullable PreReturn preReturn)
             throws Exception {
         return load3(cl, filename, DEFAULT_FLAGS, preReturn);
     }
@@ -376,7 +386,7 @@ public class ObjLoader {
     public static ObjModel3 load3(ClassLoader cl,
                                   String filename,
                                   int flags,
-                                  PreReturn preReturn)
+                                  @Nullable PreReturn preReturn)
             throws Exception {
         AIScene scene = load(cl, filename, flags);
         List<Material> materials = createMaterials(cl, scene, filename);
@@ -385,7 +395,8 @@ public class ObjLoader {
         Mesh3[] meshes = new Mesh3[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(requireNonNull(aiMeshes).get(i));
-            Mesh3 mesh = processMesh(aiMesh, materials, preReturn).unbindVao();
+            Mesh3 mesh = processMesh(aiMesh, materials, preReturn, i)
+                    .unbindVao();
             meshes[i] = mesh;
         }
         return new ObjModel3(meshes);

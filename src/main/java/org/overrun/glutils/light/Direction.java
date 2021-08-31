@@ -34,11 +34,29 @@ import org.joml.Vector3ic;
  * @since 1.2.0
  */
 public enum Direction {
+    /**
+     * Vector to up
+     */
     UP(0, 1, 0, 1, 0),
+    /**
+     * Vector to down
+     */
     DOWN(1, 0, 0, -1, 0),
+    /**
+     * Vector to north
+     */
     NORTH(2, 3, 0, 0, -1),
+    /**
+     * Vector to south
+     */
     SOUTH(3, 2, 0, 0, 1),
+    /**
+     * Vector to west
+     */
     WEST(4, 5, -1, 0, 0),
+    /**
+     * Vector to east
+     */
     EAST(5, 4, 1, 0, 0);
 
     private static final Vector3i[] CACHE_VECTOR = new Vector3i[6];
