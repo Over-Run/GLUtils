@@ -30,11 +30,7 @@ package org.overrun.glutils.mesh;
  * @since 1.2.0
  */
 public class MeshVertexBuilder extends BaseMeshVertexBuilder {
-    private final Mesh mesh;
-
-    public MeshVertexBuilder() {
-        this.mesh = new Mesh().colorDim(4);
-    }
+    private final Mesh mesh = new Mesh().colorDim(4);
 
     private void preRender() {
         if (isDirty) {

@@ -68,16 +68,29 @@ public abstract class BaseMeshVertexBuilder implements IVertexBuilder {
 
     /**
      * Render this mesh
+     * <p>
+     * <b>Note:</b> use {@link #getMesh()} to set mesh attrib index before call
+     * this method.</p>
+     *
+     * @see #render(int)
      */
     public abstract void render();
 
     /**
      * Render this mesh with specified geometry mode
+     * <p>
+     * <b>Note:</b> use {@link #getMesh()} to set mesh attrib index before call
+     * this method.</p>
+     *
+     * @param mode rendering mode
+     * @see #render()
      */
     public abstract void render(int mode);
 
     /**
      * Get mesh object
+     *
+     * @return built mesh object
      */
     public abstract BaseMesh<?> getMesh();
 

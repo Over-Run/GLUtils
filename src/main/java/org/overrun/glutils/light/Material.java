@@ -32,6 +32,9 @@ import org.joml.Vector4f;
  * @since 1.2.0
  */
 public class Material {
+    /**
+     * default reflection color
+     */
     public static final Vector4f DEFAULT_COLOR = new Vector4f(1, 1, 1, 1);
     private Vector4f ambientColor = DEFAULT_COLOR;
     private Vector4f diffuseColor = DEFAULT_COLOR;
@@ -45,21 +48,47 @@ public class Material {
     public Material() {
     }
 
+    /**
+     * construct
+     *
+     * @param color       material color
+     * @param reflectance reflectance
+     */
     public Material(Vector4f color,
                     float reflectance) {
         this(color, color, color, 0, reflectance);
     }
 
+    /**
+     * construct
+     *
+     * @param texture material texture
+     */
     public Material(int texture) {
         this.texture = texture;
     }
 
+    /**
+     * construct
+     *
+     * @param texture     material texture
+     * @param reflectance reflectance
+     */
     public Material(int texture,
                     float reflectance) {
         this.texture = texture;
         this.reflectance = reflectance;
     }
 
+    /**
+     * construct
+     *
+     * @param ambientColor  ambient color
+     * @param diffuseColor  diffuse color
+     * @param specularColor specular color
+     * @param texture       material texture
+     * @param reflectance   reflectance
+     */
     public Material(Vector4f ambientColor,
                     Vector4f diffuseColor,
                     Vector4f specularColor,
@@ -83,6 +112,8 @@ public class Material {
 
     /**
      * set ambient color
+     *
+     * @param ambientColor ambient color
      */
     public void setAmbientColor(Vector4f ambientColor) {
         this.ambientColor = ambientColor;
@@ -99,6 +130,8 @@ public class Material {
 
     /**
      * set diffuse color
+     *
+     * @param diffuseColor diffuse color
      */
     public void setDiffuseColor(Vector4f diffuseColor) {
         this.diffuseColor = diffuseColor;
@@ -115,6 +148,8 @@ public class Material {
 
     /**
      * set specular color
+     *
+     * @param specularColor specular color
      */
     public void setSpecularColor(Vector4f specularColor) {
         this.specularColor = specularColor;
@@ -131,6 +166,8 @@ public class Material {
 
     /**
      * set reflectance
+     *
+     * @param reflectance reflectance
      */
     public void setReflectance(float reflectance) {
         this.reflectance = reflectance;
@@ -147,6 +184,8 @@ public class Material {
 
     /**
      * set texture
+     *
+     * @param texture texture
      */
     public void setTexture(int texture) {
         this.texture = texture;

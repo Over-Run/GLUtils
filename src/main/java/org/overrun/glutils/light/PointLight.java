@@ -37,18 +37,37 @@ public class PointLight {
     private float intensity;
     private Attenuation attenuation;
 
+    /**
+     * construct
+     *
+     * @param color     light color
+     * @param position  light position
+     * @param intensity light intensity
+     */
     public PointLight(Vector3f color, Vector3f position, float intensity) {
-        attenuation = new Attenuation(1, 0, 0);
+        this(color, position, intensity, new Attenuation(1, 0, 0));
+    }
+
+    /**
+     * construct
+     *
+     * @param color       light color
+     * @param position    light position
+     * @param intensity   light intensity
+     * @param attenuation light attenuation
+     */
+    public PointLight(Vector3f color, Vector3f position, float intensity, Attenuation attenuation) {
         this.color = color;
         this.position = position;
         this.intensity = intensity;
-    }
-
-    public PointLight(Vector3f color, Vector3f position, float intensity, Attenuation attenuation) {
-        this(color, position, intensity);
         this.attenuation = attenuation;
     }
 
+    /**
+     * copy light
+     *
+     * @param pointLight light for copying
+     */
     public PointLight(PointLight pointLight) {
         this(new Vector3f(pointLight.getColor()),
                 new Vector3f(pointLight.getPosition()),
@@ -67,6 +86,8 @@ public class PointLight {
 
     /**
      * set color
+     *
+     * @param color color
      */
     public void setColor(Vector3f color) {
         this.color = color;
@@ -83,6 +104,8 @@ public class PointLight {
 
     /**
      * set position
+     *
+     * @param position position
      */
     public void setPosition(Vector3f position) {
         this.position = position;
@@ -99,6 +122,8 @@ public class PointLight {
 
     /**
      * set intensity
+     *
+     * @param intensity intensity
      */
     public void setIntensity(float intensity) {
         this.intensity = intensity;
@@ -115,16 +140,28 @@ public class PointLight {
 
     /**
      * set attenuation
+     *
+     * @param attenuation attenuation
      */
     public void setAttenuation(Attenuation attenuation) {
         this.attenuation = attenuation;
     }
 
+    /**
+     * @author squid233
+     */
     public static class Attenuation {
         private float constant;
         private float linear;
         private float exponent;
 
+        /**
+         * construct
+         *
+         * @param constant constant
+         * @param linear   linear
+         * @param exponent exponent
+         */
         public Attenuation(float constant, float linear, float exponent) {
             this.constant = constant;
             this.linear = linear;
@@ -142,6 +179,8 @@ public class PointLight {
 
         /**
          * set constant
+         *
+         * @param constant constant
          */
         public void setConstant(float constant) {
             this.constant = constant;
@@ -158,6 +197,8 @@ public class PointLight {
 
         /**
          * set linear
+         *
+         * @param linear linear
          */
         public void setLinear(float linear) {
             this.linear = linear;
@@ -174,6 +215,8 @@ public class PointLight {
 
         /**
          * set exponent
+         *
+         * @param exponent exponent
          */
         public void setExponent(float exponent) {
             this.exponent = exponent;

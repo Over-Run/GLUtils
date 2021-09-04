@@ -234,7 +234,7 @@ public class GameRenderer implements AutoCloseable {
         String fpsSt = "FPS: " + TIMER.fps;
         String st = fpsSt + "\nLight angle: " + lightAngle;
         st += "\nCamera pos: " + cameraX + ", " + cameraY + ", " + cameraZ;
-        // TODO: 2021/8/31  rot
+        st += "\nCamera rotation: " + player.xRot + ", " + player.yRot;
         DrawableText.build(utf8,
                 st,
                 4,
@@ -253,9 +253,7 @@ public class GameRenderer implements AutoCloseable {
                  texCoord,
                  tex,
                  indices,
-                 bv,
-                 bc,
-                 bi) -> {
+                 bc) -> {
                     text.bindVao()
                             .vertices(vertices)
                             .colors(colors)
@@ -264,9 +262,9 @@ public class GameRenderer implements AutoCloseable {
                             .indices(indices)
                             .unbindVao();
                     textBg.bindVao()
-                            .vertices(bv)
+                            .vertices(vertices)
                             .colors(bc)
-                            .indices(bi)
+                            .indices(indices)
                             .unbindVao();
                 }
         );

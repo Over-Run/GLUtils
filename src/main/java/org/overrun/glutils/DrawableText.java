@@ -94,9 +94,7 @@ public class DrawableText {
         FloatArray colors = new FloatArray();
         FloatArray tex = new FloatArray();
         IntArray indices = new IntArray();
-        FloatArray bvertices = new FloatArray();
         FloatArray bcolors = new FloatArray();
-        IntArray bindices = new IntArray();
         char[] ca = text.toCharArray();
         float startY = 0;
         int i = 0;
@@ -136,22 +134,7 @@ public class DrawableText {
             float texEndX = ((float) gsx + (float) gw) / (float) ftw;
             float texEndY = ((float) gsy + (float) gh) / (float) fth;
             if (bgColor != null) {
-                // background
-                // left top
-                bvertices.addAll(startX, startY, 0);
-                bindices.add(i0);
-                // left bottom
-                bvertices.addAll(startX, endY, 0);
-                bindices.add(i1);
-                // right bottom
-                bvertices.addAll(endX, endY, 0);
-                bindices.add(i2);
-                // right top
-                bvertices.addAll(endX, startY, 0);
                 bcolors.addAll(bgColor.apply(c, i));
-                bindices.add(i3);
-                bindices.add(i0);
-                bindices.add(i2);
             }
 
             // foreground
@@ -196,9 +179,7 @@ public class DrawableText {
                 tex.toFArray(),
                 texture.getTextureId(),
                 idi,
-                bvertices.toFArray(),
-                bcolors.toFArray(),
-                bindices.toIArray());
+                bcolors.toFArray());
     }
 
     /**
@@ -216,18 +197,15 @@ public class DrawableText {
          * @param texCoord  texture coordinates
          * @param tex       texture id
          * @param indices   indices
-         * @param bvertices background vertices
          * @param bcolors   background colors
-         * @param bindices  background indices
+         * @since 1.2.0
          */
         void accept(float[] vertices,
                     float[] colors,
                     float[] texCoord,
                     int tex,
                     int[] indices,
-                    float[] bvertices,
-                    float[] bcolors,
-                    int[] bindices);
+                    float[] bcolors);
     }
 
     /**

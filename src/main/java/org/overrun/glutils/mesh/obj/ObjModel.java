@@ -60,6 +60,8 @@ public class ObjModel<T extends IMesh> implements Drawable, AutoCloseable {
 
     /**
      * set pre render
+     *
+     * @param preRender pre render
      */
     public void setPreRender(PreRender<T> preRender) {
         this.preRender = preRender;
@@ -76,6 +78,8 @@ public class ObjModel<T extends IMesh> implements Drawable, AutoCloseable {
 
     /**
      * pre render
+     * <p>
+     * function: {@link PreRender#accept accept}
      *
      * @author squid233
      */

@@ -130,9 +130,13 @@ public class Player {
         yRot += xOffset;
         if (xRot > 90) {
             xRot = 90;
-        }
-        if (xRot < -90) {
+        } else if (xRot < -90) {
             xRot = -90;
+        }
+        if (yRot >= 360) {
+            yRot = 0;
+        } else if (yRot <= 0) {
+            yRot = 360;
         }
     }
 }

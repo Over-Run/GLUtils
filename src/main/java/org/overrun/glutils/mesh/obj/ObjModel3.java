@@ -32,6 +32,11 @@ import org.overrun.glutils.mesh.Mesh3;
  * @since 1.2.0
  */
 public class ObjModel3 extends ObjModel<Mesh3> {
+    /**
+     * construct
+     *
+     * @param meshes meshes
+     */
     public ObjModel3(Mesh3[] meshes) {
         super(meshes);
     }

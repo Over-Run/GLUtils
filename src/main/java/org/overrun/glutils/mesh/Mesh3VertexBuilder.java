@@ -30,16 +30,11 @@ package org.overrun.glutils.mesh;
  * @since 1.2.0
  */
 public class Mesh3VertexBuilder extends BaseMeshVertexBuilder {
-    private final Mesh3 mesh;
-
-    public Mesh3VertexBuilder() {
-        this.mesh = new Mesh3().colorDim(4).unbindVao();
-    }
+    private final Mesh3 mesh = new Mesh3().colorDim(4).unbindVao();
 
     private void preRender() {
         if (isDirty) {
-            mesh.bindVao()
-                    .vertices(vertices.toFArray());
+            mesh.bindVao().vertices(vertices.toFArray());
             if (colored) {
                 mesh.colors(colors.toFArray());
             }

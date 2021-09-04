@@ -47,7 +47,7 @@ public class GLUTest implements AutoCloseable {
     public static final Timer TIMER = new Timer(60);
     public final Player player = new Player();
     private float lightAngle;
-    private Vector3f ambientLight;
+    private final Vector3f ambientLight = new Vector3f(0.3f);
     private PointLight pointLight;
     private DirectionalLight directionalLight;
     public GLFWindow window;
@@ -124,14 +124,14 @@ public class GLUTest implements AutoCloseable {
             throws Exception {
         (renderer = new GameRenderer()).init();
         float lightIntensity = 1.0f;
-        ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
-        Vector3f lightColor = new Vector3f(1, 1, 1);
-        Vector3f lightPosition = new Vector3f(0, 0, 1);
+        Vector3f lightColor = new Vector3f(1);
+        // player is the lighting source
+        Vector3f lightPosition = new Vector3f(0);
         pointLight = new PointLight(lightColor, lightPosition, lightIntensity);
         PointLight.Attenuation att = new PointLight.Attenuation(0.0f, 0.0f, 1.0f);
         pointLight.setAttenuation(att);
         lightPosition = new Vector3f(-1, 0, 0);
-        lightColor = new Vector3f(1, 1, 1);
+        lightColor = new Vector3f(1);
         directionalLight = new DirectionalLight(lightColor, lightPosition, lightIntensity);
     }
 

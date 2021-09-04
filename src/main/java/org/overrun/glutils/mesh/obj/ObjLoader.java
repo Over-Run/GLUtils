@@ -59,6 +59,9 @@ import static org.lwjgl.opengl.GL11.GL_NEAREST;
  * @since 1.2.0
  */
 public class ObjLoader {
+    /**
+     *
+     */
     public static final int DEFAULT_FLAGS = aiProcess_JoinIdenticalVertices
             | aiProcess_Triangulate
             | aiProcess_FixInfacingNormals;
@@ -108,10 +111,11 @@ public class ObjLoader {
                     JarEntry entry = entries.nextElement();
                     String name = entry.getName();
                     if (!entry.isDirectory() && name.startsWith(parentPath)) {
-                        InputStream in = cl.getResourceAsStream(name);
-                        Files.copy(requireNonNull(in),
-                                Paths.get(TMP + "/" + name),
-                                StandardCopyOption.REPLACE_EXISTING);
+                        try (InputStream in = cl.getResourceAsStream(name)) {
+                            Files.copy(requireNonNull(in),
+                                    Paths.get(TMP + "/" + name),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                        }
                     }
                 }
             } else if (protocol.equals("file")) {
@@ -174,6 +178,7 @@ public class ObjLoader {
         if (!texPath.isEmpty()) {
             texture = Textures.loadAWT(cl, filename + "/../" + texPath, GL_NEAREST);
         }
+        path.close();
 
         Vector4f ambient = Material.DEFAULT_COLOR;
         int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, color);
@@ -354,6 +359,7 @@ public class ObjLoader {
             Mesh mesh = processMesh(aiMesh, materials);
             meshes[i] = mesh;
         }
+        aiReleaseImport(scene);
         return new ObjModel2(meshes);
     }
 
@@ -399,6 +405,7 @@ public class ObjLoader {
                     .unbindVao();
             meshes[i] = mesh;
         }
+        aiReleaseImport(scene);
         return new ObjModel3(meshes);
     }
 }
