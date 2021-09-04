@@ -49,6 +49,7 @@ public class GLFWindow implements AutoCloseable {
      */
     private int width, height;
     private String title;
+    private boolean resized;
 
     /**
      * construct and create window
@@ -200,6 +201,26 @@ public class GLFWindow implements AutoCloseable {
     public void setTitle(String title) {
         this.title = title;
         glfwSetWindowTitle(hWnd, title);
+    }
+
+    /**
+     * is resized
+     *
+     * @return {@link #resized}
+     * @since 1.3.0
+     */
+    public boolean isResized() {
+        return resized;
+    }
+
+    /**
+     * set resized
+     *
+     * @param resized window resized
+     * @since 1.3.0
+     */
+    public void setResized(boolean resized) {
+        this.resized = resized;
     }
 
     /**

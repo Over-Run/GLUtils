@@ -96,18 +96,18 @@ public class Framebuffer {
     }
 
     /**
-     * get window width
+     * get framebuffer width
      *
-     * @return window width
+     * @return framebuffer width
      */
     public int getWidth() {
         return width;
     }
 
     /**
-     * get window height
+     * get framebuffer height
      *
-     * @return window height
+     * @return framebuffer height
      */
     public int getHeight() {
         return height;

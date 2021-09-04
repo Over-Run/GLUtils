@@ -9,15 +9,16 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 group 'io.github.over-run'
 archivesBaseName = 'glutils'
-version = '1.2.0'
+version = '1.3.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
     maven { url 'https://repo1.maven.org/maven2' }
     maven { url 'https://maven.aliyun.com/repository/central' }
     maven { url 'https://jitpack.io' }
-    // temporary maven repository
+    // temporary maven repositories
     maven { url 'https://s01.oss.sonatype.org/content/repositories/releases' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots' }
 }
 
 dependencies {
@@ -119,7 +120,7 @@ publishing.repositories {
             username System.getenv("OSSRH_USERNAME")
             password System.getenv("OSSRH_PASSWORD")
         }
-        url = version.endsWith('SNAPSHOT')
+        url = version.endsWith('-SNAPSHOT')
                 ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
                 : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
     }
