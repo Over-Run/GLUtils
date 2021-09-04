@@ -39,6 +39,9 @@ public class Material {
     private float reflectance = 0;
     private int texture = 0;
 
+    /**
+     * construct
+     */
     public Material() {
     }
 

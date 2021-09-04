@@ -36,6 +36,13 @@ public class DirectionalLight {
     private Vector3f direction;
     private float intensity;
 
+    /**
+     * construct
+     *
+     * @param color     light color
+     * @param direction light direction
+     * @param intensity light intensity
+     */
     public DirectionalLight(Vector3f color,
                             Vector3f direction,
                             float intensity) {
@@ -44,6 +51,11 @@ public class DirectionalLight {
         this.intensity = intensity;
     }
 
+    /**
+     * copy light
+     *
+     * @param light light for copying
+     */
     @SuppressWarnings("CopyConstructorMissesField")
     public DirectionalLight(DirectionalLight light) {
         this(new Vector3f(light.getColor()), light.getDirection(), light.getIntensity());
@@ -60,6 +72,8 @@ public class DirectionalLight {
 
     /**
      * set color
+     *
+     * @param color light color
      */
     public void setColor(Vector3f color) {
         this.color = color;
@@ -76,6 +90,8 @@ public class DirectionalLight {
 
     /**
      * set direction
+     *
+     * @param direction light direction
      */
     public void setDirection(Vector3f direction) {
         this.direction = direction;
@@ -92,6 +108,8 @@ public class DirectionalLight {
 
     /**
      * set intensity
+     *
+     * @param intensity light intensity
      */
     public void setIntensity(float intensity) {
         this.intensity = intensity;

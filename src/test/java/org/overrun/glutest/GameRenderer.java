@@ -37,10 +37,8 @@ import org.overrun.glutils.mesh.MeshLoader;
 import org.overrun.glutils.mesh.obj.ObjLoader;
 import org.overrun.glutils.mesh.obj.ObjModel3;
 
-import java.awt.Font;
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.overrun.glutest.GLUTest.TIMER;
@@ -63,6 +61,12 @@ public class GameRenderer implements AutoCloseable {
             0, 1, 0, 1,
             0, 1, 0, 1
     };
+    public static final float[] BG_COLOR = {
+            0.0f, 0.0f, 0.0f, 0.5f,
+            0.0f, 0.0f, 0.0f, 0.5f,
+            0.0f, 0.0f, 0.0f, 0.5f,
+            0.0f, 0.0f, 0.0f, 0.5f
+    };
     public static final ClassLoader cl = GameRenderer.class.getClassLoader();
     public final Matrix4f proj = new Matrix4f();
     public final Matrix4fStack modelv = new Matrix4fStack(32);
@@ -71,13 +75,13 @@ public class GameRenderer implements AutoCloseable {
             .charset(StandardCharsets.UTF_8)
             .padding(2)
             .build();
-    public final Map<Integer, Mesh3> textBgMap = new HashMap<>();
     public static final float SPECULAR_POWER = 10;
     public GLProgram program;
     public GLProgram guiProgram;
     public ObjModel3 cube;
     public Mesh3 crossing;
     public Mesh3 text;
+    public Mesh3 textBg;
 
     public void init() throws Exception {
         program = new GLProgram();
@@ -90,7 +94,9 @@ public class GameRenderer implements AutoCloseable {
         guiProgram.link();
         cube = ObjLoader.load3(cl,
                 "model/cube/cube.obj",
-                m -> m.vertIdx(0).texIdx(1).normalIdx(2)
+                (m, v, i) -> m.vertIdx(0)
+                        .texIdx(1)
+                        .normalIdx(2)
         );
         cube.setPreRender(m -> program.setUniform("material.ambient",
                 "material.diffuse",
@@ -109,6 +115,12 @@ public class GameRenderer implements AutoCloseable {
                 .colorDim(4)
                 .texIdx(2)
                 .unbindVao();
+        textBg = new Mesh3()
+                .vertUsage(GL_DYNAMIC_DRAW)
+                .vertIdx(0)
+                .colorIdx(1)
+                .colorDim(4)
+                .unbindVao();
     }
 
     public void render(int w,
@@ -116,18 +128,20 @@ public class GameRenderer implements AutoCloseable {
                        Player player,
                        Vector3f ambientLight,
                        PointLight pointLight,
-                       DirectionalLight light) {
+                       DirectionalLight light,
+                       float lightAngle) {
         modelv.pushMatrix();
         float xRot = player.xRot;
         float yRot = player.yRot;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
         program.bind();
+
         modelv.pushMatrix();
         Matrix4f viewMatrix = new Matrix4f(rotateY(rotateX(modelv, -xRot), yRot));
         modelv.popMatrix();
+
         modelv.mul(viewMatrix);
         program.setUniformMat4("proj",
                 setPerspective(proj,
@@ -136,6 +150,7 @@ public class GameRenderer implements AutoCloseable {
                         h,
                         0.05f,
                         1000.0f));
+
         DirectionalLight currDirLight = new DirectionalLight(light);
         Vector4f dir = new Vector4f(currDirLight.getDirection(), 0)
                 .mul(viewMatrix);
@@ -148,6 +163,7 @@ public class GameRenderer implements AutoCloseable {
         lightPos.x = aux.x;
         lightPos.y = aux.y;
         lightPos.z = aux.z;
+
         // Update Light Uniforms
         program.setUniform("ambientLight", ambientLight);
         program.setUniform("specularPower", SPECULAR_POWER);
@@ -164,16 +180,12 @@ public class GameRenderer implements AutoCloseable {
                 "directionalLight.direction",
                 "directionalLight.intensity",
                 currDirLight);
+
         program.setUniform("texSampler", 0);
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    renderMesh(player.x,
-                            player.y,
-                            player.z,
-                            x,
-                            y,
-                            z);
+                    renderMesh(player, x, y, z);
                 }
             }
         }
@@ -181,17 +193,18 @@ public class GameRenderer implements AutoCloseable {
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glEnable(GL_BLEND);
-        renderGui(w, h);
+        renderGui(player, w, h, lightAngle);
         glDisable(GL_BLEND);
         modelv.popMatrix();
     }
 
-    private void renderMesh(float cameraX,
-                            float cameraY,
-                            float cameraZ,
+    private void renderMesh(Player player,
                             float x,
                             float y,
                             float z) {
+        float cameraX = player.x;
+        float cameraY = player.y;
+        float cameraZ = player.z;
         float fx = x == 0 ? -cameraX : -cameraX + (x * 0.9375f);
         float fy = y == 0 ? -cameraY : -cameraY + (y * 0.9375f);
         float fz = z == 0 ? -cameraZ : -cameraZ + (z * 0.9375f);
@@ -201,7 +214,13 @@ public class GameRenderer implements AutoCloseable {
         modelv.popMatrix();
     }
 
-    public void renderGui(int w, int h) {
+    public void renderGui(Player player,
+                          int w,
+                          int h,
+                          float lightAngle) {
+        float cameraX = player.x;
+        float cameraY = player.y;
+        float cameraZ = player.z;
         modelv.pushMatrix();
         glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
         guiProgram.bind();
@@ -212,46 +231,16 @@ public class GameRenderer implements AutoCloseable {
         guiProgram.setUniformMat4("modelv", modelv.translation(w / 2f, h / 2f, 0));
         crossing.render();
         guiProgram.setUniformMat4("modelv", modelv.translation(2, 2, 0));
-        String st = "FPS: " + TIMER.fps;
-        int stl = st.length();
+        String fpsSt = "FPS: " + TIMER.fps;
+        String st = fpsSt + "\nLight angle: " + lightAngle;
+        st += "\nCamera pos: " + cameraX + ", " + cameraY + ", " + cameraZ;
+        // TODO: 2021/8/31  rot
         DrawableText.build(utf8,
                 st,
                 4,
-                (text, vertices) -> {
-                    if (textBgMap.containsKey(stl)) {
-                        return;
-                    }
-                    int pad = utf8.getPadding();
-                    int l = vertices.length;
-                    float[] v = new float[12];
-                    float[] colors = new float[16];
-                    int[] indices = {
-                            0, 1, 2, 3, 0, 2
-                    };
-                    v[0] = vertices[0] - pad;
-                    v[1] = vertices[1] - pad;
-                    v[3] = vertices[3] - pad;
-                    v[4] = vertices[4] + pad;
-                    v[6] = vertices[l - 6] + pad;
-                    v[7] = vertices[l - 5] + pad;
-                    v[9] = vertices[l - 3] + pad;
-                    v[10] = vertices[l - 2] - pad;
-                    for (int i = 0; i < colors.length; i++) {
-                        // 0xffffff80
-                        colors[i] = (i != 0 && (i + 1) % 4 == 0) ? 0.5019608f : 1;
-                    }
-                    textBgMap.put(stl, new Mesh3()
-                            .vertUsage(GL_DYNAMIC_DRAW)
-                            .vertIdx(0)
-                            .vertices(v)
-                            .colorIdx(1)
-                            .colorDim(4)
-                            .colors(colors)
-                            .indices(indices)
-                            .unbindVao());
-                },
+                (c, index) -> BG_COLOR,
                 (c, index) -> {
-                    if (index > 3) {
+                    if (index > 3 && index < fpsSt.length()) {
                         if (TIMER.fps < 30) {
                             return LOW_FPS_COLOR;
                         }
@@ -259,17 +248,32 @@ public class GameRenderer implements AutoCloseable {
                     }
                     return DrawableText.DEFAULT_COLOR_ALPHA;
                 },
-                (vertices, colors, texCoord, tex, indices) ->
-                        text.bindVao()
-                                .vertices(vertices)
-                                .colors(colors)
-                                .texCoords(texCoord)
-                                .texture(tex)
-                                .indices(indices)
-                                .unbindVao()
+                (vertices,
+                 colors,
+                 texCoord,
+                 tex,
+                 indices,
+                 bv,
+                 bc,
+                 bi) -> {
+                    text.bindVao()
+                            .vertices(vertices)
+                            .colors(colors)
+                            .texCoords(texCoord)
+                            .texture(tex)
+                            .indices(indices)
+                            .unbindVao();
+                    textBg.bindVao()
+                            .vertices(bv)
+                            .colors(bc)
+                            .indices(bi)
+                            .unbindVao();
+                }
         );
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        textBgMap.get(stl).render();
+        guiProgram.setUniform("textured", false);
+        textBg.render();
+        guiProgram.setUniform("textured", true);
         text.render();
         guiProgram.unbind();
         modelv.popMatrix();

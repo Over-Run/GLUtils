@@ -62,7 +62,7 @@ vec4 calcLightColor(vec3 light_color, float light_intensity, vec3 position, vec3
 
 vec4 calcPointLight(PointLight light, vec3 position, vec3 normal) {
     vec3 light_direction = light.position - position;
-    vec3 to_light_dir  = normalize(light_direction);
+    vec3 to_light_dir = normalize(light_direction);
     vec4 light_color = calcLightColor(light.color, light.intensity, position, to_light_dir, normal);
 
     // apply attenuation
