@@ -39,7 +39,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * @author squid233
  * @since 1.0.0
  */
-public class GLFWindow {
+public class GLFWindow implements AutoCloseable {
     /**
      * window handler
      */
@@ -236,5 +236,10 @@ public class GLFWindow {
      */
     public long getHandle() {
         return hWnd;
+    }
+
+    @Override
+    public void close() {
+        free();
     }
 }

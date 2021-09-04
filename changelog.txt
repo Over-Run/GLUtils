@@ -1,5 +1,8 @@
 Update Versions.java on adding new versions
 
+1.3.0
+New feature: `GLFWindow` is `AutoCloseable` now
+
 1.2.0
 New feature: `IVertexBuilder`
 New feature: `BaseMeshVertexBuilder`
