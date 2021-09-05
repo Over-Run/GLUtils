@@ -32,7 +32,7 @@ import org.overrun.glutils.IVertexBuilder;
  * @author squid233
  * @since 1.2.0
  */
-public abstract class BaseMeshVertexBuilder implements IVertexBuilder {
+public abstract class BaseMeshVertexBuilder implements IVertexBuilder, AutoCloseable {
     /**
      * vertices
      */
@@ -133,4 +133,7 @@ public abstract class BaseMeshVertexBuilder implements IVertexBuilder {
         normals.addAll(x, y, z);
         return this;
     }
+
+    @Override
+    public abstract void close();
 }

@@ -192,11 +192,11 @@ public abstract class AtlasLoom<T> {
      */
     public static class UV {
         /**
-         * x
+         * origin point
          */
         public final int u0, v0;
         /**
-         * y
+         * end point
          */
         public final int u1, v1;
 

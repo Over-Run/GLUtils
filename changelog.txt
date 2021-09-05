@@ -3,7 +3,8 @@ Update Versions.java on adding new versions
 1.3.0
 New feature: `GLFWindow` is `AutoCloseable` now
 New feature: You can set resized to window
-New feature: `iVertexBuilder` has rendering function
+New feature: `IVertexBuilder` has rendering function
+Fixed a bug: vertex buffer can clear outdated vertex now
 
 1.2.0
 New feature: `IVertexBuilder`

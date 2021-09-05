@@ -35,14 +35,18 @@ public class MeshVertexBuilder extends BaseMeshVertexBuilder {
     private void preRender() {
         if (isDirty) {
             mesh.vertices(vertices.toFArray());
+            vertices.clear();
             if (colored) {
                 mesh.colors(colors.toFArray());
+                colors.clear();
             }
             if (textured) {
                 mesh.texCoords(textureCoord.toFArray());
+                textureCoord.clear();
             }
             if (normalized) {
                 mesh.normalVert(normals.toFArray());
+                normals.clear();
             }
             isDirty = false;
         }
@@ -63,5 +67,10 @@ public class MeshVertexBuilder extends BaseMeshVertexBuilder {
     public void render(int mode) {
         preRender();
         mesh.render(mode);
+    }
+
+    @Override
+    public void close() {
+        mesh.close();
     }
 }
