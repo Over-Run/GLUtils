@@ -74,6 +74,7 @@ public abstract class BaseMeshVertexBuilder implements IVertexBuilder {
      *
      * @see #render(int)
      */
+    @Override
     public abstract void render();
 
     /**
@@ -85,6 +86,7 @@ public abstract class BaseMeshVertexBuilder implements IVertexBuilder {
      * @param mode rendering mode
      * @see #render()
      */
+    @Override
     public abstract void render(int mode);
 
     /**

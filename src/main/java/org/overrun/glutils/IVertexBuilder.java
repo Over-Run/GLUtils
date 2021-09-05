@@ -83,6 +83,23 @@ public interface IVertexBuilder {
     IVertexBuilder normal(float x, float y, float z);
 
     /**
+     * Render this mesh
+     *
+     * @see #render(int)
+     * @since 1.3.0
+     */
+    void render();
+
+    /**
+     * Render this mesh with specified geometry mode
+     *
+     * @param mode rendering mode
+     * @see #render()
+     * @since 1.3.0
+     */
+    void render(int mode);
+
+    /**
      * No effect
      */
     default void next() {
