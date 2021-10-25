@@ -26,8 +26,7 @@
 package org.overrun.glutils.wnd;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWCursorPosCallbackI;
-import org.lwjgl.glfw.GLFWKeyCallbackI;
+import org.lwjgl.glfw.*;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -48,6 +47,7 @@ public class GLFWindow implements AutoCloseable {
      * Only for computing border size
      */
     private int width, height;
+    public int mouseX, mouseY;
     private String title;
     private boolean resized;
 
@@ -78,6 +78,10 @@ public class GLFWindow implements AutoCloseable {
         return glfwGetKey(hWnd, k);
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Window callbacks
+    ///////////////////////////////////////////////////////////////////////////
+
     /**
      * set key callback
      *
@@ -94,6 +98,46 @@ public class GLFWindow implements AutoCloseable {
      */
     public void cursorPosCb(GLFWCursorPosCallbackI cb) {
         glfwSetCursorPosCallback(hWnd, cb);
+    }
+
+    /**
+     * set scroll callback
+     *
+     * @param cb scroll callback
+     * @since 1.3.0
+     */
+    public void scrollCb(GLFWScrollCallbackI cb) {
+        glfwSetScrollCallback(hWnd, cb);
+    }
+
+    /**
+     * Set window icon.
+     *
+     * @param images Images in buffer.
+     * @since 1.3.0
+     */
+    public void setIcon(GLFWImage.Buffer images) {
+        glfwSetWindowIcon(hWnd, images);
+    }
+
+    /**
+     * Set window icon.
+     * <p>
+     * Ignore when {@code count == 0}.
+     *
+     * @param images Images in array.
+     * @since 1.3.0
+     */
+    public void setIcon(GLFWImage... images) {
+        if (images.length < 1) {
+            return;
+        }
+        try (GLFWImage.Buffer buffer = GLFWImage.malloc(images.length)) {
+            for (int i = 0; i < images.length; i++) {
+                buffer.put(i, images[i]);
+            }
+            setIcon(buffer);
+        }
     }
 
     /**
@@ -154,6 +198,15 @@ public class GLFWindow implements AutoCloseable {
     }
 
     /**
+     * close window
+     *
+     * @since 1.3.0
+     */
+    public void closeWindow() {
+        glfwSetWindowShouldClose(hWnd, true);
+    }
+
+    /**
      * free callbacks and destroy window
      */
     public void free() {
@@ -165,20 +218,24 @@ public class GLFWindow implements AutoCloseable {
      * set window width
      *
      * @param width new width
+     * @return this
      */
-    public void setWidth(int width) {
+    public GLFWindow setWidth(int width) {
         this.width = width;
         glfwSetWindowSize(hWnd, width, height);
+        return this;
     }
 
     /**
      * set window height
      *
      * @param height new height
+     * @return this
      */
-    public void setHeight(int height) {
+    public GLFWindow setHeight(int height) {
         this.height = height;
         glfwSetWindowSize(hWnd, width, height);
+        return this;
     }
 
     /**
@@ -186,21 +243,25 @@ public class GLFWindow implements AutoCloseable {
      *
      * @param width  new width
      * @param height new height
+     * @return this
      */
-    public void setSize(int width, int height) {
+    public GLFWindow setSize(int width, int height) {
         this.width = width;
         this.height = height;
         glfwSetWindowSize(hWnd, width, height);
+        return this;
     }
 
     /**
      * set window title
      *
      * @param title new title
+     * @return this
      */
-    public void setTitle(String title) {
+    public GLFWindow setTitle(String title) {
         this.title = title;
         glfwSetWindowTitle(hWnd, title);
+        return this;
     }
 
     /**
@@ -217,10 +278,53 @@ public class GLFWindow implements AutoCloseable {
      * set resized
      *
      * @param resized window resized
+     * @return this
      * @since 1.3.0
      */
-    public void setResized(boolean resized) {
+    public GLFWindow setResized(boolean resized) {
         this.resized = resized;
+        return this;
+    }
+
+    /**
+     * set mouse pos
+     *
+     * @param mouseX mouse x
+     * @param mouseY mouse x
+     * @return this
+     * @since 1.3.0
+     */
+    public GLFWindow setMousePos(int mouseX, int mouseY) {
+        glfwSetCursorPos(hWnd, mouseX, mouseY);
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
+        return this;
+    }
+
+    /**
+     * set mouse x
+     *
+     * @param mouseX mouse x
+     * @return this
+     * @since 1.3.0
+     */
+    public GLFWindow setMouseX(int mouseX) {
+        glfwSetCursorPos(hWnd, mouseX, mouseY);
+        this.mouseX = mouseX;
+        return this;
+    }
+
+    /**
+     * set mouse y
+     *
+     * @param mouseY mouse x
+     * @return this
+     * @since 1.3.0
+     */
+    public GLFWindow setMouseY(int mouseY) {
+        glfwSetCursorPos(hWnd, mouseX, mouseY);
+        this.mouseY = mouseY;
+        return this;
     }
 
     /**
@@ -239,6 +343,26 @@ public class GLFWindow implements AutoCloseable {
      */
     public int getHeight() {
         return height;
+    }
+
+    /**
+     * get window mouse x
+     *
+     * @return window mouse x
+     * @since 1.3.0
+     */
+    public int getMouseX() {
+        return mouseX;
+    }
+
+    /**
+     * get window mouse y
+     *
+     * @return window mouse y
+     * @since 1.3.0
+     */
+    public int getMouseY() {
+        return mouseY;
     }
 
     /**

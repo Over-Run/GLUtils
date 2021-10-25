@@ -44,6 +44,19 @@ public class Framebuffer {
     private int width, height;
 
     /**
+     * construct, set cb and init
+     *
+     * @param cb     size callback
+     * @param parent parent window
+     * @since 1.3.0
+     */
+    public Framebuffer(GLFWFramebufferSizeCallbackI cb,
+                       GLFWindow parent) {
+        this.cb = cb;
+        init(parent);
+    }
+
+    /**
      * construct and init
      *
      * @param parent parent window

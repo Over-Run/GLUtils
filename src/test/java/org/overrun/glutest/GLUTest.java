@@ -53,9 +53,7 @@ public class GLUTest implements AutoCloseable {
     public GLFWindow window;
     public Framebuffer fb;
     public GameRenderer renderer;
-    public boolean resized;
     public boolean grabbing;
-    public double lastX, lastY;
 
     public void run() throws Exception {
         boolean coreProfile = Boolean.parseBoolean(System.getProperty(
@@ -70,15 +68,14 @@ public class GLUTest implements AutoCloseable {
         window = new GLFWindow(854,
                 480,
                 "Testing texture, lighting and HUD");
-        lastX = 854 / 2.0;
-        lastY = 480 / 2.0;
-        fb = new Framebuffer();
-        fb.cb = (window1, width, height) -> resized = true;
-        fb.init(window);
+        window.setMousePos(854 / 2, 480 / 2);
+        fb = new Framebuffer((window1, width, height) ->
+                window.setResized(true),
+                window);
         window.keyCb((hWnd, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {
                 if (key == GLFW_KEY_ESCAPE) {
-                    glfwSetWindowShouldClose(hWnd, true);
+                    window.closeWindow();
                 }
                 if (key == GLFW_KEY_GRAVE_ACCENT) {
                     grabbing = !grabbing;
@@ -88,18 +85,16 @@ public class GLUTest implements AutoCloseable {
                 }
             }
         });
-        window.cursorPosCb((window, xpos, ypos) -> {
+        window.cursorPosCb((hWnd, xpos, ypos) -> {
             if (grabbing) {
-                double xOffset = xpos - lastX;
-                double yOffset = lastY - ypos;
-                lastX = xpos;
-                lastY = ypos;
+                double xOffset = xpos - window.mouseX;
+                double yOffset = window.mouseY - ypos;
                 xOffset *= SENSITIVITY;
                 yOffset *= SENSITIVITY;
                 player.rotate(xOffset, yOffset);
             }
-            lastX = xpos;
-            lastY = ypos;
+            window.mouseX = (int) xpos;
+            window.mouseY = (int) ypos;
         });
         GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         if (mode != null) {
@@ -111,8 +106,8 @@ public class GLUTest implements AutoCloseable {
         glfwSwapInterval(1);
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         System.out.println("GL Version " + glGetString(GL_VERSION));
-        TIMER.advanceTime();
         init();
+        TIMER.advanceTime();
         window.show();
         window.focus();
         grabbing = true;
@@ -140,11 +135,10 @@ public class GLUTest implements AutoCloseable {
         int frames = 0;
         while (!window.shouldClose()) {
             TIMER.advanceTime();
-            //float delta = TIMER.delta;
             for (int i = 0; i < TIMER.ticks; i++) {
                 tick();
             }
-            render();
+            render(TIMER.delta);
             window.swapBuffers();
             glfwPollEvents();
             ++frames;
@@ -181,11 +175,11 @@ public class GLUTest implements AutoCloseable {
         directionalLight.getDirection().y = (float) Math.cos(angRad);
     }
 
-    public void render() {
+    public void render(double delta) {
         int w = fb.getWidth(), h = fb.getHeight();
-        if (resized) {
+        if (window.isResized()) {
             glViewport(0, 0, w, h);
-            resized = false;
+            window.setResized(false);
         }
         if (w == 0) {
             w = 1;

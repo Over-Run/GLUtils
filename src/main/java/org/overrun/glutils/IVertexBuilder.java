@@ -26,6 +26,8 @@
 package org.overrun.glutils;
 
 /**
+ * Recommend implementing yourself.
+ *
  * @author squid233
  * @since 1.2.0
  */
