@@ -137,9 +137,10 @@ public class DisplayListBuilder
 
     /**
      * Render the list
+     * <p>
+     * <b>Note: </b>{@code mode} is ignored.
      *
      * @param mode Geometry mode
-     * @implNote {@code mode} is ignored.
      */
     @Override
     public void render(int mode) {

@@ -34,9 +34,10 @@ import static org.overrun.glutils.DrawableText.DEFAULT_COLOR;
 
 /**
  * Text renderer for legacy GL.
+ * <p>
+ * <b>Note: </b>Not supported to line separator
  *
  * @author squid233
- * @apiNote Not supported to line separator<br>
  * @since 1.4.0
  */
 public class TextRenderer {
