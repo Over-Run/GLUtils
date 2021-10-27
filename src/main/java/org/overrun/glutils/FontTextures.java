@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class FontTextures {
     private static final Map<String, FontTexture> FONT_TEXTURES =
-            new HashMap<>();
+        new HashMap<>();
 
     /**
      * construct builder
@@ -116,12 +116,24 @@ public class FontTextures {
          * @return font texture
          */
         public FontTexture build() {
+            return build(true);
+        }
+
+        /**
+         * build font texture
+         *
+         * @param antialias enable antialias
+         * @return font texture
+         * @since 1.4.0
+         */
+        public FontTexture build(boolean antialias) {
             if (FONT_TEXTURES.containsKey(texName)) {
                 return FONT_TEXTURES.get(texName);
             }
             FontTexture ft = new FontTexture(font,
-                    charset,
-                    padding);
+                charset,
+                padding,
+                antialias);
             FONT_TEXTURES.put(texName, ft);
             return ft;
         }

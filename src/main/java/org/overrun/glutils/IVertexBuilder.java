@@ -95,7 +95,7 @@ public interface IVertexBuilder {
     /**
      * Render this mesh with specified geometry mode
      *
-     * @param mode rendering mode
+     * @param mode Geometry mode
      * @see #render()
      * @since 1.3.0
      */

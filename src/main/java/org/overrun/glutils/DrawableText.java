@@ -42,19 +42,19 @@ public class DrawableText {
      * white color
      */
     public static final float[] DEFAULT_COLOR = {
-            1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f
     };
     /**
      * white color with alpha value
      */
     public static final float[] DEFAULT_COLOR_ALPHA = {
-            1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 1.0f
     };
 
     /**
@@ -77,14 +77,14 @@ public class DrawableText {
     /**
      * build mesh
      *
-     * @param texture  font texture
+     * @param font     font texture
      * @param text     text for rendering
      * @param colorDim Color dimensions.
      * @param bgColor  Background color function.
      * @param fgColor  Foreground color function.
      * @param consumer Consumer to set mesh.
      */
-    public static void build(final FontTexture texture,
+    public static void build(final FontTexture font,
                              final String text,
                              final int colorDim,
                              @Nullable final ColorFunction bgColor,
@@ -99,9 +99,9 @@ public class DrawableText {
         float startY = 0;
         int i = 0;
         int numChar = 0;
-        int ftw = texture.getWidth();
-        int fth = texture.getHeight();
-        int gh = texture.getGlyphHeight();
+        int ftw = font.getWidth();
+        int fth = font.getHeight();
+        int gh = font.getGlyphHeight();
         // indices
         int i0 = 0;
         int i1 = 1;
@@ -122,7 +122,7 @@ public class DrawableText {
                 numChar = 0;
                 continue;
             }
-            FontTexture.Glyph glyph = texture.getGlyph(c);
+            FontTexture.Glyph glyph = font.getGlyph(c);
             int gw = glyph.getWidth();
             int gsx = glyph.getStartX();
             int gsy = glyph.getStartY();
@@ -175,11 +175,11 @@ public class DrawableText {
         float[] vtf = vertices.toFArray();
         int[] idi = indices.toIArray();
         consumer.accept(vtf,
-                colors.toFArray(),
-                tex.toFArray(),
-                texture.getTextureId(),
-                idi,
-                bcolors.toFArray());
+            colors.toFArray(),
+            tex.toFArray(),
+            font.getTextureId(),
+            idi,
+            bcolors.toFArray());
     }
 
     /**
@@ -192,12 +192,12 @@ public class DrawableText {
         /**
          * set mesh
          *
-         * @param vertices  vertices
-         * @param colors    colors
-         * @param texCoord  texture coordinates
-         * @param tex       texture id
-         * @param indices   indices
-         * @param bcolors   background colors
+         * @param vertices vertices
+         * @param colors   colors
+         * @param texCoord texture coordinates
+         * @param tex      texture id
+         * @param indices  indices
+         * @param bcolors  background colors
          * @since 1.2.0
          */
         void accept(float[] vertices,
@@ -215,7 +215,7 @@ public class DrawableText {
      */
     @FunctionalInterface
     public interface ColorFunction
-            extends BiFunction<Character, Integer, float[]> {
+        extends BiFunction<Character, Integer, float[]> {
         /**
          * Add return value to color list
          *

@@ -40,13 +40,16 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  */
 public class GLFWindow implements AutoCloseable {
     /**
-     * window handler
+     * window handle
      */
     public final long hWnd;
     /**
      * Only for computing border size
      */
     private int width, height;
+    /**
+     * Mouse position
+     */
     public int mouseX, mouseY;
     private String title;
     private boolean resized;
@@ -111,6 +114,26 @@ public class GLFWindow implements AutoCloseable {
     }
 
     /**
+     * set mouse button callback
+     *
+     * @param cb mouse button callback
+     * @since 1.4.0
+     */
+    public void mouseButtonCb(GLFWMouseButtonCallbackI cb) {
+        glfwSetMouseButtonCallback(hWnd, cb);
+    }
+
+    /**
+     * set char callback
+     *
+     * @param cb char callback
+     * @since 1.4.0
+     */
+    public void charCb(GLFWCharCallbackI cb) {
+        glfwSetCharCallback(hWnd, cb);
+    }
+
+    /**
      * Set window icon.
      *
      * @param images Images in buffer.
@@ -148,6 +171,17 @@ public class GLFWindow implements AutoCloseable {
      */
     public void setPos(int x, int y) {
         glfwSetWindowPos(hWnd, x, y);
+    }
+
+    /**
+     * Get the key status
+     *
+     * @param key The key
+     * @return {@code PRESS} or {@code RELEASE}
+     * @since 1.4.0
+     */
+    public int getKey(int key) {
+        return glfwGetKey(hWnd, key);
     }
 
     /**
@@ -384,6 +418,7 @@ public class GLFWindow implements AutoCloseable {
     }
 
     @Override
+    @Deprecated
     public void close() {
         free();
     }

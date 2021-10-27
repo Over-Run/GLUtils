@@ -32,6 +32,7 @@ import java.nio.charset.CharsetEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static java.awt.RenderingHints.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.AWTImage.getRGB;
 
@@ -59,10 +60,26 @@ public class FontTexture {
     public FontTexture(Font font,
                        Charset charset,
                        int padding) {
+        this(font, charset, padding, true);
+    }
+
+    /**
+     * construct and build texture
+     *
+     * @param font    font
+     * @param charset charset
+     * @param padding char padding
+     * @param antialias enable antialias
+     * @since 1.4.0
+     */
+    public FontTexture(Font font,
+                       Charset charset,
+                       int padding,
+                       boolean antialias) {
         this.font = font;
         this.charset = charset;
         this.padding = padding;
-        buildTexture();
+        buildTexture(antialias);
     }
 
     /**
@@ -111,10 +128,13 @@ public class FontTexture {
         return result.toString();
     }
 
-    private void buildTexture() {
+    private void buildTexture(boolean antialias) {
+        Object aa = antialias
+            ? VALUE_ANTIALIAS_ON
+            : VALUE_ANTIALIAS_OFF;
         BufferedImage bi = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = bi.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(KEY_ANTIALIASING, aa);
         g.setFont(font);
         FontMetrics fm = g.getFontMetrics();
         char[] allChars = getAllAvailableChars().toCharArray();
@@ -140,7 +160,7 @@ public class FontTexture {
         g.dispose();
         bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g = bi.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(KEY_ANTIALIASING, aa);
         g.setFont(font);
         fm = g.getFontMetrics();
         g.setColor(Color.WHITE);
