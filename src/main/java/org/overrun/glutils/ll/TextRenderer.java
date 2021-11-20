@@ -45,7 +45,7 @@ public class TextRenderer {
                                 FontTexture font,
                                 @Nullable ColorFunction fgColor,
                                 boolean bottomToTop) {
-        String[] ln = text.split("[\r\n]");
+        String[] ln = text.split("[\\r\\n]");
         int currLn = 0;
         int ftw = font.getWidth();
         int fth = font.getHeight();
@@ -53,7 +53,6 @@ public class TextRenderer {
 
         glBindTexture(GL_TEXTURE_2D, font.getTextureId());
         for (String t : ln) {
-            int lnMulGh = currLn * gh;
             char[] ca = t.toCharArray();
             float startX = 0;
             int i = 0;
