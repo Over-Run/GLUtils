@@ -42,6 +42,7 @@ public class Vbo {
      *
      * @param target the target to which the buffer object is bound. One of:<br>
      *               <table>
+     *                  <caption>GL Buffer Target Constants</caption>
      *                   <tr>
      *                       <td>{@link GL15C#GL_ARRAY_BUFFER ARRAY_BUFFER}</td>
      *                       <td>{@link GL15C#GL_ELEMENT_ARRAY_BUFFER ELEMENT_ARRAY_BUFFER}</td>
