@@ -32,7 +32,7 @@ import org.overrun.glutils.FontTextures;
 import org.overrun.glutils.ll.TextRenderer;
 import org.overrun.glutils.wnd.GLFWindow;
 
-import java.awt.Font;
+import java.awt.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.lwjgl.glfw.GLFW.*;
@@ -67,20 +67,21 @@ public class TextRendererTest {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         FontTexture unifont = FontTextures
             .builder("unifont")
-            .font(Font.decode("Unifont").deriveFont(12.0f))
+            .font(Font.decode("Unifont"))
             .charset(UTF_8)
             .padding(2)
             .build(false);
+        boolean btt = false;
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0, 800, 600, 0, -1, 1);
+        glOrtho(0, 800, btt ? 0 : 600, btt ? 600 : 0, -1, 1);
         glMatrixMode(GL_MODELVIEW);
         window.show();
         while (!window.shouldClose()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glPushMatrix();
             glTranslatef(cx, cy, 0);
-            TextRenderer.drawText("Testing", unifont, null, false);
+            TextRenderer.drawText("Testing\nMulti lines", unifont, null, btt);
             glPopMatrix();
             window.swapBuffers();
             if (window.getKey(GLFW_KEY_W) == GLFW_PRESS) {

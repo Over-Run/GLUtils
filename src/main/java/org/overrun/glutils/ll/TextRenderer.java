@@ -35,7 +35,7 @@ import static org.overrun.glutils.DrawableText.DEFAULT_COLOR;
 /**
  * Text renderer for legacy GL.
  * <p>
- * <b>Note: </b>Not supported to line separator
+ * <b>Note: </b>Re-render per lines
  *
  * @author squid233
  * @since 1.4.0
@@ -45,55 +45,59 @@ public class TextRenderer {
                                 FontTexture font,
                                 @Nullable ColorFunction fgColor,
                                 boolean bottomToTop) {
-        char[] ca = text.toCharArray();
-        float startX = 0;
-        int i = 0;
-        int numChar = 0;
+        String[] ln = text.split("[\r\n]");
+        int currLn = 0;
         int ftw = font.getWidth();
         int fth = font.getHeight();
         int gh = font.getGlyphHeight();
 
         glBindTexture(GL_TEXTURE_2D, font.getTextureId());
-        glBegin(GL_QUADS);
+        for (String t : ln) {
+            int lnMulGh = currLn * gh;
+            char[] ca = t.toCharArray();
+            float startX = 0;
+            int i = 0;
+            glBegin(GL_QUADS);
 
-        for (char c : ca) {
-            FontTexture.Glyph glyph = font.getGlyph(c);
-            int gw = glyph.getWidth();
-            int gsx = glyph.getStartX();
-            int gsy = glyph.getStartY();
-            float endX = startX + gw;
-            float startY = bottomToTop ? gh : 0;
-            float endY = bottomToTop ? 0 : gh;
-            float texStartX = (float) gsx / (float) ftw;
-            float texStartY = (float) gsy / (float) fth;
-            float texEndX = ((float) gsx + (float) gw) / (float) ftw;
-            float texEndY = ((float) gsy + (float) gh) / (float) fth;
-            float[] colors = DEFAULT_COLOR;
-            if (fgColor != null) {
-                colors = fgColor.apply(c, i);
+            for (char c : ca) {
+                FontTexture.Glyph glyph = font.getGlyph(c);
+                int gw = glyph.getWidth();
+                int gsx = glyph.getStartX();
+                int gsy = glyph.getStartY();
+                float endX = startX + gw;
+                float startY = (currLn - (bottomToTop ? 1 : 0)) * gh;
+                float endY = bottomToTop ? startY - gh : startY + gh;
+                float texStartX = (float) gsx / (float) ftw;
+                float texStartY = (float) gsy / (float) fth;
+                float texEndX = ((float) gsx + (float) gw) / (float) ftw;
+                float texEndY = ((float) gsy + (float) gh) / (float) fth;
+                float[] colors = DEFAULT_COLOR;
+                if (fgColor != null) {
+                    colors = fgColor.apply(c, i);
+                }
+                glColor3f(colors[0], colors[1], colors[2]);
+                glTexCoord2f(texStartX, texStartY);
+                glVertex3f(startX, startY, 0);
+
+                glColor3f(colors[3], colors[4], colors[5]);
+                glTexCoord2f(texStartX, texEndY);
+                glVertex3f(startX, endY, 0);
+
+                glColor3f(colors[6], colors[7], colors[8]);
+                glTexCoord2f(texEndX, texEndY);
+                glVertex3f(endX, endY, 0);
+
+                glColor3f(colors[9], colors[10], colors[11]);
+                glTexCoord2f(texEndX, texStartY);
+                glVertex3f(endX, startY, 0);
+
+                startX += gw;
+                ++i;
             }
-            glColor3f(colors[0], colors[1], colors[2]);
-            glTexCoord2f(texStartX, texStartY);
-            glVertex3f(startX, startY, 0);
 
-            glColor3f(colors[3], colors[4], colors[5]);
-            glTexCoord2f(texStartX, texEndY);
-            glVertex3f(startX, endY, 0);
-
-            glColor3f(colors[6], colors[7], colors[8]);
-            glTexCoord2f(texEndX, texEndY);
-            glVertex3f(endX, endY, 0);
-
-            glColor3f(colors[9], colors[10], colors[11]);
-            glTexCoord2f(texEndX, texStartY);
-            glVertex3f(endX, startY, 0);
-
-            startX += gw;
-            ++i;
-            ++numChar;
+            glEnd();
+            ++currLn;
         }
-
-        glEnd();
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 

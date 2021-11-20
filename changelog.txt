@@ -4,6 +4,7 @@ Update Versions.java on adding new versions
 New feature: You can disable antialias now
 New feature: Text renderer for legacy GL
 New feature: DisplayListBuilder
+New feature: Vbo
 
 1.3.0
 New feature: `GLFWindow` is `AutoCloseable` now

@@ -67,11 +67,11 @@ public class ShaderReader {
         ) {
             StringBuilder sb = new StringBuilder();
             String read;
-            while ((read = br.readLine()) != null) {
-                if (read.isEmpty()) {
-                    continue;
+            for (int i = 0; (read = br.readLine()) != null; i++) {
+                if (i > 0) {
+                    sb.append("\n");
                 }
-                sb.append(read).append("\n");
+                sb.append(read);
             }
             return sb.toString();
         }
