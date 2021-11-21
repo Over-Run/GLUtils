@@ -36,18 +36,21 @@ import static org.lwjgl.opengl.GL30.*;
  * @author squid233
  * @since 1.5.0
  */
-public class Tesselator3 {
+public class Tesselator3 implements ITesselator<Tesselator3> {
+    public static final int VERTEX_COUNT = 50000;
     private final GLProgram program;
     private final int vao;
     private final Vbo vbo;
-    private final float[] array = new float[(3 + 4 + 2) * 50000];
+    private final float[] array = new float[(3 + 4 + 2) * VERTEX_COUNT];
+    protected final boolean fixed;
     private float r, g, b, a, u, v;
-    private int vertices;
-    private int pos;
+    protected int vertices;
+    protected int pos;
     private boolean hasColor;
     private boolean hasTexture;
 
-    public Tesselator3() {
+    public Tesselator3(boolean fixed) {
+        this.fixed = fixed;
         program = new GLProgram();
         program.createVsh("#version 330\n" +
             "layout(location = 0) in vec3 vertex;\n" +
@@ -73,7 +76,7 @@ public class Tesselator3 {
             "        FragColor *= fragColor;\n" +
             "    }\n" +
             "    if (hasTexture) {\n" +
-            "        FragColor *= texture2D(sampler, fragTexCoord);\n" +
+            "        FragColor *= texture(sampler, fragTexCoord);\n" +
             "    }\n" +
             "}");
         program.link();
@@ -81,12 +84,13 @@ public class Tesselator3 {
         vbo = new Vbo(GL_ARRAY_BUFFER);
     }
 
-    private void clear() {
+    protected void clear() {
         fill(array, 0);
         vertices = 0;
         pos = 0;
     }
 
+    @Override
     public Tesselator3 init() {
         clear();
         hasColor = false;
@@ -94,6 +98,7 @@ public class Tesselator3 {
         return this;
     }
 
+    @Override
     public Tesselator3 color(final float r,
                              final float g,
                              final float b,
@@ -106,12 +111,14 @@ public class Tesselator3 {
         return this;
     }
 
+    @Override
     public Tesselator3 color(final float r,
                              final float g,
                              final float b) {
         return color(r, g, b, 1);
     }
 
+    @Override
     public Tesselator3 tex(final float u,
                            final float v) {
         hasTexture = true;
@@ -120,6 +127,7 @@ public class Tesselator3 {
         return this;
     }
 
+    @Override
     public Tesselator3 vertexUV(final float x,
                                 final float y,
                                 final float z,
@@ -128,6 +136,7 @@ public class Tesselator3 {
         return tex(u, v).vertex(x, y, z);
     }
 
+    @Override
     public Tesselator3 vertex(final float x,
                               final float y,
                               final float z) {
@@ -152,9 +161,8 @@ public class Tesselator3 {
         return this;
     }
 
-    public Tesselator3 draw(final Matrix4fc mvp) {
+    protected void setupVbo() {
         final int stride = 9 * Float.BYTES;
-        glBindVertexArray(vao);
         vbo.bind();
         vbo.data(array, GL_STREAM_DRAW);
         glVertexAttribPointer(0,
@@ -182,6 +190,17 @@ public class Tesselator3 {
                 7 * Float.BYTES);
             glEnableVertexAttribArray(2);
         }
+        vbo.unbind();
+    }
+
+    protected void render() {
+        glDrawArrays(GL_TRIANGLES, 0, vertices);
+    }
+
+    @Override
+    public Tesselator3 draw(final Matrix4fc mvp) {
+        glBindVertexArray(vao);
+        setupVbo();
         glBindVertexArray(0);
         program.bind();
         program.setUniformMat4("mvp", mvp);
@@ -192,10 +211,24 @@ public class Tesselator3 {
             glActiveTexture(GL_TEXTURE0);
         }
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, vertices);
+        render();
         glBindVertexArray(0);
         program.unbind();
-        clear();
+        if (!fixed) {
+            clear();
+        }
+        return this;
+    }
+
+    @Override
+    public void free() {
+        program.close();
+        vbo.free();
+        glDeleteVertexArrays(vao);
+    }
+
+    @Override
+    public Tesselator3 getThis() {
         return this;
     }
 }

@@ -98,8 +98,8 @@ public class GLUTest implements AutoCloseable {
         });
         GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         if (mode != null) {
-            window.setPos((mode.width() - window.getWidth()) / 2,
-                    (mode.height() - window.getHeight()) / 2);
+            window.setPos((mode.width() - window.width()) / 2,
+                    (mode.height() - window.height()) / 2);
         }
         window.makeCurr();
         GL.createCapabilities(coreProfile);
@@ -176,7 +176,7 @@ public class GLUTest implements AutoCloseable {
     }
 
     public void render(double delta) {
-        int w = fb.getWidth(), h = fb.getHeight();
+        int w = fb.width(), h = fb.width();
         if (window.isResized()) {
             glViewport(0, 0, w, h);
             window.setResized(false);

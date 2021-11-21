@@ -25,6 +25,7 @@
 
 package org.overrun.glutils;
 
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import javax.imageio.ImageIO;
@@ -37,7 +38,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
  * @author squid233
@@ -214,6 +217,9 @@ public class Textures {
             GL_UNSIGNED_BYTE,
             data
         );
+        if (GL.getCapabilities().glGenerateMipmap != NULL) {
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
     }
 
     /**

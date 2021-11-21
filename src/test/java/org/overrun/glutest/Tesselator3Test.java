@@ -28,43 +28,52 @@ package org.overrun.glutest;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import org.overrun.glutils.IndexedTesselator3;
 import org.overrun.glutils.Tesselator3;
 import org.overrun.glutils.Textures;
+import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
 
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.math.Transform.*;
+import static org.overrun.glutils.wnd.Framebuffer.GL_VIEWPORT_FUNC;
 
 /**
  * @author squid233
  */
 public class Tesselator3Test {
-    static float x = 0, y = 0, z = 0, xRot = 0, yRot = 0,
+    public static float x = 0, y = 0, z = 0, xRot = 0, yRot = 0,
         mx = 0, my = 0, dmx = 0, dmy = 0;
 
     public static void main(String[] args) throws Exception {
         GLFWErrorCallback.createPrint().set();
         glfwInit();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        GLFWindow window = new GLFWindow(800, 600, "Tesselator3 Test");
+        GLFWindow window = new GLFWindow(854, 480, "Tesselator3 Test");
+        Framebuffer fb = new Framebuffer(GL_VIEWPORT_FUNC, window);
         window.keyCb((hWnd, key, scancode, action, mods) -> {
             if (action == GLFW_RELEASE) {
                 if (key == GLFW_KEY_ESCAPE) {
                     window.closeWindow();
+                }
+                if (key == GLFW_KEY_GRAVE_ACCENT) {
+                    window.setGrabbed(!window.isGrabbed());
                 }
             }
         });
         window.cursorPosCb((hWnd, xp, yp) -> {
             dmx = (float) (xp - mx);
             dmy = (float) (yp - my);
-            xRot -= dmy * 0.15;
-            yRot += dmx * 0.15;
-            if (xRot < -90) {
-                xRot = -90;
-            } else if (xRot > 90) {
-                xRot = 90;
+            if (window.isGrabbed()) {
+                xRot -= dmy * 0.15;
+                yRot += dmx * 0.15;
+                if (xRot < -90) {
+                    xRot = -90;
+                } else if (xRot > 90) {
+                    xRot = 90;
+                }
             }
             mx = (float) xp;
             my = (float) yp;
@@ -73,35 +82,50 @@ public class Tesselator3Test {
         GL.createCapabilities();
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         glEnable(GL_DEPTH_TEST);
-        Tesselator3 t = new Tesselator3();
+        IndexedTesselator3 it = new IndexedTesselator3(true)
+            .color(0, 1, 0).vertex(0, 1, 0)
+            .color(0, 0, 0).vertex(0, 0, 0)
+            .color(1, 0, 0).vertex(1, 0, 0)
+            .color(1, 1, 0).vertex(1, 1, 0)
+            .color(0, 1, 1).vertex(0, 1, -1)
+            .color(0, 0, 1).vertex(0, 0, -1)
+            .color(1, 0, 1).vertex(1, 0, -1)
+            .color(1, 1, 1).vertex(1, 1, -1)
+            .indices(
+                // south
+                0, 1, 2, 2, 3, 0,
+                // north
+                7, 6, 5, 5, 4, 7,
+                // west
+                4, 5, 1, 1, 0, 4,
+                // east
+                3, 2, 6, 6, 7, 3,
+                // up
+                4, 0, 3, 3, 7, 4,
+                // down
+                1, 5, 6, 6, 2, 1
+            );
+        Tesselator3 t = new Tesselator3(true)
+            .vertexUV(0, 0, 0, 0, 0)
+            .vertexUV(0, 17, 0, 0, 1)
+            .vertexUV(17, 17, 0, 1, 1)
+            .vertexUV(17, 17, 0, 1, 1)
+            .vertexUV(17, 0, 0, 1, 0)
+            .vertexUV(0, 0, 0, 0, 0);
         Matrix4f mvp = new Matrix4f();
         int id = Textures.loadAWT(ClassLoader.getSystemClassLoader(), "tstest.png", GL_NEAREST);
-        window.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         window.show();
+        window.setGrabbed(true);
         while (!window.shouldClose()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            t.init()
-                .color(0, 1, 0).vertex(0, 1, 0)
-                .color(0, 0, 0).vertex(0, 0, 0)
-                .color(1, 0, 0).vertex(1, 0, 0)
-                .color(1, 0, 0).vertex(1, 0, 0)
-                .color(1, 1, 0).vertex(1, 1, 0)
-                .color(0, 1, 0).vertex(0, 1, 0)
-                .draw(rotateY(
-                    rotateX(
-                        setPerspective(mvp, 90, 800, 600, 0.05f, 1000),
-                        -xRot),
-                    yRot).translate(-x, -y, -z));
+            it.draw(rotateY(
+                rotateX(
+                    setPerspective(mvp, 90, fb, 0.05f, 1000),
+                    -xRot),
+                yRot).translate(-x, -y, -z));
             glClear(GL_DEPTH_BUFFER_BIT);
             glBindTexture(GL_TEXTURE_2D, id);
-            t.init()
-                .vertexUV(0, 0, 0, 0, 0)
-                .vertexUV(0, 17, 0, 0, 1)
-                .vertexUV(17, 17, 0, 1, 1)
-                .vertexUV(17, 17, 0, 1, 1)
-                .vertexUV(17, 0, 0, 1, 0)
-                .vertexUV(0, 0, 0, 0, 0)
-                .draw(mvp.setOrtho2D(0, 800, 640, 0));
+            t.draw(mvp.setOrtho2D(0, fb.width(), fb.height(), 0));
             glBindTexture(GL_TEXTURE_2D, 0);
             window.swapBuffers();
             double sin = sin(toRadians(yRot)) * 0.01;
@@ -130,6 +154,8 @@ public class Tesselator3Test {
             }
             glfwPollEvents();
         }
+        it.free();
+        t.free();
         window.free();
         glfwTerminate();
         glfwSetErrorCallback(null).free();

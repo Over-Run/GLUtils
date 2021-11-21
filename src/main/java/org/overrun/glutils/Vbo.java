@@ -79,6 +79,15 @@ public class Vbo {
     }
 
     /**
+     * Unbind buffer.
+     *
+     * @since 1.5.0
+     */
+    public void unbind() {
+        glBindBuffer(target, 0);
+    }
+
+    /**
      * Set data.
      *
      * @param data  The data.
@@ -105,6 +114,7 @@ public class Vbo {
      *
      * @param data   The data.
      * @param offset The offset.
+     * @since 1.5.0
      */
     public void subData(float[] data,
                         long offset) {
@@ -116,6 +126,7 @@ public class Vbo {
      *
      * @param data   The data.
      * @param offset The offset.
+     * @since 1.5.0
      */
     public void subData(int[] data,
                         long offset) {
@@ -138,5 +149,14 @@ public class Vbo {
      */
     public int getId() {
         return id;
+    }
+
+    /**
+     * Free vertex buffer object.
+     *
+     * @since 1.5.0
+     */
+    public void free() {
+        glDeleteBuffers(id);
     }
 }

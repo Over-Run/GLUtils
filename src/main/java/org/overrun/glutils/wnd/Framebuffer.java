@@ -26,6 +26,7 @@
 package org.overrun.glutils.wnd;
 
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
+import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
 
@@ -33,7 +34,15 @@ import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
  * @author squid233
  * @since 1.0.0
  */
-public class Framebuffer {
+public class Framebuffer implements SizedObject {
+    /**
+     * Default OpenGL viewport function
+     *
+     * @since 1.5.0
+     */
+    public static final GLFWFramebufferSizeCallbackI GL_VIEWPORT_FUNC =
+        (window, w, h) -> GL11.glViewport(0, 0, w, h);
+
     /**
      * size callback (pre)
      */
@@ -90,13 +99,13 @@ public class Framebuffer {
      */
     public void init(long parent) {
         glfwSetFramebufferSizeCallback(parent,
-                (window, width1, height1) -> {
-                    if (cb != null) {
-                        cb.invoke(window, width1, height1);
-                    }
-                    width = width1;
-                    height = height1;
-                });
+            (window, width1, height1) -> {
+                if (cb != null) {
+                    cb.invoke(window, width1, height1);
+                }
+                width = width1;
+                height = height1;
+            });
     }
 
     /**
@@ -113,6 +122,7 @@ public class Framebuffer {
      *
      * @return framebuffer width
      */
+    @Override
     public int getWidth() {
         return width;
     }
@@ -122,6 +132,7 @@ public class Framebuffer {
      *
      * @return framebuffer height
      */
+    @Override
     public int getHeight() {
         return height;
     }

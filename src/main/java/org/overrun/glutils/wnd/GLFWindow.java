@@ -38,7 +38,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * @author squid233
  * @since 1.0.0
  */
-public class GLFWindow implements AutoCloseable {
+public class GLFWindow implements AutoCloseable, SizedObject {
     /**
      * window handle
      */
@@ -53,6 +53,7 @@ public class GLFWindow implements AutoCloseable {
     public int mouseX, mouseY;
     private String title;
     private boolean resized;
+    private boolean grabbed;
 
     /**
      * construct and create window
@@ -242,6 +243,22 @@ public class GLFWindow implements AutoCloseable {
     }
 
     /**
+     * set grabbed
+     *
+     * @param grabbed grabbed
+     * @since 1.5.0
+     */
+    public void setGrabbed(boolean grabbed) {
+        this.grabbed = grabbed;
+        setInputMode(GLFW_CURSOR,
+            grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    }
+
+    public boolean isGrabbed() {
+        return grabbed;
+    }
+
+    /**
      * close window
      *
      * @since 1.3.0
@@ -376,6 +393,7 @@ public class GLFWindow implements AutoCloseable {
      *
      * @return window width
      */
+    @Override
     public int getWidth() {
         return width;
     }
@@ -385,6 +403,7 @@ public class GLFWindow implements AutoCloseable {
      *
      * @return window height
      */
+    @Override
     public int getHeight() {
         return height;
     }

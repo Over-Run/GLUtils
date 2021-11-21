@@ -1,13 +1,15 @@
 Update Versions.java on adding new versions
 
 1.5.0
-Added: Load matrix from array
+Added: Loading matrix from array
+Added: Tesselator
+Added: Timer
 
 1.4.0
 Changed: You can disable antialias now
-Added: Text renderer for legacy GL
-Added: DisplayListBuilder
-Added: Vbo
+Added: `TextRenderer` for legacy GL
+Added: `DisplayListBuilder`
+Added: `Vbo`
 
 1.3.0
 Changed: `GLFWindow` is `AutoCloseable` now
