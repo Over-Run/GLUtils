@@ -198,7 +198,7 @@ public class GLUTest implements AutoCloseable {
 
     @Override
     public void close() {
-        Textures.close();
+        Textures.free();
         window.free();
         glfwTerminate();
         glfwSetErrorCallback(null).free();

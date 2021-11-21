@@ -81,6 +81,16 @@ public class GLFWindow implements AutoCloseable {
         return glfwGetKey(hWnd, k);
     }
 
+    /**
+     * Get mouse
+     *
+     * @param b Button
+     * @return one of {@link GLFW#GLFW_PRESS PRESS} or {@link GLFW#GLFW_RELEASE RELEASE}
+     */
+    public int mouse(int b) {
+        return glfwGetMouseButton(hWnd, b);
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     // Window callbacks
     ///////////////////////////////////////////////////////////////////////////

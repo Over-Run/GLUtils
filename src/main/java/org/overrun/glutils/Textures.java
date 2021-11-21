@@ -59,7 +59,7 @@ public class Textures {
     public static int loadAWT(ClassLoader loader,
                               String name,
                               int mode)
-            throws Exception {
+        throws Exception {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
         }
@@ -97,9 +97,9 @@ public class Textures {
             data = stbi_load(name, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
                 GLUtils.getErrorCb().error("Error loading image \"" +
-                        name +
-                        "\" from file system: " +
-                        stbi_failure_reason());
+                    name +
+                    "\" from file system: " +
+                    stbi_failure_reason());
                 return 0;
             }
             w = pw.get(0);
@@ -136,9 +136,9 @@ public class Textures {
             data = stbi_load_from_memory(buffer, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
                 GLUtils.getErrorCb().error("Error loading image \"" +
-                        identifier +
-                        "\": " +
-                        stbi_failure_reason());
+                    identifier +
+                    "\": " +
+                    stbi_failure_reason());
                 return 0;
             }
             w = pw.get(0);
@@ -205,14 +205,14 @@ public class Textures {
                                 ByteBuffer data) {
         processTexture(id, mode);
         glTexImage2D(GL_TEXTURE_2D,
-                0,
-                GL_RGBA,
-                w,
-                h,
-                0,
-                GL_RGBA,
-                GL_UNSIGNED_BYTE,
-                data
+            0,
+            GL_RGBA,
+            w,
+            h,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            data
         );
     }
 
@@ -233,14 +233,14 @@ public class Textures {
                                 int[] data) {
         processTexture(id, mode);
         glTexImage2D(GL_TEXTURE_2D,
-                0,
-                GL_RGBA,
-                w,
-                h,
-                0,
-                GL_RGBA,
-                GL_UNSIGNED_BYTE,
-                data
+            0,
+            GL_RGBA,
+            w,
+            h,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            data
         );
     }
 
@@ -260,12 +260,22 @@ public class Textures {
     /**
      * Cleanup all resources.
      *
-     * @since 0.2.0
+     * @since 1.5.0
      */
-    public static void close() {
+    public static void free() {
         for (int id : ID_MAP.values()) {
             glDeleteTextures(id);
         }
         ID_MAP.clear();
+    }
+
+    /**
+     * Cleanup all resources.
+     *
+     * @since 0.2.0
+     */
+    @Deprecated
+    public static void close() {
+        free();
     }
 }

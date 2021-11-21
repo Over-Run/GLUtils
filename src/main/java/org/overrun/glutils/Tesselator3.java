@@ -39,9 +39,9 @@ import static org.lwjgl.opengl.GL30.*;
 public class Tesselator3 {
     private final GLProgram program;
     private final int vao;
-    private final Vbo vertVbo;
-    private final float[] array = new float[(3 + 4) * 50000];
-    private float r, g, b, a;
+    private final Vbo vbo;
+    private final float[] array = new float[(3 + 4 + 2) * 50000];
+    private float r, g, b, a, u, v;
     private int vertices;
     private int pos;
     private boolean hasColor;
@@ -78,7 +78,7 @@ public class Tesselator3 {
             "}");
         program.link();
         vao = glGenVertexArrays();
-        vertVbo = new Vbo(GL_ARRAY_BUFFER);
+        vbo = new Vbo(GL_ARRAY_BUFFER);
     }
 
     private void clear() {
@@ -112,6 +112,22 @@ public class Tesselator3 {
         return color(r, g, b, 1);
     }
 
+    public Tesselator3 tex(final float u,
+                           final float v) {
+        hasTexture = true;
+        this.u = u;
+        this.v = v;
+        return this;
+    }
+
+    public Tesselator3 vertexUV(final float x,
+                                final float y,
+                                final float z,
+                                final float u,
+                                final float v) {
+        return tex(u, v).vertex(x, y, z);
+    }
+
     public Tesselator3 vertex(final float x,
                               final float y,
                               final float z) {
@@ -126,19 +142,26 @@ public class Tesselator3 {
         } else {
             pos += 4;
         }
+        if (hasTexture) {
+            array[pos++] = u;
+            array[pos++] = v;
+        } else {
+            pos += 2;
+        }
         ++vertices;
         return this;
     }
 
     public Tesselator3 draw(final Matrix4fc mvp) {
+        final int stride = 9 * Float.BYTES;
         glBindVertexArray(vao);
-        vertVbo.bind();
-        vertVbo.data(array, GL_STREAM_DRAW);
+        vbo.bind();
+        vbo.data(array, GL_STREAM_DRAW);
         glVertexAttribPointer(0,
             3,
             GL_FLOAT,
             false,
-            7 * Float.BYTES,
+            stride,
             0);
         glEnableVertexAttribArray(0);
         if (hasColor) {
@@ -146,9 +169,18 @@ public class Tesselator3 {
                 4,
                 GL_FLOAT,
                 false,
-                7 * Float.BYTES,
+                stride,
                 3 * Float.BYTES);
             glEnableVertexAttribArray(1);
+        }
+        if (hasTexture) {
+            glVertexAttribPointer(2,
+                2,
+                GL_FLOAT,
+                false,
+                stride,
+                7 * Float.BYTES);
+            glEnableVertexAttribArray(2);
         }
         glBindVertexArray(0);
         program.bind();
