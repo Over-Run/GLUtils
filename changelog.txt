@@ -1,55 +1,58 @@
 Update Versions.java on adding new versions
 
+1.5.0
+Added: Load matrix from array
+
 1.4.0
-New feature: You can disable antialias now
-New feature: Text renderer for legacy GL
-New feature: DisplayListBuilder
-New feature: Vbo
+Changed: You can disable antialias now
+Added: Text renderer for legacy GL
+Added: DisplayListBuilder
+Added: Vbo
 
 1.3.0
-New feature: `GLFWindow` is `AutoCloseable` now
-New feature: You can set resized, mouse pos, scroll cb and window icon to window
-New feature: `IVertexBuilder` has rendering function
+Changed: `GLFWindow` is `AutoCloseable` now
+Changed: You can set resized, mouse pos, scroll cb and window icon to window
+Changed: `IVertexBuilder` has rendering function
 Changed: Use JOML 1.10.2
 Fixed a bug: vertex buffer can clear outdated vertex now
 
 1.2.0
-New feature: `IVertexBuilder`
-New feature: `BaseMeshVertexBuilder`
-New feature: `MeshVertexBuilder`
-New feature: `Mesh3VertexBuilder`
-New feature: `ObjLoader`
-New feature: `ObjModel`
-New feature: `ObjModel2`
-New feature: `ObjModel3`
-New feature: Lighting system
+Added: `IVertexBuilder`
+Added: `BaseMeshVertexBuilder`
+Added: `MeshVertexBuilder`
+Added: `Mesh3VertexBuilder`
+Added: `ObjLoader`
+Added: `ObjModel`
+Added: `ObjModel2`
+Added: `ObjModel3`
+Added: Lighting system
     +Direction
     +DirectionalLight
     +PointLight
     +Material
 
 1.1.0
-New feature: `Math`
+Added: `Math`
 New internal feature: `AtlasLoomArray`
 New internal feature: `MeshManager`
 New internal feature: `MeshManager3`
 New internal feature: `MeshManagerConstant`
-New feature: `FontTexture`
-New feature: `FontTextures`
-New feature: `Drawable`
-New feature: `DrawableText`
-New feature: `Mesh3#bindVao` and `Mesh3#unbindVao`
-New feature: Mesh supported to normal vertex
+Added: `FontTexture`
+Added: `FontTextures`
+Added: `Drawable`
+Added: `DrawableText`
+Added: `Mesh3#bindVao` and `Mesh3#unbindVao`
+Changed: Mesh now supported to normal vertex
 Changed: Use common utils now
 Changed: `ShaderReader` and `MeshLoader` use UTF-8 not ANSI now
 Changed: Rename `Window` to `GLFWindow`
 
 1.0.0
 Release
-New feature: More docs
-New feature: `Versions`
-New feature: `Window`
-New feature: `Framebuffer`
+Added: More docs
+Added: `Versions`
+Added: `Window`
+Added: `Framebuffer`
 Changed: Rename `MeshVar` to `MeshMacro`
 Changed: Rename `idxVbo` to `ibo`
 Changed: `ShaderType#toString`: "vertexShader" -> "vertex shader"
@@ -58,11 +61,11 @@ Changed: Mesh color is optional now
 0.9.0
 Beta
 Fixed a bug: `GLUtils.VERSION` was 0.7.0
-New feature: `ArrayHelper.toIArray`
-New feature: `ArrayHelper.expand`
-New feature: `GLUtils.isOlder`
-New feature: `GLUtils.isNewer`
-New feature: `GLUtils.isEqual`
+Added: `ArrayHelper.toIArray`
+Added: `ArrayHelper.expand`
+Added: `GLUtils.isOlder`
+Added: `GLUtils.isNewer`
+Added: `GLUtils.isEqual`
 Changed: Move `*Mesh*` to [base pkg].mesh
 
 0.8.0
@@ -71,42 +74,42 @@ Fixed a bug: Can't compile `AtlasLoomSTB`
 Changed: Public dependencies
 
 0.7.0
-New feature: ArrayHelper
-New feature: CompileException
-New feature: FloatArray
-New feature: IntArray
-New feature: MapStr2Str
-New feature: MeshFile
-New feature: MeshLoader
-New feature: MeshVar
+Added: ArrayHelper
+Added: CompileException
+Added: FloatArray
+Added: IntArray
+Added: MapStr2Str
+Added: MeshFile
+Added: MeshLoader
+Added: MeshVar
 
 0.6.1
 Fixed Javadoc
 0.6.0
 Alpha
 Removed: Mesh builder
-New feature: `BaseMesh`
+Added: `BaseMesh`
 
 0.5.0
-New feature: Bind JOML now
-New feature: Package math
+Added: Bind JOML now
+Added: Package math
 Changed: `AtlasLoom#load` returns int now
 Deprecated: Mesh builder
 
 0.4.0
-New feature: GLString
-New feature: StbImg
-New feature: AWTImage
-New feature: `GLProgram#setUniform*`
+Added: GLString
+Added: StbImg
+Added: AWTImage
+Added: `GLProgram#setUniform*`
 Changed: `IMesh#*Size` -> `IMesh#*Dim`
 Changed: Split `AtlasLoom` into `-AWT` and `-STB`
 Changed: `AtlasLoom` must construct by name
 Fixed a bug: `IMesh#texDim` is 3
 
 0.3.0
-New feature: Developers can load texture by int array
-New feature: Developers can generate image atlas by `AtlasLoom`
-New feature: `GLProgram#vertexAttribPointer`
+Added: Developers can load texture by int array
+Added: Developers can generate image atlas by `AtlasLoom`
+Added: `GLProgram#vertexAttribPointer`
 Fixed a fatal bug: Program crashed when creating shaders
     Exception in thread "main" java.lang.RuntimeException: Error compiling shader src: No errors.[NUL]
     	at org.overrun.glutils.GlProgram.createShader(GlProgram.java:84)
@@ -114,10 +117,10 @@ Fixed a fatal bug: Program crashed when creating shaders
 0.2.0
 Fixed a bug: Program crashed when loading texture by `Textures.loadFS`
 Fixed a bug: Expect ARGB but return ABGR when loading texture by `Textures.loadAWT`
-New feature: Developers can load texture by ByteBuffer
-New feature: `Mesh` for OpenGL 2 and `Mesh3` for OpenGL 3
-New feature: Developers can and MUST close `Textures` before terminating
-New feature: interface for `ThrowableCallback`
+Added: Developers can load texture by ByteBuffer
+Added: `Mesh` for OpenGL 2 and `Mesh3` for OpenGL 3
+Added: Developers can and MUST close `Textures` before terminating
+Added: interface for `ThrowableCallback`
 Changed: Program will not throw an exception when attrib not found (`GLProgram#getAttrib`)
 
 0.1.0

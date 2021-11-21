@@ -25,76 +25,38 @@
 
 package org.overrun.glutest;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import org.overrun.glutils.FontTexture;
-import org.overrun.glutils.FontTextures;
-import org.overrun.glutils.ll.TextRenderer;
+import org.overrun.glutils.Tesselator3;
 import org.overrun.glutils.wnd.GLFWindow;
 
-import java.awt.*;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
  * @author squid233
  */
-public class TextRendererTest {
-    static int cx = 0, cy = 0;
-
+public class Tesselator3Test {
     public static void main(String[] args) {
-        // FIXME: 2021/10/26
         GLFWErrorCallback.createPrint().set();
         glfwInit();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        GLFWindow window = new GLFWindow(800, 640, "TextRenderer");
-        window.keyCb((hWnd, key, scancode, action, mods) -> {
-            if (action == GLFW_PRESS) {
-                if (key == GLFW_KEY_ESCAPE) {
-                    window.closeWindow();
-                }
-            }
-        });
+        GLFWindow window = new GLFWindow(800, 600, "Tesselator3 Test");
         window.makeCurr();
         GL.createCapabilities();
-        glfwSwapInterval(1);
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        FontTexture unifont = FontTextures
-            .builder("unifont")
-            .font(Font.decode("Unifont"))
-            .charset(UTF_8)
-            .padding(2)
-            .build(false);
-        boolean btt = false;
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0, 800, btt ? 0 : 600, btt ? 600 : 0, -1, 1);
-        glMatrixMode(GL_MODELVIEW);
+        Tesselator3 t = new Tesselator3();
+        Matrix4f mvp = new Matrix4f().setOrtho2D(0, 800, 640, 0);
         window.show();
         while (!window.shouldClose()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glPushMatrix();
-            glTranslatef(cx, cy, 0);
-            TextRenderer.drawText("Testing\nMulti lines", unifont, null, btt);
-            glPopMatrix();
+            t.init()
+                .vertex(0, 0, 0)
+                .vertex(0, 200, 0)
+                .vertex(200, 200, 0)
+                .draw(mvp);
             window.swapBuffers();
-            if (window.getKey(GLFW_KEY_W) == GLFW_PRESS) {
-                --cy;
-            }
-            if (window.getKey(GLFW_KEY_S) == GLFW_PRESS) {
-                ++cy;
-            }
-            if (window.getKey(GLFW_KEY_A) == GLFW_PRESS) {
-                --cx;
-            }
-            if (window.getKey(GLFW_KEY_D) == GLFW_PRESS) {
-                ++cx;
-            }
             glfwPollEvents();
         }
         window.free();

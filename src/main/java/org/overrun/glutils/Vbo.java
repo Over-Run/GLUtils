@@ -101,6 +101,28 @@ public class Vbo {
     }
 
     /**
+     * Set data.
+     *
+     * @param data   The data.
+     * @param offset The offset.
+     */
+    public void subData(float[] data,
+                        long offset) {
+        glBufferSubData(target, offset, data);
+    }
+
+    /**
+     * Set data.
+     *
+     * @param data   The data.
+     * @param offset The offset.
+     */
+    public void subData(int[] data,
+                        long offset) {
+        glBufferSubData(target, offset, data);
+    }
+
+    /**
      * Get target for direct operations.
      *
      * @return The target of this vertex buffer object.

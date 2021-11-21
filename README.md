@@ -24,7 +24,7 @@ Utils for developing OpenGL for Java:coffee:.
 
 ```groovy
 dependencies {
-    implementation "io.github.over-run:glutils:1.4.0"
+    implementation "io.github.over-run:glutils:1.5.0"
 }
 ```
 

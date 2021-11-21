@@ -25,9 +25,7 @@
 
 package org.overrun.glutils;
 
-import org.joml.Matrix4fc;
-import org.joml.Vector3fc;
-import org.joml.Vector4fc;
+import org.joml.*;
 import org.lwjgl.system.MemoryStack;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.Material;
@@ -38,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.lwjgl.opengl.GL41.*;
+import static org.lwjgl.opengl.GL20.*;
 import static org.overrun.glutils.GLString.toJava;
 import static org.overrun.glutils.GLUtils.getErrorCb;
 import static org.overrun.glutils.GLUtils.getWarningCb;
@@ -48,6 +46,8 @@ import static org.overrun.glutils.GLUtils.getWarningCb;
  * @since 0.1.0
  */
 public class GLProgram implements AutoCloseable {
+    private static final float[] MATRIX4F_BUF = new float[16];
+
     /**
      * program id
      */
@@ -71,7 +71,7 @@ public class GLProgram implements AutoCloseable {
      * @throws RuntimeException An error occurred creating the program object
      */
     public GLProgram()
-            throws RuntimeException {
+        throws RuntimeException {
         id = glCreateProgram();
         if (id == 0) {
             throw new RuntimeException("An error occurred creating the program object.");
@@ -79,25 +79,25 @@ public class GLProgram implements AutoCloseable {
     }
 
     /**
-     * create vertex shader
+     * Create vertex shader
      *
      * @param src source code
      */
-    public void createVsh(String src) {
+    public void createVsh(final String src) {
         vshId = createShader(src, ShaderType.VERTEX_SHADER);
     }
 
     /**
-     * create fragment shader
+     * Create fragment shader
      *
      * @param src source code
      */
-    public void createFsh(String src) {
+    public void createFsh(final String src) {
         fshId = createShader(src, ShaderType.FRAGMENT_SHADER);
     }
 
     /**
-     * create geometry shader
+     * Create geometry shader
      *
      * @param src source code
      */
@@ -113,20 +113,20 @@ public class GLProgram implements AutoCloseable {
      * @param type The shader type.
      */
     private int createShader(String src, ShaderType type)
-            throws RuntimeException {
+        throws RuntimeException {
         int shader = glCreateShader(type.getType());
         if (shader == 0) {
             throw new RuntimeException(
-                    "An error occurred creating the " +
-                            type +
-                            " object."
+                "An error occurred creating the " +
+                    type +
+                    " object."
             );
         }
         glShaderSource(shader, src);
         glCompileShader(shader);
         if (glGetShaderi(shader, GL_COMPILE_STATUS) == GL_FALSE) {
             throw new CompileException("Error compiling shader src: \n" +
-                    toJava(glGetShaderInfoLog(shader)));
+                toJava(glGetShaderInfoLog(shader)));
         }
         glAttachShader(id, shader);
         return shader;
@@ -138,11 +138,11 @@ public class GLProgram implements AutoCloseable {
      * @throws RuntimeException error linking program
      */
     public void link()
-            throws RuntimeException {
+        throws RuntimeException {
         glLinkProgram(id);
         if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE) {
             throw new RuntimeException("Error linking GL program: \n" +
-                    toJava(glGetProgramInfoLog(id)));
+                toJava(glGetProgramInfoLog(id)));
         }
         if (vshId != 0) {
             glDetachShader(id, vshId);
@@ -173,6 +173,10 @@ public class GLProgram implements AutoCloseable {
         glUseProgram(0);
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Uniforms
+    ///////////////////////////////////////////////////////////////////////////
+
     /**
      * check has uniform
      *
@@ -191,15 +195,15 @@ public class GLProgram implements AutoCloseable {
      * @throws RuntimeException uniform not found
      */
     public int getUniform(String name)
-            throws RuntimeException {
+        throws RuntimeException {
         if (uniforms.containsKey(name)) {
             return uniforms.get(name);
         }
         int loc = glGetUniformLocation(id, name);
         if (!hasUniform(name)) {
             throw new RuntimeException("Couldn't find uniform: \"" +
-                    name +
-                    "\"");
+                name +
+                "\"");
         }
         uniforms.put(name, loc);
         return loc;
@@ -259,9 +263,11 @@ public class GLProgram implements AutoCloseable {
      * @since 1.2.0
      */
     public void setUniform(String name, Vector4fc value) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            glUniform4fv(getUniform(name), value.get(stack.mallocFloat(4)));
-        }
+        glUniform4f(getUniform(name),
+            value.get(0),
+            value.get(1),
+            value.get(2),
+            value.get(3));
     }
 
     /**
@@ -349,9 +355,21 @@ public class GLProgram implements AutoCloseable {
      * setUniform
      *
      * @param name     uniform name
+     * @param matrix4f matrix as float array
+     * @since 1.5.0
+     */
+    public void setUniformMat4(String name, float[] matrix4f) {
+        glUniformMatrix4fv(getUniform(name), false, matrix4f);
+    }
+
+    /**
+     * setUniform
+     *
+     * @param name     uniform name
      * @param matrix4f matrix function (example: <code>matrix4f::get</code>)
      * @since 0.4.0
      */
+    @Deprecated
     public void setUniformMat4(String name,
                                Function<FloatBuffer, FloatBuffer> matrix4f) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -368,9 +386,7 @@ public class GLProgram implements AutoCloseable {
      */
     public void setUniformMat4(String name,
                                Matrix4fc matrix4f) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            setUniformMat4(name, matrix4f.get(stack.mallocFloat(16)));
-        }
+        setUniformMat4(name, matrix4f.get(MATRIX4F_BUF));
     }
 
     /**
@@ -386,8 +402,8 @@ public class GLProgram implements AutoCloseable {
         int loc = glGetAttribLocation(id, name);
         if (loc < 0) {
             getErrorCb().error("Couldn't find attribute: \"" +
-                    name +
-                    "\"");
+                name +
+                "\"");
             return -1;
         }
         attributes.put(name, loc);
@@ -444,11 +460,11 @@ public class GLProgram implements AutoCloseable {
                                     int stride,
                                     long pointer) {
         glVertexAttribPointer(getAttrib(name),
-                size,
-                type,
-                normalized,
-                stride,
-                pointer);
+            size,
+            type,
+            normalized,
+            stride,
+            pointer);
     }
 
     /**

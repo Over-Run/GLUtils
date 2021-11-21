@@ -36,9 +36,11 @@ public class Versions {
      * @return current version
      */
     public static String current() {
-        return VERSION_1_4_0;
+        return VERSION_1_5_0;
     }
 
+    /** 1.5.0 */
+    public static final String VERSION_1_5_0 = "1.5.0";
     /** 1.4.0 */
     public static final String VERSION_1_4_0 = "1.4.0";
     /** 1.3.0 */
