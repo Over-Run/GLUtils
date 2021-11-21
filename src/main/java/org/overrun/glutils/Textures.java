@@ -61,6 +61,25 @@ public class Textures {
     }
 
     /**
+     * Unbind texture for 2D
+     *
+     * @since 1.5.0
+     */
+    public static void unbind2D() {
+        bind2D(0);
+    }
+
+    /**
+     * Active texture
+     *
+     * @param unit Texture unit.
+     * @since 1.5.0
+     */
+    public static void active(int unit) {
+        glActiveTexture(GL_TEXTURE0 + unit);
+    }
+
+    /**
      * Load texture from stream by AWT.
      *
      * @param loader ClassLoader of loader class.
@@ -111,11 +130,10 @@ public class Textures {
             IntBuffer pc = stack.mallocInt(1);
             data = stbi_load(name, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
-                GLUtils.getErrorCb().error("Error loading image \"" +
+                throw new RuntimeException("Error loading image [" +
                     name +
-                    "\" from file system: " +
+                    "] from file system: " +
                     stbi_failure_reason());
-                return 0;
             }
             w = pw.get(0);
             h = ph.get(0);
@@ -150,11 +168,10 @@ public class Textures {
             IntBuffer pc = stack.mallocInt(1);
             data = stbi_load_from_memory(buffer, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
-                GLUtils.getErrorCb().error("Error loading image \"" +
+                throw new RuntimeException("Error loading image \"" +
                     identifier +
                     "\": " +
                     stbi_failure_reason());
-                return 0;
             }
             w = pw.get(0);
             h = ph.get(0);
@@ -229,6 +246,13 @@ public class Textures {
             GL_UNSIGNED_BYTE,
             data
         );
+        genMipmap2D();
+    }
+
+    /**
+     * Generate mipmap 2D
+     */
+    public static void genMipmap2D() {
         if (GL.getCapabilities().glGenerateMipmap != NULL) {
             glGenerateMipmap(GL_TEXTURE_2D);
         }

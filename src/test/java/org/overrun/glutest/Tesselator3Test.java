@@ -27,19 +27,15 @@ package org.overrun.glutest;
 
 import org.joml.Matrix4f;
 import org.overrun.glutils.IndexedTesselator3;
+import org.overrun.glutils.MipmapMode;
 import org.overrun.glutils.Tesselator3;
-import org.overrun.glutils.Textures;
-import org.overrun.glutils.game.GameApp;
-import org.overrun.glutils.game.GameConfig;
-import org.overrun.glutils.game.GameEngine;
-import org.overrun.glutils.game.GameLogic;
+import org.overrun.glutils.game.*;
 import org.overrun.glutils.wnd.Framebuffer;
 
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.game.GameEngine.timer;
-import static org.overrun.glutils.game.GameEngine.window;
+import static org.overrun.glutils.game.GameEngine.*;
 import static org.overrun.glutils.math.Transform.*;
 
 /**
@@ -49,13 +45,11 @@ public class Tesselator3Test implements GameLogic {
     private float x = 0, y = 0, z = 0,
         xRot = 0, yRot = 0,
         xo = 0, yo = 0, zo = 0,
-        xd = 0, yd = 0, zd = 0,
-        mx = 0, my = 0,
-        dmx = 0, dmy = 0;
+        xd = 0, yd = 0, zd = 0;
     private final Matrix4f mvp = new Matrix4f();
     private IndexedTesselator3 it;
     private Tesselator3 t;
-    private int id;
+    private Texture sth;
 
     public static void main(String[] args) {
         GameConfig config = new GameConfig();
@@ -67,7 +61,7 @@ public class Tesselator3Test implements GameLogic {
 
     @Override
     public void create() {
-        window.keyCb((hWnd, key, scancode, action, mods) -> {
+        input.register((hWnd, key, scancode, action, mods) -> {
             if (action == GLFW_RELEASE) {
                 if (key == GLFW_KEY_ESCAPE) {
                     window.closeWindow();
@@ -77,20 +71,16 @@ public class Tesselator3Test implements GameLogic {
                 }
             }
         });
-        window.cursorPosCb((hWnd, xp, yp) -> {
-            dmx = (float) (xp - mx);
-            dmy = (float) (yp - my);
+        input.register((hWnd, xp, yp) -> {
             if (window.isGrabbed()) {
-                xRot -= dmy * 0.15;
-                yRot += dmx * 0.15;
+                xRot -= input.getDeltaMY() * 0.15;
+                yRot += input.getDeltaMX() * 0.15;
                 if (xRot < -90) {
                     xRot = -90;
                 } else if (xRot > 90) {
                     xRot = 90;
                 }
             }
-            mx = (float) xp;
-            my = (float) yp;
         });
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         glEnable(GL_DEPTH_TEST);
@@ -125,7 +115,11 @@ public class Tesselator3Test implements GameLogic {
             .vertexUV(17, 17, 0, 1, 1)
             .vertexUV(17, 0, 0, 1, 0)
             .vertexUV(0, 0, 0, 0, 0);
-        id = Textures.loadAWT(ClassLoader.getSystemClassLoader(), "tstest.png", GL_NEAREST);
+        sth = new Texture(ClassLoader.getSystemClassLoader(),
+            "tstest.png",
+            new MipmapMode()
+                .minFilter(GL_NEAREST)
+                .magFilter(GL_NEAREST));
     }
 
     @Override
@@ -143,9 +137,9 @@ public class Tesselator3Test implements GameLogic {
                 -xRot),
             yRot).translate(-tx, -ty, -tz));
         glClear(GL_DEPTH_BUFFER_BIT);
-        glBindTexture(GL_TEXTURE_2D, id);
+        sth.bind();
         t.draw(mvp.setOrtho2D(0, fb.width(), fb.height(), 0));
-        glBindTexture(GL_TEXTURE_2D, 0);
+        sth.unbind();
     }
 
     @Override
@@ -154,22 +148,22 @@ public class Tesselator3Test implements GameLogic {
         yo = y;
         zo = z;
         float xa = 0, ya = 0, za = 0;
-        if (window.key(GLFW_KEY_W) == GLFW_PRESS) {
+        if (input.pressed(GLFW_KEY_W)) {
             --za;
         }
-        if (window.key(GLFW_KEY_S) == GLFW_PRESS) {
+        if (input.pressed(GLFW_KEY_S)) {
             ++za;
         }
-        if (window.key(GLFW_KEY_A) == GLFW_PRESS) {
+        if (input.pressed(GLFW_KEY_A)) {
             --xa;
         }
-        if (window.key(GLFW_KEY_D) == GLFW_PRESS) {
+        if (input.pressed(GLFW_KEY_D)) {
             ++xa;
         }
-        if (window.key(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        if (input.pressed(GLFW_KEY_LEFT_SHIFT)) {
             --ya;
         }
-        if (window.key(GLFW_KEY_SPACE) == GLFW_PRESS) {
+        if (input.pressed(GLFW_KEY_SPACE)) {
             ++ya;
         }
         float dist = xa * xa + ya * ya + za * za;
@@ -199,6 +193,7 @@ public class Tesselator3Test implements GameLogic {
 
     @Override
     public void free() {
+        sth.free();
         it.free();
         t.free();
     }

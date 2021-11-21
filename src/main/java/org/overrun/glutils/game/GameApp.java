@@ -25,6 +25,8 @@
 
 package org.overrun.glutils.game;
 
+import org.lwjgl.glfw.GLFWCursorPosCallbackI;
+import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.opengl.GL;
 import org.overrun.glutils.timer.SystemTimer;
 import org.overrun.glutils.wnd.Framebuffer;
@@ -62,6 +64,21 @@ public class GameApp {
         window = new GLFWindow(config.width,
             config.height,
             config.title);
+        input = new Input();
+        window.keyCb((hWnd, key, scancode, action, mods) -> {
+            for (GLFWKeyCallbackI cb : input.keyCbs) {
+                cb.invoke(hWnd, key, scancode, action, mods);
+            }
+        });
+        window.cursorPosCb((hWnd, xp, yp) -> {
+            input.deltaMX = (int) (xp - input.mouseX);
+            input.deltaMY = (int) (yp - input.mouseY);
+            for (GLFWCursorPosCallbackI cb : input.cursorPosCbs) {
+                cb.invoke(hWnd, xp, yp);
+            }
+            input.mouseX = (int) xp;
+            input.mouseY = (int) yp;
+        });
         framebuffer = new Framebuffer((hWnd, width, height) ->
             logic.resize(width, height), window);
         timer = new SystemTimer(config.tps);

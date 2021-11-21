@@ -23,20 +23,23 @@
  *
  */
 
-package org.overrun.glutils.game;
-
-import org.overrun.glutils.timer.ITimer;
-import org.overrun.glutils.wnd.Framebuffer;
-import org.overrun.glutils.wnd.GLFWindow;
+package org.overrun.glutils;
 
 /**
  * @author squid233
  * @since 1.5.0
  */
-public class GameEngine {
-    public static GLFWindow window;
-    public static Framebuffer framebuffer;
-    public static ITimer timer;
-    public static Input input;
-    public static int fps;
+public class MipmapMode {
+    public int minFilter;
+    public int magFilter;
+
+    public MipmapMode minFilter(int minFilter) {
+        this.minFilter = minFilter;
+        return this;
+    }
+
+    public MipmapMode magFilter(int magFilter) {
+        this.magFilter = magFilter;
+        return this;
+    }
 }

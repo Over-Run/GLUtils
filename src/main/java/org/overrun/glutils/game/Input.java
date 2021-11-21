@@ -25,18 +25,51 @@
 
 package org.overrun.glutils.game;
 
-import org.overrun.glutils.timer.ITimer;
-import org.overrun.glutils.wnd.Framebuffer;
-import org.overrun.glutils.wnd.GLFWindow;
+import org.lwjgl.glfw.GLFWCursorPosCallbackI;
+import org.lwjgl.glfw.GLFWKeyCallbackI;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.overrun.glutils.game.GameEngine.window;
 
 /**
  * @author squid233
  * @since 1.5.0
  */
-public class GameEngine {
-    public static GLFWindow window;
-    public static Framebuffer framebuffer;
-    public static ITimer timer;
-    public static Input input;
-    public static int fps;
+public class Input {
+    protected final List<GLFWKeyCallbackI> keyCbs =
+        new ArrayList<>();
+    protected final List<GLFWCursorPosCallbackI> cursorPosCbs =
+        new ArrayList<>();
+    protected int mouseX, mouseY, deltaMX, deltaMY;
+
+    public void register(GLFWKeyCallbackI cb) {
+        keyCbs.add(cb);
+    }
+
+    public void register(GLFWCursorPosCallbackI cb) {
+        cursorPosCbs.add(cb);
+    }
+
+    public boolean pressed(int key) {
+        return window.key(key) == GLFW_PRESS;
+    }
+
+    public int getMouseX() {
+        return mouseX;
+    }
+
+    public int getMouseY() {
+        return mouseY;
+    }
+
+    public int getDeltaMX() {
+        return deltaMX;
+    }
+
+    public int getDeltaMY() {
+        return deltaMY;
+    }
 }

@@ -36,7 +36,7 @@ import static org.overrun.glutils.DrawableText.DEFAULT_COLOR;
 /**
  * Text renderer for legacy GL.
  * <p>
- * <b>Note: </b>Re-render per lines
+ * <b>Note:</b> Re-render per lines
  *
  * @author squid233
  * @since 1.4.0
@@ -98,7 +98,7 @@ public class TextRenderer {
             glEnd();
             ++currLn;
         }
-        Textures.bind2D(0);
+        Textures.unbind2D();
     }
 
     public static int getHeight(FontTexture font) {
