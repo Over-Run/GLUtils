@@ -40,8 +40,8 @@ public class Tesselator3 {
     private final GLProgram program;
     private final int vao;
     private final Vbo vertVbo;
-    private final float[] array = new float[(3) * 50000];
-    private int r, g, b, a;
+    private final float[] array = new float[(3 + 4) * 50000];
+    private float r, g, b, a;
     private int vertices;
     private int pos;
     private boolean hasColor;
@@ -62,13 +62,13 @@ public class Tesselator3 {
             "    fragTexCoord = texCoord;\n" +
             "}");
         program.createFsh("#version 330\n" +
-            "vec4 fragColor;\n" +
-            "vec2 fragTexCoord;\n" +
+            "in vec4 fragColor;\n" +
+            "in vec2 fragTexCoord;\n" +
             "out vec4 FragColor;\n" +
             "uniform bool hasColor, hasTexture;\n" +
             "uniform sampler2D sampler;\n" +
             "void main() {\n" +
-            "    FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n" +
+            "    FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" +
             "    if (hasColor) {\n" +
             "        FragColor *= fragColor;\n" +
             "    }\n" +
@@ -98,6 +98,11 @@ public class Tesselator3 {
                              final float g,
                              final float b,
                              final float a) {
+        hasColor = true;
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
         return this;
     }
 
@@ -113,6 +118,14 @@ public class Tesselator3 {
         array[pos++] = x;
         array[pos++] = y;
         array[pos++] = z;
+        if (hasColor) {
+            array[pos++] = r;
+            array[pos++] = g;
+            array[pos++] = b;
+            array[pos++] = a;
+        } else {
+            pos += 4;
+        }
         ++vertices;
         return this;
     }
@@ -125,9 +138,18 @@ public class Tesselator3 {
             3,
             GL_FLOAT,
             false,
-            3 * Float.BYTES,
+            7 * Float.BYTES,
             0);
         glEnableVertexAttribArray(0);
+        if (hasColor) {
+            glVertexAttribPointer(1,
+                4,
+                GL_FLOAT,
+                false,
+                7 * Float.BYTES,
+                3 * Float.BYTES);
+            glEnableVertexAttribArray(1);
+        }
         glBindVertexArray(0);
         program.bind();
         program.setUniformMat4("mvp", mvp);

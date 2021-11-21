@@ -52,9 +52,9 @@ public class Tesselator3Test {
         while (!window.shouldClose()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             t.init()
-                .vertex(0, 0, 0)
-                .vertex(0, 200, 0)
-                .vertex(200, 200, 0)
+                .color(1, 0, 0).vertex(0, 0, 0)
+                .color(0, 1, 0).vertex(0, 200, 0)
+                .color(0, 0, 1).vertex(200, 200, 0)
                 .draw(mvp);
             window.swapBuffers();
             glfwPollEvents();
