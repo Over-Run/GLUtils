@@ -38,6 +38,7 @@ import org.overrun.glutils.wnd.Framebuffer;
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.game.GameEngine.timer;
 import static org.overrun.glutils.game.GameEngine.window;
 import static org.overrun.glutils.math.Transform.*;
 
@@ -45,8 +46,12 @@ import static org.overrun.glutils.math.Transform.*;
  * @author squid233
  */
 public class Tesselator3Test implements GameLogic {
-    private float x = 0, y = 0, z = 0, xRot = 0, yRot = 0,
-        mx = 0, my = 0, dmx = 0, dmy = 0;
+    private float x = 0, y = 0, z = 0,
+        xRot = 0, yRot = 0,
+        xo = 0, yo = 0, zo = 0,
+        xd = 0, yd = 0, zd = 0,
+        mx = 0, my = 0,
+        dmx = 0, dmy = 0;
     private final Matrix4f mvp = new Matrix4f();
     private IndexedTesselator3 it;
     private Tesselator3 t;
@@ -127,11 +132,16 @@ public class Tesselator3Test implements GameLogic {
     public void render() {
         Framebuffer fb = GameEngine.framebuffer;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        float delta = timer.getDelta();
+        float tx = xo + (x - xo) * delta;
+        float ty = yo + (y - yo) * delta;
+        float tz = zo + (z - zo) * delta;
         it.draw(rotateY(
             rotateX(
-                setPerspective(mvp, 90, fb, 0.05f, 1000),
+                setPerspective(mvp, 90, fb, 0.05f, 1000)
+                    .translate(0, 0, -0.3f),
                 -xRot),
-            yRot).translate(-x, -y, -z));
+            yRot).translate(-tx, -ty, -tz));
         glClear(GL_DEPTH_BUFFER_BIT);
         glBindTexture(GL_TEXTURE_2D, id);
         t.draw(mvp.setOrtho2D(0, fb.width(), fb.height(), 0));
@@ -140,30 +150,46 @@ public class Tesselator3Test implements GameLogic {
 
     @Override
     public void tick() {
-        double sin = sin(toRadians(yRot)) * 0.1;
-        double cos = cos(toRadians(yRot)) * 0.1;
+        xo = x;
+        yo = y;
+        zo = z;
+        float xa = 0, ya = 0, za = 0;
         if (window.key(GLFW_KEY_W) == GLFW_PRESS) {
-            x += sin;
-            z -= cos;
+            --za;
         }
         if (window.key(GLFW_KEY_S) == GLFW_PRESS) {
-            x -= sin;
-            z += cos;
+            ++za;
         }
         if (window.key(GLFW_KEY_A) == GLFW_PRESS) {
-            x -= cos;
-            z -= sin;
+            --xa;
         }
         if (window.key(GLFW_KEY_D) == GLFW_PRESS) {
-            x += cos;
-            z += sin;
+            ++xa;
         }
         if (window.key(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-            y -= 0.1;
+            --ya;
         }
         if (window.key(GLFW_KEY_SPACE) == GLFW_PRESS) {
-            y += 0.1;
+            ++ya;
         }
+        float dist = xa * xa + ya * ya + za * za;
+        if (dist >= 0.01) {
+            dist = (float) (0.1 / sqrt(dist));
+            xa *= dist;
+            ya *= dist;
+            za *= dist;
+            float sin = (float) sin(toRadians(yRot));
+            float cos = (float) cos(toRadians(yRot));
+            xd += xa * cos - za * sin;
+            yd += ya;
+            zd += za * cos + xa * sin;
+        }
+        x += xd;
+        y += yd;
+        z += zd;
+        xd *= 0.91 * 0.7;
+        yd *= 0.98 * 0.65;
+        zd *= 0.91 * 0.7;
     }
 
     @Override

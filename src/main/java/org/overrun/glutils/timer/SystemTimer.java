@@ -49,13 +49,13 @@ public class SystemTimer extends AbstractTimer {
         if (passedNs > MAX_NS_PER_UPDATE) {
             passedNs = MAX_NS_PER_UPDATE;
         }
-        fps = (float) (NS_PER_SECOND / passedNs);
-        passedTime += (float) passedNs * timeScale * tps / NS_PER_SECOND;
+        fps = (float) (MAX_NS_PER_UPDATE / passedNs);
+        passedTime += (float) passedNs * timeScale * tps / (double) NS_PER_SECOND;
         ticks = (int) passedTime;
         if (ticks > MAX_TICKS_PER_UPDATE) {
             ticks = MAX_TICKS_PER_UPDATE;
         }
-        passedTime -= ticks;
+        passedTime = passedTime - ticks;
         delta = passedTime;
     }
 }

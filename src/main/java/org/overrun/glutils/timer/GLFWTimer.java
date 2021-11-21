@@ -51,7 +51,7 @@ public class GLFWTimer extends AbstractTimer {
         if (passedS > MAX_S_PER_UPDATE) {
             passedS = MAX_S_PER_UPDATE;
         }
-        fps = (float) (1.0 / passedS);
+        fps = (float) (MAX_S_PER_UPDATE / passedS);
         passedTime += (float) passedS * timeScale * tps;
         ticks = (int) passedTime;
         if (ticks > MAX_TICKS_PER_UPDATE) {
