@@ -28,6 +28,7 @@ package org.overrun.glutils.ll;
 import org.jetbrains.annotations.Nullable;
 import org.overrun.glutils.DrawableText.ColorFunction;
 import org.overrun.glutils.FontTexture;
+import org.overrun.glutils.Textures;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.DrawableText.DEFAULT_COLOR;
@@ -51,7 +52,7 @@ public class TextRenderer {
         int fth = font.getHeight();
         int gh = font.getGlyphHeight();
 
-        glBindTexture(GL_TEXTURE_2D, font.getTextureId());
+        Textures.bind2D(font.getTextureId());
         for (String t : ln) {
             char[] ca = t.toCharArray();
             float startX = 0;
@@ -97,7 +98,7 @@ public class TextRenderer {
             glEnd();
             ++currLn;
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
+        Textures.bind2D(0);
     }
 
     public static int getHeight(FontTexture font) {

@@ -26,33 +26,42 @@
 package org.overrun.glutest;
 
 import org.joml.Matrix4f;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.opengl.GL;
 import org.overrun.glutils.IndexedTesselator3;
 import org.overrun.glutils.Tesselator3;
 import org.overrun.glutils.Textures;
+import org.overrun.glutils.game.GameApp;
+import org.overrun.glutils.game.GameConfig;
+import org.overrun.glutils.game.GameEngine;
+import org.overrun.glutils.game.GameLogic;
 import org.overrun.glutils.wnd.Framebuffer;
-import org.overrun.glutils.wnd.GLFWindow;
 
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.game.GameEngine.window;
 import static org.overrun.glutils.math.Transform.*;
-import static org.overrun.glutils.wnd.Framebuffer.GL_VIEWPORT_FUNC;
 
 /**
  * @author squid233
  */
-public class Tesselator3Test {
-    public static float x = 0, y = 0, z = 0, xRot = 0, yRot = 0,
+public class Tesselator3Test implements GameLogic {
+    private float x = 0, y = 0, z = 0, xRot = 0, yRot = 0,
         mx = 0, my = 0, dmx = 0, dmy = 0;
+    private final Matrix4f mvp = new Matrix4f();
+    private IndexedTesselator3 it;
+    private Tesselator3 t;
+    private int id;
 
-    public static void main(String[] args) throws Exception {
-        GLFWErrorCallback.createPrint().set();
-        glfwInit();
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        GLFWindow window = new GLFWindow(854, 480, "Tesselator3 Test");
-        Framebuffer fb = new Framebuffer(GL_VIEWPORT_FUNC, window);
+    public static void main(String[] args) {
+        GameConfig config = new GameConfig();
+        config.width = 854;
+        config.height = 480;
+        config.title = "Tesselator3 Test";
+        new GameApp(new Tesselator3Test(), config);
+    }
+
+    @Override
+    public void create() {
         window.keyCb((hWnd, key, scancode, action, mods) -> {
             if (action == GLFW_RELEASE) {
                 if (key == GLFW_KEY_ESCAPE) {
@@ -78,11 +87,10 @@ public class Tesselator3Test {
             mx = (float) xp;
             my = (float) yp;
         });
-        window.makeCurr();
-        GL.createCapabilities();
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         glEnable(GL_DEPTH_TEST);
-        IndexedTesselator3 it = new IndexedTesselator3(true)
+        window.setGrabbed(true);
+        it = new IndexedTesselator3(true)
             .color(0, 1, 0).vertex(0, 1, 0)
             .color(0, 0, 0).vertex(0, 0, 0)
             .color(1, 0, 0).vertex(1, 0, 0)
@@ -105,59 +113,67 @@ public class Tesselator3Test {
                 // down
                 1, 5, 6, 6, 2, 1
             );
-        Tesselator3 t = new Tesselator3(true)
+        t = new Tesselator3(true)
             .vertexUV(0, 0, 0, 0, 0)
             .vertexUV(0, 17, 0, 0, 1)
             .vertexUV(17, 17, 0, 1, 1)
             .vertexUV(17, 17, 0, 1, 1)
             .vertexUV(17, 0, 0, 1, 0)
             .vertexUV(0, 0, 0, 0, 0);
-        Matrix4f mvp = new Matrix4f();
-        int id = Textures.loadAWT(ClassLoader.getSystemClassLoader(), "tstest.png", GL_NEAREST);
-        window.show();
-        window.setGrabbed(true);
-        while (!window.shouldClose()) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            it.draw(rotateY(
-                rotateX(
-                    setPerspective(mvp, 90, fb, 0.05f, 1000),
-                    -xRot),
-                yRot).translate(-x, -y, -z));
-            glClear(GL_DEPTH_BUFFER_BIT);
-            glBindTexture(GL_TEXTURE_2D, id);
-            t.draw(mvp.setOrtho2D(0, fb.width(), fb.height(), 0));
-            glBindTexture(GL_TEXTURE_2D, 0);
-            window.swapBuffers();
-            double sin = sin(toRadians(yRot)) * 0.01;
-            double cos = cos(toRadians(yRot)) * 0.01;
-            if (window.key(GLFW_KEY_W) == GLFW_PRESS) {
-                x += sin;
-                z -= cos;
-            }
-            if (window.key(GLFW_KEY_S) == GLFW_PRESS) {
-                x -= sin;
-                z += cos;
-            }
-            if (window.key(GLFW_KEY_A) == GLFW_PRESS) {
-                x -= cos;
-                z -= sin;
-            }
-            if (window.key(GLFW_KEY_D) == GLFW_PRESS) {
-                x += cos;
-                z += sin;
-            }
-            if (window.key(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-                y -= 0.01;
-            }
-            if (window.key(GLFW_KEY_SPACE) == GLFW_PRESS) {
-                y += 0.01;
-            }
-            glfwPollEvents();
+        id = Textures.loadAWT(ClassLoader.getSystemClassLoader(), "tstest.png", GL_NEAREST);
+    }
+
+    @Override
+    public void render() {
+        Framebuffer fb = GameEngine.framebuffer;
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        it.draw(rotateY(
+            rotateX(
+                setPerspective(mvp, 90, fb, 0.05f, 1000),
+                -xRot),
+            yRot).translate(-x, -y, -z));
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glBindTexture(GL_TEXTURE_2D, id);
+        t.draw(mvp.setOrtho2D(0, fb.width(), fb.height(), 0));
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    @Override
+    public void tick() {
+        double sin = sin(toRadians(yRot)) * 0.1;
+        double cos = cos(toRadians(yRot)) * 0.1;
+        if (window.key(GLFW_KEY_W) == GLFW_PRESS) {
+            x += sin;
+            z -= cos;
         }
+        if (window.key(GLFW_KEY_S) == GLFW_PRESS) {
+            x -= sin;
+            z += cos;
+        }
+        if (window.key(GLFW_KEY_A) == GLFW_PRESS) {
+            x -= cos;
+            z -= sin;
+        }
+        if (window.key(GLFW_KEY_D) == GLFW_PRESS) {
+            x += cos;
+            z += sin;
+        }
+        if (window.key(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            y -= 0.1;
+        }
+        if (window.key(GLFW_KEY_SPACE) == GLFW_PRESS) {
+            y += 0.1;
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        glViewport(0, 0, width, height);
+    }
+
+    @Override
+    public void free() {
         it.free();
         t.free();
-        window.free();
-        glfwTerminate();
-        glfwSetErrorCallback(null).free();
     }
 }

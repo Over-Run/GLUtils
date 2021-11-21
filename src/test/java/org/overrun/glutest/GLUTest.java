@@ -55,7 +55,7 @@ public class GLUTest implements AutoCloseable {
     public GameRenderer renderer;
     public boolean grabbing;
 
-    public void run() throws Exception {
+    public void run() {
         boolean coreProfile = Boolean.parseBoolean(System.getProperty(
                 "GLUTest.coreProfile", "true"
         ));
@@ -115,8 +115,7 @@ public class GLUTest implements AutoCloseable {
         loop();
     }
 
-    private void init()
-            throws Exception {
+    private void init() {
         (renderer = new GameRenderer()).init();
         float lightIntensity = 1.0f;
         Vector3f lightColor = new Vector3f(1);
@@ -204,14 +203,14 @@ public class GLUTest implements AutoCloseable {
         glfwSetErrorCallback(null).free();
     }
 
-    public void start() throws Exception {
+    public void start() {
         System.out.println("Testing GLUtils " + GLUtils.VERSION);
         GLFWErrorCallback.createPrint().set();
         glfwInit();
         run();
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try (GLUTest test = new GLUTest()) {
             test.start();
         }

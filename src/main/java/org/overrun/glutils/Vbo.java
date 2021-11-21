@@ -67,7 +67,7 @@ public class Vbo {
      *                   </tr>
      *               </table>
      */
-    public Vbo(int target) {
+    public Vbo(final int target) {
         this.target = target;
     }
 
@@ -93,8 +93,8 @@ public class Vbo {
      * @param data  The data.
      * @param usage The usage of the data.
      */
-    public void data(float[] data,
-                     int usage) {
+    public void data(final float[] data,
+                     final int usage) {
         glBufferData(target, data, usage);
     }
 
@@ -104,8 +104,8 @@ public class Vbo {
      * @param data  The data.
      * @param usage The usage of the data.
      */
-    public void data(int[] data,
-                     int usage) {
+    public void data(final int[] data,
+                     final int usage) {
         glBufferData(target, data, usage);
     }
 
@@ -116,8 +116,8 @@ public class Vbo {
      * @param offset The offset.
      * @since 1.5.0
      */
-    public void subData(float[] data,
-                        long offset) {
+    public void subData(final float[] data,
+                        final long offset) {
         glBufferSubData(target, offset, data);
     }
 
@@ -128,8 +128,8 @@ public class Vbo {
      * @param offset The offset.
      * @since 1.5.0
      */
-    public void subData(int[] data,
-                        long offset) {
+    public void subData(final int[] data,
+                        final long offset) {
         glBufferSubData(target, offset, data);
     }
 

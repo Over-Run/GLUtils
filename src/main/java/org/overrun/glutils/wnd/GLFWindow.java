@@ -58,18 +58,38 @@ public class GLFWindow implements AutoCloseable, SizedObject {
     /**
      * construct and create window
      *
-     * @param width  window width
-     * @param height window height
-     * @param title  window title
+     * @param width   window width
+     * @param height  window height
+     * @param title   window title
+     * @param monitor window monitor
+     * @param share   window share to
+     * @since 1.5.0
      */
-    public GLFWindow(int width, int height, String title) {
-        hWnd = glfwCreateWindow(width, height, title, NULL, NULL);
+    public GLFWindow(final int width,
+                     final int height,
+                     final String title,
+                     final long monitor,
+                     final long share) {
+        hWnd = glfwCreateWindow(width, height, title, monitor, share);
         if (hWnd == NULL) {
             throw new RuntimeException("Can't create window");
         }
         this.width = width;
         this.height = height;
         this.title = title;
+    }
+
+    /**
+     * construct and create window
+     *
+     * @param width  window width
+     * @param height window height
+     * @param title  window title
+     */
+    public GLFWindow(final int width,
+                     final int height,
+                     final String title) {
+        this(width, height, title, NULL, NULL);
     }
 
     /**

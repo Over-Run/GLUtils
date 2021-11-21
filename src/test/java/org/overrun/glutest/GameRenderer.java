@@ -83,7 +83,7 @@ public class GameRenderer implements AutoCloseable {
     public Mesh3 text;
     public Mesh3 textBg;
 
-    public void init() throws Exception {
+    public void init() {
         program = new GLProgram();
         program.createVsh(lines(cl, "shaders/scene.vsh"));
         program.createFsh(lines(cl, "shaders/scene.fsh"));

@@ -30,6 +30,7 @@ import org.lwjgl.system.MemoryStack;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -37,8 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.glGenerateMipmap;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -51,18 +51,28 @@ public class Textures {
     private static int maxSize;
 
     /**
+     * Bind texture for 2D
+     *
+     * @param id Texture ID.
+     * @since 1.5.0
+     */
+    public static void bind2D(int id) {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
+
+    /**
      * Load texture from stream by AWT.
      *
      * @param loader ClassLoader of loader class.
      * @param name   The filename.
      * @param mode   Processor mode.
      * @return The texture id.
-     * @throws Exception When file not found.
+     * @throws RuntimeException When file not found.
      */
     public static int loadAWT(ClassLoader loader,
                               String name,
                               int mode)
-        throws Exception {
+        throws RuntimeException {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
         }
@@ -72,6 +82,8 @@ public class Textures {
             img = ImageIO.read(Objects.requireNonNull(is));
             w = img.getWidth();
             h = img.getHeight();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         int id = glGenTextures();
         pushToGL(id, mode, w, h, AWTImage.getRGB(img));
@@ -186,7 +198,7 @@ public class Textures {
      */
     private static void processTexture(int id,
                                        int mode) {
-        glBindTexture(GL_TEXTURE_2D, id);
+        bind2D(id);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mode);
     }

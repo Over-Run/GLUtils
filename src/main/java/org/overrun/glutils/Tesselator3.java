@@ -39,9 +39,12 @@ import static org.lwjgl.opengl.GL30.*;
 public class Tesselator3 implements ITesselator<Tesselator3> {
     public static final int VERTEX_COUNT = 50000;
     private final GLProgram program;
-    private final int vao;
+    private final Vao vao;
     private final Vbo vbo;
     private final float[] array = new float[(3 + 4 + 2) * VERTEX_COUNT];
+    private final VertexAttrib vertex = new VertexAttrib(0);
+    private final VertexAttrib color = new VertexAttrib(1);
+    private final VertexAttrib texCoord = new VertexAttrib(2);
     protected final boolean fixed;
     private float r, g, b, a, u, v;
     protected int vertices;
@@ -80,7 +83,7 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
             "    }\n" +
             "}");
         program.link();
-        vao = glGenVertexArrays();
+        vao = new Vao();
         vbo = new Vbo(GL_ARRAY_BUFFER);
     }
 
@@ -165,30 +168,27 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
         final int stride = 9 * Float.BYTES;
         vbo.bind();
         vbo.data(array, GL_STREAM_DRAW);
-        glVertexAttribPointer(0,
-            3,
+        vertex.pointer(3,
             GL_FLOAT,
             false,
             stride,
             0);
-        glEnableVertexAttribArray(0);
+        vertex.enable();
         if (hasColor) {
-            glVertexAttribPointer(1,
-                4,
+            color.pointer(4,
                 GL_FLOAT,
                 false,
                 stride,
                 3 * Float.BYTES);
-            glEnableVertexAttribArray(1);
+            color.enable();
         }
         if (hasTexture) {
-            glVertexAttribPointer(2,
-                2,
+            texCoord.pointer(2,
                 GL_FLOAT,
                 false,
                 stride,
                 7 * Float.BYTES);
-            glEnableVertexAttribArray(2);
+            texCoord.enable();
         }
         vbo.unbind();
     }
@@ -199,9 +199,9 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
 
     @Override
     public Tesselator3 draw(final Matrix4fc mvp) {
-        glBindVertexArray(vao);
+        vao.bind();
         setupVbo();
-        glBindVertexArray(0);
+        vao.unbind();
         program.bind();
         program.setUniformMat4("mvp", mvp);
         program.setUniform("hasColor", hasColor);
@@ -210,9 +210,9 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
         if (hasTexture) {
             glActiveTexture(GL_TEXTURE0);
         }
-        glBindVertexArray(vao);
+        vao.bind();
         render();
-        glBindVertexArray(0);
+        vao.unbind();
         program.unbind();
         if (!fixed) {
             clear();
@@ -224,7 +224,7 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
     public void free() {
         program.close();
         vbo.free();
-        glDeleteVertexArrays(vao);
+        vao.free();
     }
 
     @Override

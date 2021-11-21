@@ -37,6 +37,7 @@ import org.overrun.glutils.mesh.Mesh;
 import org.overrun.glutils.mesh.Mesh3;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -63,8 +64,8 @@ public class ObjLoader {
      *
      */
     public static final int DEFAULT_FLAGS = aiProcess_JoinIdenticalVertices
-            | aiProcess_Triangulate
-            | aiProcess_FixInfacingNormals;
+        | aiProcess_Triangulate
+        | aiProcess_FixInfacingNormals;
     private static final File TMP = new File("tmp");
 
     static {
@@ -93,59 +94,61 @@ public class ObjLoader {
 
     private static AIScene load(ClassLoader cl,
                                 String filename,
-                                int flags)
-            throws Exception {
+                                int flags) {
         File parent = new File(filename).getParentFile();
         String parentPath = parent.getPath().replaceAll("\\\\", "/");
         new File(TMP + "/" + parentPath).mkdirs();
-        Enumeration<URL> resources = cl.getResources(parentPath);
-        while (resources.hasMoreElements()) {
-            URL url = resources.nextElement();
-            String protocol = url.getProtocol();
-            if (protocol.equals("jar")) {
-                // TODO: 2021/8/31 0031 test
-                JarURLConnection conn = (JarURLConnection) url.openConnection();
-                JarFile jar = conn.getJarFile();
-                Enumeration<JarEntry> entries = jar.entries();
-                while (entries.hasMoreElements()) {
-                    JarEntry entry = entries.nextElement();
-                    String name = entry.getName();
-                    if (!entry.isDirectory() && name.startsWith(parentPath)) {
-                        try (InputStream in = cl.getResourceAsStream(name)) {
-                            Files.copy(requireNonNull(in),
+        try {
+            Enumeration<URL> resources = cl.getResources(parentPath);
+            while (resources.hasMoreElements()) {
+                URL url = resources.nextElement();
+                String protocol = url.getProtocol();
+                if (protocol.equals("jar")) {
+                    // TODO: 2021/8/31 0031 test
+                    JarURLConnection conn = (JarURLConnection) url.openConnection();
+                    JarFile jar = conn.getJarFile();
+                    Enumeration<JarEntry> entries = jar.entries();
+                    while (entries.hasMoreElements()) {
+                        JarEntry entry = entries.nextElement();
+                        String name = entry.getName();
+                        if (!entry.isDirectory() && name.startsWith(parentPath)) {
+                            try (InputStream in = cl.getResourceAsStream(name)) {
+                                Files.copy(requireNonNull(in),
                                     Paths.get(TMP + "/" + name),
                                     StandardCopyOption.REPLACE_EXISTING);
+                            }
                         }
                     }
-                }
-            } else if (protocol.equals("file")) {
-                URL resource = requireNonNull(cl.getResource(parentPath));
-                String[] files = new File(resource.getPath()).list();
-                if (files != null) {
-                    for (String file : files) {
-                        String path = parentPath + "/" + file;
-                        try (InputStream in = cl.getResourceAsStream(path)) {
-                            Files.copy(requireNonNull(in),
+                } else if (protocol.equals("file")) {
+                    URL resource = requireNonNull(cl.getResource(parentPath));
+                    String[] files = new File(resource.getPath()).list();
+                    if (files != null) {
+                        for (String file : files) {
+                            String path = parentPath + "/" + file;
+                            try (InputStream in = cl.getResourceAsStream(path)) {
+                                Files.copy(requireNonNull(in),
                                     Paths.get(TMP + "/" + path),
                                     StandardCopyOption.REPLACE_EXISTING);
+                            }
                         }
                     }
                 }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         AIScene scene = aiImportFile(TMP + "/" + filename, flags);
         if (scene == null) {
             throw new RuntimeException(
-                    "Error loading model: " +
-                            aiGetErrorString());
+                "Error loading model: " +
+                    aiGetErrorString());
         }
         return scene;
     }
 
     private static List<Material> createMaterials(ClassLoader cl,
                                                   AIScene scene,
-                                                  String filename)
-            throws Exception {
+                                                  String filename) {
         int numMaterials = scene.mNumMaterials();
         PointerBuffer aiMaterials = scene.mMaterials();
         List<Material> materials = new ArrayList<>();
@@ -159,20 +162,19 @@ public class ObjLoader {
     private static void processMaterial(ClassLoader cl,
                                         AIMaterial aiMaterial,
                                         List<Material> materials,
-                                        String filename)
-            throws Exception {
+                                        String filename) {
         AIColor4D color = AIColor4D.create();
         AIString path = AIString.calloc();
         Assimp.aiGetMaterialTexture(aiMaterial,
-                aiTextureType_DIFFUSE,
-                0,
-                path,
-                (IntBuffer) null,
-                null,
-                null,
-                null,
-                null,
-                null);
+            aiTextureType_DIFFUSE,
+            0,
+            path,
+            (IntBuffer) null,
+            null,
+            null,
+            null,
+            null,
+            null);
         String texPath = path.dataString();
         int texture = 0;
         if (!texPath.isEmpty()) {
@@ -276,11 +278,11 @@ public class ObjLoader {
         }
 
         return new Mesh()
-                .vertices(vertices.toFArray())
-                .texCoords(textures.toFArray())
-                .normalVert(normals.toFArray())
-                .indices(indices.toIArray())
-                .material(material);
+            .vertices(vertices.toFArray())
+            .texCoords(textures.toFArray())
+            .normalVert(normals.toFArray())
+            .indices(indices.toIArray())
+            .material(material);
     }
 
     private static Mesh3 processMesh(AIMesh aiMesh,
@@ -316,10 +318,10 @@ public class ObjLoader {
             mesh.colors(colors.toFArray());
         }
         return mesh.vertices(v)
-                .texCoords(textures.toFArray())
-                .normalVert(normals.toFArray())
-                .indices(indices.toIArray())
-                .material(material);
+            .texCoords(textures.toFArray())
+            .normalVert(normals.toFArray())
+            .indices(indices.toIArray())
+            .material(material);
     }
 
     /**
@@ -328,11 +330,9 @@ public class ObjLoader {
      * @param cl       Class loader
      * @param filename Object filename in classpath.
      * @return Meshes.
-     * @throws Exception IOE or RE
      */
     public static ObjModel2 load2(ClassLoader cl,
-                                  String filename)
-            throws Exception {
+                                  String filename) {
         return load2(cl, filename, DEFAULT_FLAGS);
     }
 
@@ -343,12 +343,10 @@ public class ObjLoader {
      * @param filename Object filename in classpath (in relative path).
      * @param flags    Assimp flags.
      * @return Meshes.
-     * @throws Exception IOE or RE
      */
     public static ObjModel2 load2(ClassLoader cl,
                                   String filename,
-                                  int flags)
-            throws Exception {
+                                  int flags) {
         AIScene scene = load(cl, filename, flags);
         List<Material> materials = createMaterials(cl, scene, filename);
         int numMeshes = scene.mNumMeshes();
@@ -370,12 +368,10 @@ public class ObjLoader {
      * @param filename  Object filename in classpath.
      * @param preReturn Set attribute index before return.
      * @return Meshes v3.
-     * @throws Exception IOE or RE
      */
     public static ObjModel3 load3(ClassLoader cl,
                                   String filename,
-                                  @Nullable PreReturn preReturn)
-            throws Exception {
+                                  @Nullable PreReturn preReturn) {
         return load3(cl, filename, DEFAULT_FLAGS, preReturn);
     }
 
@@ -387,13 +383,11 @@ public class ObjLoader {
      * @param flags     Assimp flags.
      * @param preReturn Set attribute index before return.
      * @return Meshes v3.
-     * @throws Exception IOE or RE
      */
     public static ObjModel3 load3(ClassLoader cl,
                                   String filename,
                                   int flags,
-                                  @Nullable PreReturn preReturn)
-            throws Exception {
+                                  @Nullable PreReturn preReturn) {
         AIScene scene = load(cl, filename, flags);
         List<Material> materials = createMaterials(cl, scene, filename);
         int numMeshes = scene.mNumMeshes();
@@ -402,7 +396,7 @@ public class ObjLoader {
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(requireNonNull(aiMeshes).get(i));
             Mesh3 mesh = processMesh(aiMesh, materials, preReturn, i)
-                    .unbindVao();
+                .unbindVao();
             meshes[i] = mesh;
         }
         aiReleaseImport(scene);
