@@ -52,14 +52,6 @@ public class Tesselator3Test extends Game {
     private Tesselator3 t;
     private Texture2D sth;
 
-    public static void main(String[] args) {
-        GameConfig config = new GameConfig();
-        config.width = 854;
-        config.height = 480;
-        config.title = "Tesselator3 Test";
-        new GameApp(new Tesselator3Test(), config);
-    }
-
     @Override
     public void create() {
         input.register((hWnd, key, scancode, action, mods) -> {
@@ -131,15 +123,17 @@ public class Tesselator3Test extends Game {
         float tx = xo + (x - xo) * delta;
         float ty = yo + (y - yo) * delta;
         float tz = zo + (z - zo) * delta;
-        it.draw(rotateY(
+        it.setMatrix(rotateY(
             rotateX(
                 setPerspective(mvp, 90, fb, 0.05f, 1000)
                     .translate(0, 0, -0.3f),
                 -xRot),
             yRot).translate(-tx, -ty, -tz));
+        it.draw();
         glClear(GL_DEPTH_BUFFER_BIT);
         sth.bind();
-        t.draw(mvp.setOrtho2D(0, fb.width(), fb.height(), 0));
+        t.setMatrix(mvp.setOrtho2D(0, fb.width(), fb.height(), 0));
+        t.draw();
         sth.unbind();
         super.render();
     }
@@ -192,7 +186,7 @@ public class Tesselator3Test extends Game {
     @Override
     public void resize(int width, int height) {
         glViewport(0, 0, width, height);
-        super.tick();
+        super.resize(width, height);
     }
 
     @Override
@@ -206,5 +200,15 @@ public class Tesselator3Test extends Game {
         sth.free();
         it.free();
         t.free();
+    }
+
+    public static void main(String[] args) {
+        GameConfig config = new GameConfig();
+        config.width = 854;
+        config.height = 480;
+        config.title = "Tesselator3 Test";
+        config.glVersion = 3.3;
+        config.coreProfile = true;
+        new GameApp(new Tesselator3Test(), config);
     }
 }

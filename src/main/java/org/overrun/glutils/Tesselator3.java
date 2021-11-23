@@ -31,7 +31,7 @@ import static java.util.Arrays.fill;
 import static org.lwjgl.opengl.GL30.*;
 
 /**
- * Tesselator for OpenGL 3
+ * Tesselator for OpenGL 3.3
  *
  * @author squid233
  * @since 1.5.0
@@ -51,6 +51,7 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
     protected int pos;
     private boolean hasColor;
     private boolean hasTexture;
+    private Matrix4fc mvp;
 
     public Tesselator3(boolean fixed) {
         this.fixed = fixed;
@@ -197,8 +198,12 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
         glDrawArrays(GL_TRIANGLES, 0, vertices);
     }
 
+    public void setMatrix(final Matrix4fc mvp) {
+        this.mvp = mvp;
+    }
+
     @Override
-    public Tesselator3 draw(final Matrix4fc mvp) {
+    public Tesselator3 draw() {
         vao.bind();
         setupVbo();
         vao.unbind();

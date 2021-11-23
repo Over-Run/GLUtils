@@ -25,8 +25,6 @@
 
 package org.overrun.glutils;
 
-import org.joml.Matrix4fc;
-
 /**
  * @author squid233
  * @since 1.5.0
@@ -62,7 +60,7 @@ public interface ITesselator<T extends ITesselator<T>> {
              final float y,
              final float z);
 
-    T draw(final Matrix4fc mvp);
+    T draw();
 
     void free();
 }

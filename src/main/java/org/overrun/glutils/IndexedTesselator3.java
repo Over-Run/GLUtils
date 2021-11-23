@@ -25,12 +25,12 @@
 
 package org.overrun.glutils;
 
-import org.joml.Matrix4fc;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL15.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL15.glDrawElements;
 
 /**
  * @author squid233
@@ -88,8 +88,8 @@ public class IndexedTesselator3 extends Tesselator3 {
     }
 
     @Override
-    public IndexedTesselator3 draw(Matrix4fc mvp) {
-        super.draw(mvp);
+    public IndexedTesselator3 draw() {
+        super.draw();
         return this;
     }
 
