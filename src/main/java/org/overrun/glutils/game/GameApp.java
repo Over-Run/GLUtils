@@ -40,6 +40,9 @@ import static org.overrun.glutils.game.GameEngine.*;
  * @since 1.5.0
  */
 public class GameApp {
+    public final GameLogic game;
+    public final GameConfig config;
+
     /**
      * Create and run game
      *
@@ -48,12 +51,15 @@ public class GameApp {
      */
     public GameApp(final GameLogic logic,
                    final GameConfig config) {
+        game = logic;
+        this.config = config;
+        app = this;
         config.errorCallback.set();
         if (!glfwInit()) {
             throw new IllegalStateException("Can't init GLFW");
         }
         glfwWindowHint(GLFW_VISIBLE,
-            config.visibleBeforeInitialized ? GLFW_TRUE : GLFW_FALSE);
+            config.visibleBeforeInitialization ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, (int) config.glVersion);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,
             (int) (config.glVersion * 10) - (int) config.glVersion * 10);
@@ -84,6 +90,8 @@ public class GameApp {
         timer = new SystemTimer(config.tps);
         window.makeCurr();
         GL.createCapabilities();
+        glfwSwapInterval(config.vSync ? 1 : 0);
+        graphics = new Graphics();
         logic.create();
         window.show();
         long lastTime = System.currentTimeMillis();
@@ -96,9 +104,10 @@ public class GameApp {
             logic.render();
             window.swapBuffers();
             glfwPollEvents();
+            logic.onUpdated();
             ++frames;
             while (System.currentTimeMillis() >= lastTime + 1000) {
-                fps = frames;
+                graphics.fps = frames;
                 lastTime += 1000;
                 frames = 0;
             }

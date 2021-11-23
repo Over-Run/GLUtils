@@ -49,14 +49,14 @@ import static org.lwjgl.system.MemoryStack.stackPush;
  * @author squid233
  * @since 1.5.0
  */
-public class Texture {
+public class Texture2D {
     private final int width;
     private final int height;
     private final int id;
 
-    public Texture(final ClassLoader l,
-                   final String filename,
-                   final MipmapMode mode) {
+    public Texture2D(final ClassLoader l,
+                     final String filename,
+                     final MipmapMode mode) {
         try (InputStream is = requireNonNull(
             l.getResourceAsStream(filename)
         )) {

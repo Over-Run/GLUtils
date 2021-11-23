@@ -35,13 +35,14 @@ import org.overrun.glutils.wnd.Framebuffer;
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.game.GLStateManager.enableDepthTest;
 import static org.overrun.glutils.game.GameEngine.*;
 import static org.overrun.glutils.math.Transform.*;
 
 /**
  * @author squid233
  */
-public class Tesselator3Test implements GameLogic {
+public class Tesselator3Test extends Game {
     private float x = 0, y = 0, z = 0,
         xRot = 0, yRot = 0,
         xo = 0, yo = 0, zo = 0,
@@ -49,7 +50,7 @@ public class Tesselator3Test implements GameLogic {
     private final Matrix4f mvp = new Matrix4f();
     private IndexedTesselator3 it;
     private Tesselator3 t;
-    private Texture sth;
+    private Texture2D sth;
 
     public static void main(String[] args) {
         GameConfig config = new GameConfig();
@@ -83,7 +84,7 @@ public class Tesselator3Test implements GameLogic {
             }
         });
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
-        glEnable(GL_DEPTH_TEST);
+        enableDepthTest();
         window.setGrabbed(true);
         it = new IndexedTesselator3(true)
             .color(0, 1, 0).vertex(0, 1, 0)
@@ -115,7 +116,7 @@ public class Tesselator3Test implements GameLogic {
             .vertexUV(17, 17, 0, 1, 1)
             .vertexUV(17, 0, 0, 1, 0)
             .vertexUV(0, 0, 0, 0, 0);
-        sth = new Texture(ClassLoader.getSystemClassLoader(),
+        sth = new Texture2D(ClassLoader.getSystemClassLoader(),
             "tstest.png",
             new MipmapMode()
                 .minFilter(GL_NEAREST)
@@ -140,10 +141,12 @@ public class Tesselator3Test implements GameLogic {
         sth.bind();
         t.draw(mvp.setOrtho2D(0, fb.width(), fb.height(), 0));
         sth.unbind();
+        super.render();
     }
 
     @Override
     public void tick() {
+        super.tick();
         xo = x;
         yo = y;
         zo = z;
@@ -189,6 +192,13 @@ public class Tesselator3Test implements GameLogic {
     @Override
     public void resize(int width, int height) {
         glViewport(0, 0, width, height);
+        super.tick();
+    }
+
+    @Override
+    public void onUpdated() {
+        super.onUpdated();
+        window.setTitle("Tesselator3 Test FPS:" + graphics.getFps());
     }
 
     @Override

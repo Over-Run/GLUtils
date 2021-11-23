@@ -25,6 +25,7 @@
 
 package org.overrun.glutils;
 
+import org.jetbrains.annotations.Range;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
@@ -75,7 +76,7 @@ public class Textures {
      * @param unit Texture unit.
      * @since 1.5.0
      */
-    public static void active(int unit) {
+    public static void active(@Range(from = 0, to = 31) int unit) {
         glActiveTexture(GL_TEXTURE0 + unit);
     }
 

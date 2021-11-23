@@ -25,20 +25,34 @@
 
 package org.overrun.glutils.game;
 
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.overrun.glutils.game.GameEngine.app;
+
 /**
  * @author squid233
  * @since 1.5.0
  */
-public interface GameLogic {
-    void create();
+public class Graphics {
+    protected int fps;
+    /**
+     * State of vertical synchronizing.
+     * <p>
+     * <b>Note:</b> Don't confuse with {@link GameConfig#vSync}
+     * </p>
+     */
+    protected boolean vSync = app.config.vSync;
 
-    void render();
+    public int getFps() {
+        return fps;
+    }
 
-    void tick();
+    public boolean isVSync() {
+        return vSync;
+    }
 
-    void resize(int width, int height);
-
-    void onUpdated();
-
-    void free();
+    public Graphics setVSync(boolean vSync) {
+        this.vSync = vSync;
+        glfwSwapInterval(vSync ? 1 : 0);
+        return this;
+    }
 }

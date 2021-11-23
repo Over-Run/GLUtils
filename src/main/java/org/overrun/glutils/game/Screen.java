@@ -29,16 +29,37 @@ package org.overrun.glutils.game;
  * @author squid233
  * @since 1.5.0
  */
-public interface GameLogic {
-    void create();
+public class Screen implements GameLogic {
+    protected int width;
+    protected int height;
 
-    void render();
+    @Override
+    public void create() {
+    }
 
-    void tick();
+    @Override
+    public void render() {
+    }
 
-    void resize(int width, int height);
+    @Override
+    public void tick() {
+    }
 
-    void onUpdated();
+    @Override
+    public void resize(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
 
-    void free();
+    @Override
+    public void onUpdated() {
+    }
+
+    public void close() {
+    }
+
+    @Override
+    public final void free() {
+        close();
+    }
 }

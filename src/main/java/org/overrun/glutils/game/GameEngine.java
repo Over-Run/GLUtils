@@ -34,9 +34,10 @@ import org.overrun.glutils.wnd.GLFWindow;
  * @since 1.5.0
  */
 public class GameEngine {
+    public static GameApp app;
     public static GLFWindow window;
     public static Framebuffer framebuffer;
     public static ITimer timer;
     public static Input input;
-    public static int fps;
+    public static Graphics graphics;
 }

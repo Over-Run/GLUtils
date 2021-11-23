@@ -37,12 +37,13 @@ import org.overrun.glutils.mesh.MeshLoader;
 import org.overrun.glutils.mesh.obj.ObjLoader;
 import org.overrun.glutils.mesh.obj.ObjModel3;
 
-import java.awt.*;
+import java.awt.Font;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.overrun.glutest.GLUTest.TIMER;
 import static org.overrun.glutils.ShaderReader.lines;
+import static org.overrun.glutils.game.GLStateManager.*;
 import static org.overrun.glutils.math.Transform.*;
 
 /**
@@ -134,8 +135,8 @@ public class GameRenderer implements AutoCloseable {
         float xRot = player.xRot;
         float yRot = player.yRot;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
+        enableDepthTest();
+        enableCullFace();
         program.bind();
 
         modelv.pushMatrix();
@@ -190,11 +191,11 @@ public class GameRenderer implements AutoCloseable {
             }
         }
         program.unbind();
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-        glEnable(GL_BLEND);
+        disableDepthTest();
+        disableCullFace();
+        enableBlend();
         renderGui(player, w, h, lightAngle);
-        glDisable(GL_BLEND);
+        disableBlend();
         modelv.popMatrix();
     }
 

@@ -32,11 +32,13 @@ import org.overrun.glutils.FontTextures;
 import org.overrun.glutils.ll.TextRenderer;
 import org.overrun.glutils.wnd.GLFWindow;
 
-import java.awt.*;
+import java.awt.Font;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.game.GLStateManager.enableBlend;
+import static org.overrun.glutils.game.GLStateManager.enableTexture2D;
 
 /**
  * @author squid233
@@ -61,8 +63,8 @@ public class TextRendererTest {
         GL.createCapabilities();
         glfwSwapInterval(1);
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
+        enableTexture2D();
+        enableBlend();
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         FontTexture unifont = FontTextures
             .builder("unifont")

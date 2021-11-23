@@ -25,20 +25,59 @@
 
 package org.overrun.glutils.game;
 
+import static org.overrun.glutils.game.GameEngine.framebuffer;
+
 /**
  * @author squid233
  * @since 1.5.0
  */
-public interface GameLogic {
-    void create();
+public class Game implements GameLogic {
+    public Screen screen;
 
-    void render();
+    public void openScreen(Screen s) {
+        if (screen != null) {
+            screen.close();
+        }
+        screen = s;
+        if (s != null) {
+            s.resize(framebuffer.width(), framebuffer.height());
+            s.create();
+        }
+    }
 
-    void tick();
+    @Override
+    public void create() {
+    }
 
-    void resize(int width, int height);
+    @Override
+    public void render() {
+        if (screen != null) {
+            screen.render();
+        }
+    }
 
-    void onUpdated();
+    @Override
+    public void onUpdated() {
+        if (screen != null) {
+            screen.onUpdated();
+        }
+    }
 
-    void free();
+    @Override
+    public void tick() {
+        if (screen != null) {
+            screen.tick();
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        if (screen != null) {
+            screen.resize(width, height);
+        }
+    }
+
+    @Override
+    public void free() {
+    }
 }

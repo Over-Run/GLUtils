@@ -25,20 +25,42 @@
 
 package org.overrun.glutils.game;
 
+import static org.lwjgl.opengl.GL11.*;
+
 /**
  * @author squid233
  * @since 1.5.0
  */
-public interface GameLogic {
-    void create();
+public class GLStateManager {
+    public static void enableDepthTest() {
+        glEnable(GL_DEPTH_TEST);
+    }
 
-    void render();
+    public static void enableCullFace() {
+        glEnable(GL_CULL_FACE);
+    }
 
-    void tick();
+    public static void enableBlend() {
+        glEnable(GL_BLEND);
+    }
 
-    void resize(int width, int height);
+    public static void enableTexture2D() {
+        glEnable(GL_TEXTURE_2D);
+    }
 
-    void onUpdated();
+    public static void disableDepthTest() {
+        glDisable(GL_DEPTH_TEST);
+    }
 
-    void free();
+    public static void disableCullFace() {
+        glDisable(GL_CULL_FACE);
+    }
+
+    public static void disableBlend() {
+        glDisable(GL_BLEND);
+    }
+
+    public static void disableTexture2D() {
+        glDisable(GL_TEXTURE_2D);
+    }
 }
