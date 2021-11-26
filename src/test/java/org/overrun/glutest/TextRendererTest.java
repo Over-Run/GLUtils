@@ -25,7 +25,6 @@
 
 package org.overrun.glutest;
 
-import org.joml.Matrix4fc;
 import org.overrun.glutils.FontTexture;
 import org.overrun.glutils.FontTextures;
 import org.overrun.glutils.game.Game;
@@ -33,7 +32,7 @@ import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
 import org.overrun.glutils.ll.TextRenderer;
 
-import java.awt.Font;
+import java.awt.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.lwjgl.glfw.GLFW.*;
@@ -72,13 +71,13 @@ public class TextRendererTest extends Game {
     }
 
     @Override
-    public void render(Matrix4fc matrix) {
+    public void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glPushMatrix();
         glTranslatef(cx, cy, 0);
         TextRenderer.drawText("Testing\nMulti lines", unifont, null, btt);
         glPopMatrix();
-        super.render(matrix);
+        super.render();
     }
 
     @Override

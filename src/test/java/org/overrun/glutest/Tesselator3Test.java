@@ -26,6 +26,7 @@
 package org.overrun.glutest;
 
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.overrun.glutils.IndexedTesselator3;
 import org.overrun.glutils.MipmapMode;
 import org.overrun.glutils.Tesselator3;
@@ -47,11 +48,10 @@ public class Tesselator3Test extends Game {
         xRot = 0, yRot = 0,
         xo = 0, yo = 0, zo = 0,
         xd = 0, yd = 0, zd = 0;
-    private final Matrix4f mat3d = new Matrix4f();
+    private final Matrix4fStack mat3d = new Matrix4fStack(32);
     private final Matrix4f mat2d = new Matrix4f();
     private IndexedTesselator3 it;
     private Tesselator3 t;
-    private Tesselator3 scrT;
     private Texture2D sth;
 
     private class Scr extends Screen {
@@ -61,14 +61,13 @@ public class Tesselator3Test extends Game {
 
         @Override
         public void render() {
-            scrT.setMatrix(mat2d);
-            scrT.init()
+            it.setMatrix(mat2d);
+            it.init()
                 .color(0, 0, 0, 0.5f).vertex(0, 0, 0)
                 .color(0, 0, 0, 0.5f).vertex(0, height, 0)
                 .color(0, 0, 0, 0.5f).vertex(width, height, 0)
-                .color(0, 0, 0, 0.5f).vertex(width, height, 0)
                 .color(0, 0, 0, 0.5f).vertex(width, 0, 0)
-                .color(0, 0, 0, 0.5f).vertex(0, 0, 0)
+                .indices(0, 1, 2, 2, 3, 0)
                 .draw();
             super.render();
         }
@@ -76,16 +75,6 @@ public class Tesselator3Test extends Game {
 
     @Override
     public void create() {
-        input.register((hWnd, key, scancode, action, mods) -> {
-            if (action == GLFW_RELEASE) {
-                if (key == GLFW_KEY_ESCAPE) {
-                    window.setGrabbed(!window.isGrabbed());
-                    if (screen == null) {
-                        openScreen(new Scr(null));
-                    }
-                }
-            }
-        });
         input.register((hWnd, xp, yp) -> {
             if (window.isGrabbed()) {
                 xRot -= input.getDeltaMY() * 0.15;
@@ -102,15 +91,38 @@ public class Tesselator3Test extends Game {
         enableBlend();
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         window.setGrabbed(true);
-        it = new IndexedTesselator3(true)
-            .color(0, 1, 0).vertex(0, 1, 0)
-            .color(0, 0, 0).vertex(0, 0, 0)
-            .color(1, 0, 0).vertex(1, 0, 0)
-            .color(1, 1, 0).vertex(1, 1, 0)
-            .color(0, 1, 1).vertex(0, 1, -1)
-            .color(0, 0, 1).vertex(0, 0, -1)
-            .color(1, 0, 1).vertex(1, 0, -1)
-            .color(1, 1, 1).vertex(1, 1, -1)
+        it = new IndexedTesselator3(false);
+        t = new Tesselator3(true)
+            .vertexUV(0, 0, 0, 0, 0)
+            .vertexUV(0, 17, 0, 0, 1)
+            .vertexUV(17, 17, 0, 1, 1)
+            .vertexUV(17, 17, 0, 1, 1)
+            .vertexUV(17, 0, 0, 1, 0)
+            .vertexUV(0, 0, 0, 0, 0);
+        sth = new Texture2D(ClassLoader.getSystemClassLoader(),
+            "tstest.png",
+            new MipmapMode()
+                .minFilter(GL_NEAREST)
+                .magFilter(GL_NEAREST));
+    }
+
+    @Override
+    public void render() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        mat3d.pushMatrix();
+        float sin = (float) sin(timer.getCurrTime());
+        float c0 = abs(sin);
+        float c1 = 1 - c0;
+        it.setMatrix(mat3d.scaleLocal((c0 + 1) / 2f));
+        it.init()
+            .color(c0, c1, c0).vertex(0, 1, 0)
+            .color(c0, c0, c0).vertex(0, 0, 0)
+            .color(c1, c0, c0).vertex(1, 0, 0)
+            .color(c1, c1, c0).vertex(1, 1, 0)
+            .color(c0, c1, c1).vertex(0, 1, -1)
+            .color(c0, c0, c1).vertex(0, 0, -1)
+            .color(c1, c0, c1).vertex(1, 0, -1)
+            .color(c1, c1, c1).vertex(1, 1, -1)
             .indices(
                 // south
                 0, 1, 2, 2, 3, 0,
@@ -124,27 +136,9 @@ public class Tesselator3Test extends Game {
                 4, 0, 3, 3, 7, 4,
                 // down
                 1, 5, 6, 6, 2, 1
-            );
-        t = new Tesselator3(true)
-            .vertexUV(0, 0, 0, 0, 0)
-            .vertexUV(0, 17, 0, 0, 1)
-            .vertexUV(17, 17, 0, 1, 1)
-            .vertexUV(17, 17, 0, 1, 1)
-            .vertexUV(17, 0, 0, 1, 0)
-            .vertexUV(0, 0, 0, 0, 0);
-        scrT = new Tesselator3(false);
-        sth = new Texture2D(ClassLoader.getSystemClassLoader(),
-            "tstest.png",
-            new MipmapMode()
-                .minFilter(GL_NEAREST)
-                .magFilter(GL_NEAREST));
-    }
-
-    @Override
-    public void render() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        it.setMatrix(mat3d);
-        it.draw();
+            )
+            .draw();
+        mat3d.popMatrix();
         glClear(GL_DEPTH_BUFFER_BIT);
         sth.bind();
         float delta = timer.getDelta();
@@ -223,6 +217,14 @@ public class Tesselator3Test extends Game {
 
     @Override
     public void keyReleased(int key, int scancode, int mods) {
+        if (key == GLFW_KEY_ESCAPE) {
+            window.setGrabbed(!window.isGrabbed());
+            if (screen == null) {
+                openScreen(new Scr(null));
+            } else {
+                openScreen(null);
+            }
+        }
         super.keyReleased(key, scancode, mods);
     }
 

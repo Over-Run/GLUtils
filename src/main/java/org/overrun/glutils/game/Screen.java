@@ -25,9 +25,6 @@
 
 package org.overrun.glutils.game;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.overrun.glutils.game.GameEngine.app;
-
 /**
  * @author squid233
  * @since 1.5.0
@@ -72,9 +69,6 @@ public class Screen implements GameLogic {
 
     @Override
     public void keyReleased(int key, int scancode, int mods) {
-        if (key == GLFW_KEY_ESCAPE) {
-            app.game.openScreen(parent);
-        }
     }
 
     /**

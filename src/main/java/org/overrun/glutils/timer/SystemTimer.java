@@ -58,4 +58,9 @@ public class SystemTimer extends AbstractTimer {
         passedTime = passedTime - ticks;
         delta = passedTime;
     }
+
+    @Override
+    public double getCurrTime() {
+        return lastTime / (double) NS_PER_SECOND;
+    }
 }

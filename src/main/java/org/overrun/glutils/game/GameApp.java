@@ -75,6 +75,11 @@ public class GameApp {
             for (GLFWKeyCallbackI cb : input.keyCbs) {
                 cb.invoke(hWnd, key, scancode, action, mods);
             }
+            if (action == GLFW_PRESS) {
+                game.keyPressed(key, scancode, mods);
+            } else if (action == GLFW_RELEASE) {
+                game.keyReleased(key, scancode, mods);
+            }
         });
         window.cursorPosCb((hWnd, xp, yp) -> {
             input.deltaMX = (int) (xp - input.mouseX);

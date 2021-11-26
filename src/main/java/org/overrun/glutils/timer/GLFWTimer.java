@@ -60,4 +60,9 @@ public class GLFWTimer extends AbstractTimer {
         passedTime -= ticks;
         delta = passedTime;
     }
+
+    @Override
+    public double getCurrTime() {
+        return glfwGetTime();
+    }
 }

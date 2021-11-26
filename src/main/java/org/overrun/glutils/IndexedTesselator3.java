@@ -25,7 +25,6 @@
 
 package org.overrun.glutils;
 
-import static java.util.Arrays.fill;
 import static org.lwjgl.opengl.GL15.*;
 
 /**
@@ -43,7 +42,7 @@ public class IndexedTesselator3 extends Tesselator3 {
     @Override
     protected void clear() {
         super.clear();
-        fill(array, 0);
+        array = null;
     }
 
     @Override

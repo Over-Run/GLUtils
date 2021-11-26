@@ -40,4 +40,11 @@ public interface ITimer {
      * @return The delta time.
      */
     float getDelta();
+
+    /**
+     * Get current time in seconds.
+     *
+     * @return Current time.
+     */
+    double getCurrTime();
 }
