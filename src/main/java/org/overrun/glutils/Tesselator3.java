@@ -36,16 +36,17 @@ import static org.lwjgl.opengl.GL30.*;
  * @author squid233
  * @since 1.5.0
  */
-public class Tesselator3 implements ITesselator<Tesselator3> {
+public class Tesselator3 implements ITesselator {
     public static final int VERTEX_COUNT = 50000;
-    private final GLProgram program;
-    private final Vao vao;
-    private final Vbo vbo;
+    private final GLProgram program = new GLProgram();
+    private final Vao vao = new Vao();
+    private final Vbo vbo = new Vbo(GL_ARRAY_BUFFER);
     private final float[] array = new float[(3 + 4 + 2) * VERTEX_COUNT];
     private final VertexAttrib vertex = new VertexAttrib(0);
     private final VertexAttrib color = new VertexAttrib(1);
     private final VertexAttrib texCoord = new VertexAttrib(2);
     protected final boolean fixed;
+    protected boolean rendered;
     private float r, g, b, a, u, v;
     protected int vertices;
     protected int pos;
@@ -55,7 +56,6 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
 
     public Tesselator3(boolean fixed) {
         this.fixed = fixed;
-        program = new GLProgram();
         program.createVsh("#version 330\n" +
             "layout(location = 0) in vec3 vertex;\n" +
             "layout(location = 1) in vec4 color;\n" +
@@ -84,8 +84,6 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
             "    }\n" +
             "}");
         program.link();
-        vao = new Vao();
-        vbo = new Vbo(GL_ARRAY_BUFFER);
     }
 
     protected void clear() {
@@ -204,9 +202,12 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
 
     @Override
     public Tesselator3 draw() {
-        vao.bind();
-        setupVbo();
-        vao.unbind();
+        if (!fixed || !rendered) {
+            vao.bind();
+            setupVbo();
+            vao.unbind();
+            rendered = true;
+        }
         program.bind();
         program.setUniformMat4("mvp", mvp);
         program.setUniform("hasColor", hasColor);
@@ -230,10 +231,5 @@ public class Tesselator3 implements ITesselator<Tesselator3> {
         program.close();
         vbo.free();
         vao.free();
-    }
-
-    @Override
-    public Tesselator3 getThis() {
-        return this;
     }
 }

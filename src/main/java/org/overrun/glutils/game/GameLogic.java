@@ -32,13 +32,54 @@ package org.overrun.glutils.game;
 public interface GameLogic {
     void create();
 
+    /**
+     * Rendering.
+     * <p>
+     * This method call per frames.
+     * </p>
+     */
     void render();
 
+    /**
+     * Ticking.
+     * <p>
+     * This method call per ticks.
+     * </p>
+     *
+     * @see GameConfig#tps
+     */
     void tick();
 
+    /**
+     * Resizing framebuffer.
+     *
+     * @param width  The new width.
+     * @param height The new height.
+     */
     void resize(int width, int height);
 
+    /**
+     * This method call after polling events.
+     */
     void onUpdated();
+
+    /**
+     * Called on key pressed.
+     *
+     * @param key      The key.
+     * @param scancode The scancode.
+     * @param mods     The modifiers.
+     */
+    void keyPressed(int key, int scancode, int mods);
+
+    /**
+     * Called on key released.
+     *
+     * @param key      The key.
+     * @param scancode The scancode.
+     * @param mods     The modifiers.
+     */
+    void keyReleased(int key, int scancode, int mods);
 
     void free();
 }

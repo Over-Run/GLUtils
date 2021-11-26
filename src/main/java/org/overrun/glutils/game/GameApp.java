@@ -40,18 +40,18 @@ import static org.overrun.glutils.game.GameEngine.*;
  * @since 1.5.0
  */
 public class GameApp {
-    public final GameLogic game;
+    public final Game game;
     public final GameConfig config;
 
     /**
      * Create and run game
      *
-     * @param logic  Game logic
+     * @param game   Game logic
      * @param config Game config
      */
-    public GameApp(final GameLogic logic,
+    public GameApp(final Game game,
                    final GameConfig config) {
-        game = logic;
+        this.game = game;
         this.config = config;
         app = this;
         config.errorCallback.set();
@@ -86,25 +86,25 @@ public class GameApp {
             input.mouseY = (int) yp;
         });
         framebuffer = new Framebuffer((hWnd, width, height) ->
-            logic.resize(width, height), window);
+            game.resize(width, height), window);
         timer = new SystemTimer(config.tps);
         window.makeCurr();
         GL.createCapabilities();
         glfwSwapInterval(config.vSync ? 1 : 0);
         graphics = new Graphics();
-        logic.create();
+        game.create();
         window.show();
         long lastTime = System.currentTimeMillis();
         int frames = 0;
         while (!window.shouldClose()) {
             timer.advanceTime();
             for (int i = 0; i < timer.getTicks(); i++) {
-                logic.tick();
+                game.tick();
             }
-            logic.render();
+            game.render();
             window.swapBuffers();
             glfwPollEvents();
-            logic.onUpdated();
+            game.onUpdated();
             ++frames;
             while (System.currentTimeMillis() >= lastTime + 1000) {
                 graphics.fps = frames;
@@ -112,7 +112,7 @@ public class GameApp {
                 frames = 0;
             }
         }
-        logic.free();
+        game.free();
         window.free();
         glfwTerminate();
         glfwSetErrorCallback(null).free();

@@ -30,11 +30,11 @@ import org.overrun.glutils.IndexedTesselator3;
 import org.overrun.glutils.MipmapMode;
 import org.overrun.glutils.Tesselator3;
 import org.overrun.glutils.game.*;
-import org.overrun.glutils.wnd.Framebuffer;
 
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.game.GLStateManager.enableBlend;
 import static org.overrun.glutils.game.GLStateManager.enableDepthTest;
 import static org.overrun.glutils.game.GameEngine.*;
 import static org.overrun.glutils.math.Transform.*;
@@ -47,20 +47,42 @@ public class Tesselator3Test extends Game {
         xRot = 0, yRot = 0,
         xo = 0, yo = 0, zo = 0,
         xd = 0, yd = 0, zd = 0;
-    private final Matrix4f mvp = new Matrix4f();
+    private final Matrix4f mat3d = new Matrix4f();
+    private final Matrix4f mat2d = new Matrix4f();
     private IndexedTesselator3 it;
     private Tesselator3 t;
+    private Tesselator3 scrT;
     private Texture2D sth;
+
+    private class Scr extends Screen {
+        public Scr(Screen parent) {
+            super(parent);
+        }
+
+        @Override
+        public void render() {
+            scrT.setMatrix(mat2d);
+            scrT.init()
+                .color(0, 0, 0, 0.5f).vertex(0, 0, 0)
+                .color(0, 0, 0, 0.5f).vertex(0, height, 0)
+                .color(0, 0, 0, 0.5f).vertex(width, height, 0)
+                .color(0, 0, 0, 0.5f).vertex(width, height, 0)
+                .color(0, 0, 0, 0.5f).vertex(width, 0, 0)
+                .color(0, 0, 0, 0.5f).vertex(0, 0, 0)
+                .draw();
+            super.render();
+        }
+    }
 
     @Override
     public void create() {
         input.register((hWnd, key, scancode, action, mods) -> {
             if (action == GLFW_RELEASE) {
                 if (key == GLFW_KEY_ESCAPE) {
-                    window.closeWindow();
-                }
-                if (key == GLFW_KEY_GRAVE_ACCENT) {
                     window.setGrabbed(!window.isGrabbed());
+                    if (screen == null) {
+                        openScreen(new Scr(null));
+                    }
                 }
             }
         });
@@ -77,6 +99,8 @@ public class Tesselator3Test extends Game {
         });
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         enableDepthTest();
+        enableBlend();
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         window.setGrabbed(true);
         it = new IndexedTesselator3(true)
             .color(0, 1, 0).vertex(0, 1, 0)
@@ -108,6 +132,7 @@ public class Tesselator3Test extends Game {
             .vertexUV(17, 17, 0, 1, 1)
             .vertexUV(17, 0, 0, 1, 0)
             .vertexUV(0, 0, 0, 0, 0);
+        scrT = new Tesselator3(false);
         sth = new Texture2D(ClassLoader.getSystemClassLoader(),
             "tstest.png",
             new MipmapMode()
@@ -117,22 +142,22 @@ public class Tesselator3Test extends Game {
 
     @Override
     public void render() {
-        Framebuffer fb = GameEngine.framebuffer;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        it.setMatrix(mat3d);
+        it.draw();
+        glClear(GL_DEPTH_BUFFER_BIT);
+        sth.bind();
         float delta = timer.getDelta();
         float tx = xo + (x - xo) * delta;
         float ty = yo + (y - yo) * delta;
         float tz = zo + (z - zo) * delta;
-        it.setMatrix(rotateY(
+        rotateY(
             rotateX(
-                setPerspective(mvp, 90, fb, 0.05f, 1000)
+                setPerspective(mat3d, 90, framebuffer, 0.05f, 1000)
                     .translate(0, 0, -0.3f),
                 -xRot),
-            yRot).translate(-tx, -ty, -tz));
-        it.draw();
-        glClear(GL_DEPTH_BUFFER_BIT);
-        sth.bind();
-        t.setMatrix(mvp.setOrtho2D(0, fb.width(), fb.height(), 0));
+            yRot).translate(-tx, -ty, -tz);
+        t.setMatrix(mat2d);
         t.draw();
         sth.unbind();
         super.render();
@@ -186,6 +211,7 @@ public class Tesselator3Test extends Game {
     @Override
     public void resize(int width, int height) {
         glViewport(0, 0, width, height);
+        mat2d.setOrtho2D(0, width, height, 0);
         super.resize(width, height);
     }
 
@@ -193,6 +219,11 @@ public class Tesselator3Test extends Game {
     public void onUpdated() {
         super.onUpdated();
         window.setTitle("Tesselator3 Test FPS:" + graphics.getFps());
+    }
+
+    @Override
+    public void keyReleased(int key, int scancode, int mods) {
+        super.keyReleased(key, scancode, mods);
     }
 
     @Override

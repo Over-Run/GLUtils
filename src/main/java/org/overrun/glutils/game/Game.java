@@ -45,6 +45,12 @@ public class Game implements GameLogic {
         }
     }
 
+    /**
+     * Creating game.
+     * <p>
+     * This method call after creating OpenGL context.
+     * </p>
+     */
     @Override
     public void create() {
     }
@@ -53,13 +59,6 @@ public class Game implements GameLogic {
     public void render() {
         if (screen != null) {
             screen.render();
-        }
-    }
-
-    @Override
-    public void onUpdated() {
-        if (screen != null) {
-            screen.onUpdated();
         }
     }
 
@@ -77,6 +76,33 @@ public class Game implements GameLogic {
         }
     }
 
+    @Override
+    public void onUpdated() {
+        if (screen != null) {
+            screen.onUpdated();
+        }
+    }
+
+    @Override
+    public void keyPressed(int key, int scancode, int mods) {
+        if (screen != null) {
+            screen.keyPressed(key, scancode, mods);
+        }
+    }
+
+    @Override
+    public void keyReleased(int key, int scancode, int mods) {
+        if (screen != null) {
+            screen.keyReleased(key, scancode, mods);
+        }
+    }
+
+    /**
+     * Freeing.
+     * <p>
+     * This method call on exiting the game engine.
+     * </p>
+     */
     @Override
     public void free() {
     }

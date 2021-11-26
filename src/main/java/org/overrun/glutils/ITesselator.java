@@ -29,38 +29,36 @@ package org.overrun.glutils;
  * @author squid233
  * @since 1.5.0
  */
-public interface ITesselator<T extends ITesselator<T>> {
-    T getThis();
+public interface ITesselator {
+    ITesselator init();
 
-    T init();
+    ITesselator color(final float r,
+                      final float g,
+                      final float b,
+                      final float a);
 
-    T color(final float r,
-            final float g,
-            final float b,
-            final float a);
-
-    default T color(final float r,
-                    final float g,
-                    final float b) {
+    default ITesselator color(final float r,
+                              final float g,
+                              final float b) {
         return color(r, g, b, 1);
     }
 
-    T tex(final float u,
-          final float v);
+    ITesselator tex(final float u,
+                    final float v);
 
-    default T vertexUV(final float x,
-                       final float y,
-                       final float z,
-                       final float u,
-                       final float v) {
+    default ITesselator vertexUV(final float x,
+                                 final float y,
+                                 final float z,
+                                 final float u,
+                                 final float v) {
         return tex(u, v).vertex(x, y, z);
     }
 
-    T vertex(final float x,
-             final float y,
-             final float z);
+    ITesselator vertex(final float x,
+                       final float y,
+                       final float z);
 
-    T draw();
+    ITesselator draw();
 
     void free();
 }

@@ -93,7 +93,7 @@ public class GLFWindow implements AutoCloseable, SizedObject {
     }
 
     /**
-     * get key
+     * Get key state
      *
      * @param k key
      * @return one of {@link GLFW#GLFW_PRESS PRESS} or {@link GLFW#GLFW_RELEASE RELEASE}
@@ -103,10 +103,11 @@ public class GLFWindow implements AutoCloseable, SizedObject {
     }
 
     /**
-     * Get mouse
+     * Get mouse button state
      *
      * @param b Button
      * @return one of {@link GLFW#GLFW_PRESS PRESS} or {@link GLFW#GLFW_RELEASE RELEASE}
+     * @since 1.5.0
      */
     public int mouse(int b) {
         return glfwGetMouseButton(hWnd, b);
@@ -274,6 +275,12 @@ public class GLFWindow implements AutoCloseable, SizedObject {
             grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
     }
 
+    /**
+     * is grabbed
+     *
+     * @return {@link #grabbed}
+     * @since 1.5.0
+     */
     public boolean isGrabbed() {
         return grabbed;
     }

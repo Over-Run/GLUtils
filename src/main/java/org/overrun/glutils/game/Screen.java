@@ -25,14 +25,25 @@
 
 package org.overrun.glutils.game;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.overrun.glutils.game.GameEngine.app;
+
 /**
  * @author squid233
  * @since 1.5.0
  */
 public class Screen implements GameLogic {
+    protected Screen parent;
     protected int width;
     protected int height;
 
+    public Screen(Screen parent) {
+        this.parent = parent;
+    }
+
+    /**
+     * Creating screen.
+     */
     @Override
     public void create() {
     }
@@ -55,9 +66,26 @@ public class Screen implements GameLogic {
     public void onUpdated() {
     }
 
+    @Override
+    public void keyPressed(int key, int scancode, int mods) {
+    }
+
+    @Override
+    public void keyReleased(int key, int scancode, int mods) {
+        if (key == GLFW_KEY_ESCAPE) {
+            app.game.openScreen(parent);
+        }
+    }
+
+    /**
+     * Closing screen.
+     */
     public void close() {
     }
 
+    /**
+     * @see #close()
+     */
     @Override
     public final void free() {
         close();

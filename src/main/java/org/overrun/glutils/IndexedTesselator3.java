@@ -25,21 +25,16 @@
 
 package org.overrun.glutils;
 
-import org.lwjgl.system.MemoryUtil;
-
-import java.nio.IntBuffer;
-
-import static org.lwjgl.opengl.GL15.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL15.glDrawElements;
+import static java.util.Arrays.fill;
+import static org.lwjgl.opengl.GL15.*;
 
 /**
  * @author squid233
  * @since 1.5.0
  */
 public class IndexedTesselator3 extends Tesselator3 {
-    private final int[] array = new int[10 * VERTEX_COUNT];
-    private final IntBuffer buffer = MemoryUtil.memAllocInt(10 * VERTEX_COUNT);
-    private boolean firstTime = true;
+    private final Vbo ebo = new Vbo(GL_ELEMENT_ARRAY_BUFFER);
+    private int[] array;
 
     public IndexedTesselator3(boolean fixed) {
         super(fixed);
@@ -48,7 +43,7 @@ public class IndexedTesselator3 extends Tesselator3 {
     @Override
     protected void clear() {
         super.clear();
-        buffer.clear();
+        fill(array, 0);
     }
 
     @Override
@@ -93,30 +88,26 @@ public class IndexedTesselator3 extends Tesselator3 {
         return this;
     }
 
-    public IndexedTesselator3 indices(final long offset,
-                                      final int... indices) {
-        System.arraycopy(indices, 0, array, (int) offset, indices.length);
+    public IndexedTesselator3 indices(final int... indices) {
+        array = indices;
         return this;
     }
 
-    public IndexedTesselator3 indices(final int... indices) {
-        return indices(0, indices);
+    @Override
+    protected void setupVbo() {
+        super.setupVbo();
+        ebo.bind();
+        ebo.data(array, GL_STREAM_DRAW);
     }
 
     @Override
     protected void render() {
-        if (!fixed) {
-            buffer.clear();
-            buffer.put(array, 0, pos).flip();
-        } else if (firstTime) {
-            firstTime = false;
-            buffer.put(array, 0, pos).flip();
-        }
-        glDrawElements(GL_TRIANGLES, buffer);
+        glDrawElements(GL_TRIANGLES, array.length, GL_UNSIGNED_INT, 0);
     }
 
     @Override
-    public IndexedTesselator3 getThis() {
-        return this;
+    public void free() {
+        super.free();
+        ebo.free();
     }
 }
