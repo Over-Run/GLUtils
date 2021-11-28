@@ -25,6 +25,8 @@
 
 package org.overrun.glutils.game;
 
+import static org.overrun.glutils.game.GameEngine.app;
+
 /**
  * @author squid233
  * @since 1.5.0
@@ -34,7 +36,7 @@ public class Screen implements GameLogic {
     protected int width;
     protected int height;
 
-    public Screen(Screen parent) {
+    public Screen(final Screen parent) {
         this.parent = parent;
     }
 
@@ -50,38 +52,23 @@ public class Screen implements GameLogic {
     }
 
     @Override
-    public void tick() {
-    }
-
-    @Override
-    public void resize(int width, int height) {
+    public void resize(final int width,
+                       final int height) {
         this.width = width;
         this.height = height;
     }
 
-    @Override
-    public void onUpdated() {
-    }
-
-    @Override
-    public void keyPressed(int key, int scancode, int mods) {
-    }
-
-    @Override
-    public void keyReleased(int key, int scancode, int mods) {
-    }
-
     /**
-     * Closing screen.
+     * Close screen.
      */
     public void close() {
+        app.game.openScreen(parent);
     }
 
     /**
-     * @see #close()
+     * Called on closing screen.
      */
     @Override
-    public final void free() {
-        close();
+    public void free() {
     }
 }

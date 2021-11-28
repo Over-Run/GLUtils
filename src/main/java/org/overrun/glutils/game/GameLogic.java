@@ -48,7 +48,8 @@ public interface GameLogic {
      *
      * @see GameConfig#tps
      */
-    void tick();
+    default void tick() {
+    }
 
     /**
      * Resizing framebuffer.
@@ -56,12 +57,25 @@ public interface GameLogic {
      * @param width  The new width.
      * @param height The new height.
      */
-    void resize(int width, int height);
+    default void resize(final int width,
+                        final int height) {
+    }
 
     /**
-     * This method call after polling events.
+     * Called after polling events.
      */
-    void onUpdated();
+    default void onUpdated() {
+    }
+
+    /**
+     * Called on cursor pos callback.
+     *
+     * @param x New pos x.
+     * @param y New pos y.
+     */
+    default void cursorPosCb(final int x,
+                             final int y) {
+    }
 
     /**
      * Called on key pressed.
@@ -70,7 +84,10 @@ public interface GameLogic {
      * @param scancode The scancode.
      * @param mods     The modifiers.
      */
-    void keyPressed(int key, int scancode, int mods);
+    default void keyPressed(final int key,
+                            final int scancode,
+                            final int mods) {
+    }
 
     /**
      * Called on key released.
@@ -79,7 +96,22 @@ public interface GameLogic {
      * @param scancode The scancode.
      * @param mods     The modifiers.
      */
-    void keyReleased(int key, int scancode, int mods);
+    default void keyReleased(final int key,
+                             final int scancode,
+                             final int mods) {
+    }
+
+    /**
+     * Called on key repeated.
+     *
+     * @param key      The key.
+     * @param scancode The scancode.
+     * @param mods     The modifiers.
+     */
+    default void keyRepeated(final int key,
+                             final int scancode,
+                             final int mods) {
+    }
 
     void free();
 }

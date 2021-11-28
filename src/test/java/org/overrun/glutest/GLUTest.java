@@ -68,7 +68,7 @@ public class GLUTest implements AutoCloseable {
         window = new GLFWindow(854,
                 480,
                 "Testing texture, lighting and HUD");
-        window.setMousePos(854 / 2, 480 / 2);
+        window.setCursorPos(854 / 2, 480 / 2);
         fb = new Framebuffer((window1, width, height) ->
                 window.setResized(true),
                 window);

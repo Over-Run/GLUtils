@@ -34,9 +34,9 @@ import static org.overrun.glutils.game.GameEngine.framebuffer;
 public class Game implements GameLogic {
     public Screen screen;
 
-    public void openScreen(Screen s) {
+    public void openScreen(final Screen s) {
         if (screen != null) {
-            screen.close();
+            screen.free();
         }
         screen = s;
         if (s != null) {
@@ -70,7 +70,8 @@ public class Game implements GameLogic {
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(final int width,
+                       final int height) {
         if (screen != null) {
             screen.resize(width, height);
         }
@@ -84,16 +85,36 @@ public class Game implements GameLogic {
     }
 
     @Override
-    public void keyPressed(int key, int scancode, int mods) {
+    public void cursorPosCb(int x, int y) {
+        if (screen != null) {
+            screen.cursorPosCb(x, y);
+        }
+    }
+
+    @Override
+    public void keyPressed(final int key,
+                           final int scancode,
+                           final int mods) {
         if (screen != null) {
             screen.keyPressed(key, scancode, mods);
         }
     }
 
     @Override
-    public void keyReleased(int key, int scancode, int mods) {
+    public void keyReleased(final int key,
+                            final int scancode,
+                            final int mods) {
         if (screen != null) {
             screen.keyReleased(key, scancode, mods);
+        }
+    }
+
+    @Override
+    public void keyRepeated(final int key,
+                            final int scancode,
+                            final int mods) {
+        if (screen != null) {
+            screen.keyRepeated(key, scancode, mods);
         }
     }
 

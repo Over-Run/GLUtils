@@ -39,7 +39,6 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.game.GLStateManager.enableBlend;
 import static org.overrun.glutils.game.GLStateManager.enableTexture2D;
-import static org.overrun.glutils.game.GameEngine.input;
 import static org.overrun.glutils.game.GameEngine.window;
 
 /**
@@ -52,13 +51,6 @@ public class TextRendererTest extends Game {
 
     @Override
     public void create() {
-        input.register((hWnd, key, scancode, action, mods) -> {
-            if (action == GLFW_PRESS) {
-                if (key == GLFW_KEY_ESCAPE) {
-                    window.closeWindow();
-                }
-            }
-        });
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         enableTexture2D();
         enableBlend();
@@ -105,6 +97,14 @@ public class TextRendererTest extends Game {
         glOrtho(0, width, btt ? 0 : height, btt ? height : 0, -1, 1);
         glMatrixMode(GL_MODELVIEW);
         super.resize(width, height);
+    }
+
+    @Override
+    public void keyReleased(int key, int scancode, int mods) {
+        if (key == GLFW_RELEASE) {
+            window.closeWindow();
+        }
+        super.keyReleased(key, scancode, mods);
     }
 
     public static void main(String[] args) {

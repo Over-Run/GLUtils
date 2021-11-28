@@ -25,12 +25,6 @@
 
 package org.overrun.glutils.game;
 
-import org.lwjgl.glfw.GLFWCursorPosCallbackI;
-import org.lwjgl.glfw.GLFWKeyCallbackI;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.overrun.glutils.game.GameEngine.window;
 
@@ -39,21 +33,9 @@ import static org.overrun.glutils.game.GameEngine.window;
  * @since 1.5.0
  */
 public class Input {
-    protected final List<GLFWKeyCallbackI> keyCbs =
-        new ArrayList<>();
-    protected final List<GLFWCursorPosCallbackI> cursorPosCbs =
-        new ArrayList<>();
     protected int mouseX, mouseY, deltaMX, deltaMY;
 
-    public void register(GLFWKeyCallbackI cb) {
-        keyCbs.add(cb);
-    }
-
-    public void register(GLFWCursorPosCallbackI cb) {
-        cursorPosCbs.add(cb);
-    }
-
-    public boolean pressed(int key) {
+    public boolean pressed(final int key) {
         return window.key(key) == GLFW_PRESS;
     }
 

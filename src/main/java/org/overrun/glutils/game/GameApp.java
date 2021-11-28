@@ -25,8 +25,6 @@
 
 package org.overrun.glutils.game;
 
-import org.lwjgl.glfw.GLFWCursorPosCallbackI;
-import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.opengl.GL;
 import org.overrun.glutils.timer.SystemTimer;
 import org.overrun.glutils.wnd.Framebuffer;
@@ -72,21 +70,18 @@ public class GameApp {
             config.title);
         input = new Input();
         window.keyCb((hWnd, key, scancode, action, mods) -> {
-            for (GLFWKeyCallbackI cb : input.keyCbs) {
-                cb.invoke(hWnd, key, scancode, action, mods);
-            }
             if (action == GLFW_PRESS) {
                 game.keyPressed(key, scancode, mods);
             } else if (action == GLFW_RELEASE) {
                 game.keyReleased(key, scancode, mods);
+            } else if (action == GLFW_REPEAT) {
+                game.keyRepeated(key, scancode, mods);
             }
         });
         window.cursorPosCb((hWnd, xp, yp) -> {
-            input.deltaMX = (int) (xp - input.mouseX);
-            input.deltaMY = (int) (yp - input.mouseY);
-            for (GLFWCursorPosCallbackI cb : input.cursorPosCbs) {
-                cb.invoke(hWnd, xp, yp);
-            }
+            input.deltaMX = (int) xp - input.mouseX;
+            input.deltaMY = (int) yp - input.mouseY;
+            game.cursorPosCb(input.mouseX, input.mouseY);
             input.mouseX = (int) xp;
             input.mouseY = (int) yp;
         });

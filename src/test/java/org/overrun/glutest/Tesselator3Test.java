@@ -55,7 +55,7 @@ public class Tesselator3Test extends Game {
     private Texture2D sth;
 
     private class Scr extends Screen {
-        public Scr(Screen parent) {
+        public Scr(final Screen parent) {
             super(parent);
         }
 
@@ -75,17 +75,6 @@ public class Tesselator3Test extends Game {
 
     @Override
     public void create() {
-        input.register((hWnd, xp, yp) -> {
-            if (window.isGrabbed()) {
-                xRot -= input.getDeltaMY() * 0.15;
-                yRot += input.getDeltaMX() * 0.15;
-                if (xRot < -90) {
-                    xRot = -90;
-                } else if (xRot > 90) {
-                    xRot = 90;
-                }
-            }
-        });
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         enableDepthTest();
         enableBlend();
@@ -113,7 +102,7 @@ public class Tesselator3Test extends Game {
         float sin = (float) sin(timer.getCurrTime());
         float c0 = abs(sin);
         float c1 = 1 - c0;
-        it.setMatrix(mat3d.scaleLocal((c0 + 1) / 2f));
+        it.setMatrix(mat3d.scaleLocal((c0 * 0.95f + 1f) / 2f));
         it.init()
             .color(c0, c1, c0).vertex(0, 1, 0)
             .color(c0, c0, c0).vertex(0, 0, 0)
@@ -203,7 +192,8 @@ public class Tesselator3Test extends Game {
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(final int width,
+                       final int height) {
         glViewport(0, 0, width, height);
         mat2d.setOrtho2D(0, width, height, 0);
         super.resize(width, height);
@@ -216,13 +206,29 @@ public class Tesselator3Test extends Game {
     }
 
     @Override
-    public void keyReleased(int key, int scancode, int mods) {
+    public void cursorPosCb(int x, int y) {
+        if (window.isGrabbed()) {
+            xRot -= input.getDeltaMY() * 0.15;
+            yRot += input.getDeltaMX() * 0.15;
+            if (xRot < -90) {
+                xRot = -90;
+            } else if (xRot > 90) {
+                xRot = 90;
+            }
+        }
+        super.cursorPosCb(x, y);
+    }
+
+    @Override
+    public void keyReleased(final int key,
+                            final int scancode,
+                            final int mods) {
         if (key == GLFW_KEY_ESCAPE) {
             window.setGrabbed(!window.isGrabbed());
             if (screen == null) {
                 openScreen(new Scr(null));
             } else {
-                openScreen(null);
+                screen.close();
             }
         }
         super.keyReleased(key, scancode, mods);
@@ -235,7 +241,7 @@ public class Tesselator3Test extends Game {
         t.free();
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         GameConfig config = new GameConfig();
         config.width = 854;
         config.height = 480;
