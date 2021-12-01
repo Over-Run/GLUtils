@@ -97,6 +97,16 @@ public class Tesselator3Test extends Game {
 
     @Override
     public void render() {
+        float delta = timer.getDelta();
+        float tx = xo + (x - xo) * delta;
+        float ty = yo + (y - yo) * delta;
+        float tz = zo + (z - zo) * delta;
+        rotateY(
+            rotateX(
+                setPerspective(mat3d, 90, framebuffer, 0.05f, 1000)
+                    .translate(0, 0, -0.3f),
+                -xRot),
+            yRot).translate(-tx, -ty, -tz);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         mat3d.pushMatrix();
         float sin = (float) sin(timer.getCurrTime());
@@ -130,16 +140,6 @@ public class Tesselator3Test extends Game {
         mat3d.popMatrix();
         glClear(GL_DEPTH_BUFFER_BIT);
         sth.bind();
-        float delta = timer.getDelta();
-        float tx = xo + (x - xo) * delta;
-        float ty = yo + (y - yo) * delta;
-        float tz = zo + (z - zo) * delta;
-        rotateY(
-            rotateX(
-                setPerspective(mat3d, 90, framebuffer, 0.05f, 1000)
-                    .translate(0, 0, -0.3f),
-                -xRot),
-            yRot).translate(-tx, -ty, -tz);
         t.setMatrix(mat2d);
         t.draw();
         sth.unbind();
@@ -153,22 +153,22 @@ public class Tesselator3Test extends Game {
         yo = y;
         zo = z;
         float xa = 0, ya = 0, za = 0;
-        if (input.pressed(GLFW_KEY_W)) {
+        if (input.keyPressed(GLFW_KEY_W)) {
             --za;
         }
-        if (input.pressed(GLFW_KEY_S)) {
+        if (input.keyPressed(GLFW_KEY_S)) {
             ++za;
         }
-        if (input.pressed(GLFW_KEY_A)) {
+        if (input.keyPressed(GLFW_KEY_A)) {
             --xa;
         }
-        if (input.pressed(GLFW_KEY_D)) {
+        if (input.keyPressed(GLFW_KEY_D)) {
             ++xa;
         }
-        if (input.pressed(GLFW_KEY_LEFT_SHIFT)) {
+        if (input.keyPressed(GLFW_KEY_LEFT_SHIFT)) {
             --ya;
         }
-        if (input.pressed(GLFW_KEY_SPACE)) {
+        if (input.keyPressed(GLFW_KEY_SPACE)) {
             ++ya;
         }
         float dist = xa * xa + ya * ya + za * za;

@@ -44,9 +44,9 @@ public interface IMesh extends Drawable, AutoCloseable {
     /**
      * Render this mesh.
      *
-     * @param mode Drawing mode.
+     * @param primitive Drawing primitive.
      */
-    void render(int mode);
+    void render(int primitive);
 
     /**
      * Render this mesh.

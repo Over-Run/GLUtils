@@ -41,7 +41,7 @@ import java.awt.Font;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL15.*;
-import static org.overrun.glutest.GLUTest.TIMER;
+import static org.overrun.glutest.GLUTest.fps;
 import static org.overrun.glutils.ShaderReader.lines;
 import static org.overrun.glutils.game.GLStateManager.*;
 import static org.overrun.glutils.math.Transform.*;
@@ -51,31 +51,31 @@ import static org.overrun.glutils.math.Transform.*;
  */
 public class GameRenderer implements AutoCloseable {
     public static final float[] LOW_FPS_COLOR = {
-            1, 0, 0, 1,
-            1, 0, 0, 1,
-            1, 0, 0, 1,
-            1, 0, 0, 1
+        1, 0, 0, 1,
+        1, 0, 0, 1,
+        1, 0, 0, 1,
+        1, 0, 0, 1
     };
     public static final float[] HIGH_FPS_COLOR = {
-            0, 1, 0, 1,
-            0, 1, 0, 1,
-            0, 1, 0, 1,
-            0, 1, 0, 1
+        0, 1, 0, 1,
+        0, 1, 0, 1,
+        0, 1, 0, 1,
+        0, 1, 0, 1
     };
     public static final float[] BG_COLOR = {
-            0.0f, 0.0f, 0.0f, 0.5f,
-            0.0f, 0.0f, 0.0f, 0.5f,
-            0.0f, 0.0f, 0.0f, 0.5f,
-            0.0f, 0.0f, 0.0f, 0.5f
+        0.0f, 0.0f, 0.0f, 0.5f,
+        0.0f, 0.0f, 0.0f, 0.5f,
+        0.0f, 0.0f, 0.0f, 0.5f,
+        0.0f, 0.0f, 0.0f, 0.5f
     };
     public static final ClassLoader cl = GameRenderer.class.getClassLoader();
     public final Matrix4f proj = new Matrix4f();
     public final Matrix4fStack modelv = new Matrix4fStack(32);
     public final FontTexture utf8 = FontTextures.builder("Consolas-UTF_8-2")
-            .font(Font.decode("Consolas"))
-            .charset(StandardCharsets.UTF_8)
-            .padding(2)
-            .build();
+        .font(Font.decode("Consolas"))
+        .charset(StandardCharsets.UTF_8)
+        .padding(2)
+        .build();
     public static final float SPECULAR_POWER = 10;
     public GLProgram program;
     public GLProgram guiProgram;
@@ -94,34 +94,34 @@ public class GameRenderer implements AutoCloseable {
         guiProgram.createFsh(lines(cl, "shaders/gui.fsh"));
         guiProgram.link();
         cube = ObjLoader.load3(cl,
-                "model/cube/cube.obj",
-                (m, v, i) -> m.vertIdx(0)
-                        .texIdx(1)
-                        .normalIdx(2)
+            "model/cube/cube.obj",
+            (m, v, i) -> m.vertIdx(0)
+                .texIdx(1)
+                .normalIdx(2)
         );
         cube.setPreRender(m -> program.setUniform("material.ambient",
-                "material.diffuse",
-                "material.specular",
-                "material.textured",
-                "material.reflectance",
-                m.getMaterial()));
+            "material.diffuse",
+            "material.specular",
+            "material.textured",
+            "material.reflectance",
+            m.getMaterial()));
         crossing = MeshLoader.load3(cl,
-                        "crossing.mesh",
-                        m -> m.vertIdx(0).colorIdx(1).texIdx(2))
-                .texture(Textures.loadAWT(cl, "crossing.png", GL_NEAREST));
+                "crossing.mesh",
+                m -> m.vertIdx(0).colorIdx(1).texIdx(2))
+            .texture(Textures.loadAWT(cl, "crossing.png", GL_NEAREST));
         text = new Mesh3()
-                .vertUsage(GL_DYNAMIC_DRAW)
-                .vertIdx(0)
-                .colorIdx(1)
-                .colorDim(4)
-                .texIdx(2)
-                .unbindVao();
+            .vertUsage(GL_DYNAMIC_DRAW)
+            .vertIdx(0)
+            .colorIdx(1)
+            .colorDim(4)
+            .texIdx(2)
+            .unbindVao();
         textBg = new Mesh3()
-                .vertUsage(GL_DYNAMIC_DRAW)
-                .vertIdx(0)
-                .colorIdx(1)
-                .colorDim(4)
-                .unbindVao();
+            .vertUsage(GL_DYNAMIC_DRAW)
+            .vertIdx(0)
+            .colorIdx(1)
+            .colorDim(4)
+            .unbindVao();
     }
 
     public void render(int w,
@@ -145,16 +145,16 @@ public class GameRenderer implements AutoCloseable {
 
         modelv.mul(viewMatrix);
         program.setUniformMat4("proj",
-                setPerspective(proj,
-                        70,
-                        w,
-                        h,
-                        0.05f,
-                        1000.0f));
+            setPerspective(proj,
+                90,
+                w,
+                h,
+                0.05f,
+                1000.0f));
 
         DirectionalLight currDirLight = new DirectionalLight(light);
         Vector4f dir = new Vector4f(currDirLight.getDirection(), 0)
-                .mul(viewMatrix);
+            .mul(viewMatrix);
         currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
         // Get a copy of the point light object and transform its position to view coordinates
         PointLight currPointLight = new PointLight(pointLight);
@@ -169,18 +169,18 @@ public class GameRenderer implements AutoCloseable {
         program.setUniform("ambientLight", ambientLight);
         program.setUniform("specularPower", SPECULAR_POWER);
         program.setUniform(
-                "pointLight.color",
-                "pointLight.position",
-                "pointLight.intensity",
-                "pointLight.att.constant",
-                "pointLight.att.linear",
-                "pointLight.att.exponent",
-                currPointLight);
+            "pointLight.color",
+            "pointLight.position",
+            "pointLight.intensity",
+            "pointLight.att.constant",
+            "pointLight.att.linear",
+            "pointLight.att.exponent",
+            currPointLight);
         program.setUniform(
-                "directionalLight.color",
-                "directionalLight.direction",
-                "directionalLight.intensity",
-                currDirLight);
+            "directionalLight.color",
+            "directionalLight.direction",
+            "directionalLight.intensity",
+            currDirLight);
 
         program.setUniform("texSampler", 0);
         for (int x = 0; x < 3; x++) {
@@ -232,42 +232,42 @@ public class GameRenderer implements AutoCloseable {
         guiProgram.setUniformMat4("modelv", modelv.translation(w / 2f, h / 2f, 0));
         crossing.render();
         guiProgram.setUniformMat4("modelv", modelv.translation(2, 2, 0));
-        String fpsSt = "FPS: " + TIMER.fps;
+        String fpsSt = "FPS: " + fps;
         String st = fpsSt + "\nLight angle: " + lightAngle;
         st += "\nCamera pos: " + cameraX + ", " + cameraY + ", " + cameraZ;
         st += "\nCamera rotation: " + player.xRot + ", " + player.yRot;
         DrawableText.build(utf8,
-                st,
-                4,
-                (c, index) -> BG_COLOR,
-                (c, index) -> {
-                    if (index > 3 && index < fpsSt.length()) {
-                        if (TIMER.fps < 30) {
-                            return LOW_FPS_COLOR;
-                        }
-                        return HIGH_FPS_COLOR;
+            st,
+            4,
+            (c, index) -> BG_COLOR,
+            (c, index) -> {
+                if (index > 3 && index < fpsSt.length()) {
+                    if (fps < 30) {
+                        return LOW_FPS_COLOR;
                     }
-                    return DrawableText.DEFAULT_COLOR_ALPHA;
-                },
-                (vertices,
-                 colors,
-                 texCoord,
-                 tex,
-                 indices,
-                 bc) -> {
-                    text.bindVao()
-                            .vertices(vertices)
-                            .colors(colors)
-                            .texCoords(texCoord)
-                            .texture(tex)
-                            .indices(indices)
-                            .unbindVao();
-                    textBg.bindVao()
-                            .vertices(vertices)
-                            .colors(bc)
-                            .indices(indices)
-                            .unbindVao();
+                    return HIGH_FPS_COLOR;
                 }
+                return DrawableText.DEFAULT_COLOR_ALPHA;
+            },
+            (vertices,
+             colors,
+             texCoord,
+             tex,
+             indices,
+             bc) -> {
+                text.bindVao()
+                    .vertices(vertices)
+                    .colors(colors)
+                    .texCoords(texCoord)
+                    .texture(tex)
+                    .indices(indices)
+                    .unbindVao();
+                textBg.bindVao()
+                    .vertices(vertices)
+                    .colors(bc)
+                    .indices(indices)
+                    .unbindVao();
+            }
         );
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         guiProgram.setUniform("textured", false);

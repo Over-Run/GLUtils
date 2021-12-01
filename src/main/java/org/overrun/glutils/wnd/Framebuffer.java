@@ -84,9 +84,9 @@ public class Framebuffer implements SizedObject {
     }
 
     /**
-     * construct
+     * Construct.
      * <p>
-     * must init
+     * Note: You must init yourself.
      * </p>
      */
     public Framebuffer() {
@@ -99,12 +99,12 @@ public class Framebuffer implements SizedObject {
      */
     public void init(long parent) {
         glfwSetFramebufferSizeCallback(parent,
-            (window, width1, height1) -> {
+            (window, w, h) -> {
                 if (cb != null) {
-                    cb.invoke(window, width1, height1);
+                    cb.invoke(window, w, h);
                 }
-                width = width1;
-                height = height1;
+                width = w;
+                height = h;
             });
     }
 

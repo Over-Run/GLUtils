@@ -6,6 +6,7 @@ Added: Tesselator
 Added: Timer
 Added: `Vao`
 Added: Game engine
+Added: Drawer
 
 1.4.0
 Changed: You can disable antialias now

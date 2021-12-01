@@ -33,18 +33,20 @@ import org.overrun.glutils.GLUtils;
 import org.overrun.glutils.Textures;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.PointLight;
+import org.overrun.glutils.timer.SystemTimer;
 import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
 
+import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.*;
 
 /**
  * @author squid233
  */
 public class GLUTest implements AutoCloseable {
     public static final float SENSITIVITY = 0.05f;
-    public static final Timer TIMER = new Timer(60);
+    public static final SystemTimer TIMER = new SystemTimer(60);
     public final Player player = new Player();
     private float lightAngle;
     private final Vector3f ambientLight = new Vector3f(0.3f);
@@ -54,10 +56,11 @@ public class GLUTest implements AutoCloseable {
     public Framebuffer fb;
     public GameRenderer renderer;
     public boolean grabbing;
+    public static int fps;
 
     public void run() {
         boolean coreProfile = Boolean.parseBoolean(System.getProperty(
-                "GLUTest.coreProfile", "true"
+            "GLUTest.coreProfile", "true"
         ));
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         if (coreProfile) {
@@ -66,12 +69,12 @@ public class GLUTest implements AutoCloseable {
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         }
         window = new GLFWindow(854,
-                480,
-                "Testing texture, lighting and HUD");
+            480,
+            "Testing texture, lighting and HUD");
         window.setCursorPos(854 / 2, 480 / 2);
-        fb = new Framebuffer((window1, width, height) ->
-                window.setResized(true),
-                window);
+        fb = new Framebuffer((hWnd, width, height) ->
+            window.setResized(true),
+            window);
         window.keyCb((hWnd, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {
                 if (key == GLFW_KEY_ESCAPE) {
@@ -80,8 +83,8 @@ public class GLUTest implements AutoCloseable {
                 if (key == GLFW_KEY_GRAVE_ACCENT) {
                     grabbing = !grabbing;
                     glfwSetInputMode(hWnd,
-                            GLFW_CURSOR,
-                            grabbing ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+                        GLFW_CURSOR,
+                        grabbing ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
                 }
             }
         });
@@ -91,7 +94,7 @@ public class GLUTest implements AutoCloseable {
                 double yOffset = window.mouseY - ypos;
                 xOffset *= SENSITIVITY;
                 yOffset *= SENSITIVITY;
-                player.rotate(xOffset, yOffset);
+                player.turn(xOffset, yOffset);
             }
             window.mouseX = (int) xpos;
             window.mouseY = (int) ypos;
@@ -99,13 +102,17 @@ public class GLUTest implements AutoCloseable {
         GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         if (mode != null) {
             window.setPos((mode.width() - window.width()) / 2,
-                    (mode.height() - window.height()) / 2);
+                (mode.height() - window.height()) / 2);
         }
         window.makeCurr();
         GL.createCapabilities(coreProfile);
         glfwSwapInterval(1);
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
-        System.out.println("GL Version " + glGetString(GL_VERSION));
+        System.out.println("GL Renderer: " + glGetString(GL_RENDERER));
+        System.out.println("GL Vendor: " + glGetString(GL_VENDOR));
+        System.out.println("GL Extensions: " + glGetString(GL_EXTENSIONS));
+        System.out.println("GL Version: " + glGetString(GL_VERSION));
+        System.out.println("GL Shading language version: " + glGetString(GL_SHADING_LANGUAGE_VERSION));
         init();
         TIMER.advanceTime();
         window.show();
@@ -142,7 +149,7 @@ public class GLUTest implements AutoCloseable {
             glfwPollEvents();
             ++frames;
             while (System.currentTimeMillis() >= lastTime + 1000L) {
-                TIMER.fps = frames;
+                fps = frames;
                 lastTime += 1000L;
                 frames = 0;
             }
@@ -159,23 +166,23 @@ public class GLUTest implements AutoCloseable {
                 lightAngle = -90;
             }
         } else if (lightAngle <= -80 || lightAngle >= 80) {
-            float factor = 1 - (Math.abs(lightAngle) - 80) / 10.0f;
+            float factor = 1 - (abs(lightAngle) - 80) / 10.0f;
             directionalLight.setIntensity(factor);
-            directionalLight.getColor().y = Math.max(factor, 0.9f);
-            directionalLight.getColor().z = Math.max(factor, 0.5f);
+            directionalLight.getColor().y = max(factor, 0.9f);
+            directionalLight.getColor().z = max(factor, 0.5f);
         } else {
             directionalLight.setIntensity(1);
             directionalLight.getColor().x = 1;
             directionalLight.getColor().y = 1;
             directionalLight.getColor().z = 1;
         }
-        double angRad = Math.toRadians(lightAngle);
-        directionalLight.getDirection().x = (float) Math.sin(angRad);
-        directionalLight.getDirection().y = (float) Math.cos(angRad);
+        double angRad = toRadians(lightAngle);
+        directionalLight.getDirection().x = (float) sin(angRad);
+        directionalLight.getDirection().y = (float) cos(angRad);
     }
 
     public void render(double delta) {
-        int w = fb.width(), h = fb.width();
+        int w = fb.width(), h = fb.height();
         if (window.isResized()) {
             glViewport(0, 0, w, h);
             window.setResized(false);
@@ -187,12 +194,12 @@ public class GLUTest implements AutoCloseable {
             h = 1;
         }
         renderer.render(w,
-                h,
-                player,
-                ambientLight,
-                pointLight,
-                directionalLight,
-                lightAngle);
+            h,
+            player,
+            ambientLight,
+            pointLight,
+            directionalLight,
+            lightAngle);
     }
 
     @Override

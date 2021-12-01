@@ -23,35 +23,25 @@
  *
  */
 
-package org.overrun.glutils.game;
+package org.overrun.glutils.ll;
 
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.overrun.glutils.game.GameEngine.window;
+import org.overrun.glutils.IMR;
+
+import static org.lwjgl.opengl.GL11.glVertex3f;
 
 /**
  * @author squid233
  * @since 1.5.0
  */
-public class Input {
-    protected int mouseX, mouseY, deltaMX, deltaMY;
+public class LGLRenderer implements IMR {
+    private static final LGLRenderer instance = new LGLRenderer();
 
-    public boolean keyPressed(final int key) {
-        return window.key(key) == GLFW_PRESS;
+    public static LGLRenderer getInstance() {
+        return instance;
     }
 
-    public int getMouseX() {
-        return mouseX;
-    }
-
-    public int getMouseY() {
-        return mouseY;
-    }
-
-    public int getDeltaMX() {
-        return deltaMX;
-    }
-
-    public int getDeltaMY() {
-        return deltaMY;
+    @Override
+    public void imr_vertex(float x, float y, float z) {
+        glVertex3f(x, y, z);
     }
 }

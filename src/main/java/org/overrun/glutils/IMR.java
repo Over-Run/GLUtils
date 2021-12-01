@@ -23,35 +23,12 @@
  *
  */
 
-package org.overrun.glutils.game;
-
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.overrun.glutils.game.GameEngine.window;
+package org.overrun.glutils;
 
 /**
  * @author squid233
  * @since 1.5.0
  */
-public class Input {
-    protected int mouseX, mouseY, deltaMX, deltaMY;
-
-    public boolean keyPressed(final int key) {
-        return window.key(key) == GLFW_PRESS;
-    }
-
-    public int getMouseX() {
-        return mouseX;
-    }
-
-    public int getMouseY() {
-        return mouseY;
-    }
-
-    public int getDeltaMX() {
-        return deltaMX;
-    }
-
-    public int getDeltaMY() {
-        return deltaMY;
-    }
+public interface IMR {
+    void imr_vertex(float x, float y, float z);
 }

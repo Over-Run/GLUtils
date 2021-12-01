@@ -29,7 +29,7 @@ package org.overrun.glutils;
  * @author squid233
  * @since 1.5.0
  */
-public interface ITesselator {
+public interface ITesselator extends IMR {
     ITesselator init();
 
     ITesselator color(final float r,
@@ -61,4 +61,9 @@ public interface ITesselator {
     ITesselator draw();
 
     void free();
+
+    @Override
+    default void imr_vertex(float x, float y, float z) {
+        vertex(x, y, z);
+    }
 }

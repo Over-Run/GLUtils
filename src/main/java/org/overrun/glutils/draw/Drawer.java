@@ -23,35 +23,44 @@
  *
  */
 
-package org.overrun.glutils.game;
+package org.overrun.glutils.draw;
 
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.overrun.glutils.game.GameEngine.window;
+import org.overrun.glutils.IMR;
+
+import static java.lang.Math.*;
 
 /**
  * @author squid233
  * @since 1.5.0
  */
-public class Input {
-    protected int mouseX, mouseY, deltaMX, deltaMY;
-
-    public boolean keyPressed(final int key) {
-        return window.key(key) == GLFW_PRESS;
-    }
-
-    public int getMouseX() {
-        return mouseX;
-    }
-
-    public int getMouseY() {
-        return mouseY;
-    }
-
-    public int getDeltaMX() {
-        return deltaMX;
-    }
-
-    public int getDeltaMY() {
-        return deltaMY;
+public class Drawer {
+    public static void drawCircle(final float r,
+                                  final int precision,
+                                  final Direction dir,
+                                  final IMR imr) {
+        final double C = 2 * PI;
+        for (int i = 0; i < precision; i++) {
+            final double d = C * i / precision;
+            switch (dir) {
+                case NORTH:
+                case SOUTH:
+                    imr.imr_vertex((float) (r * cos(d)),
+                        (float) (r * sin(d)),
+                        0);
+                    break;
+                case WEST:
+                case EAST:
+                    imr.imr_vertex(0,
+                        (float) (r * sin(d)),
+                        (float) (r * cos(d)));
+                    break;
+                case UP:
+                case DOWN:
+                    imr.imr_vertex((float) (r * cos(d)),
+                        0,
+                        (float) (r * sin(d)));
+                    break;
+            }
+        }
     }
 }

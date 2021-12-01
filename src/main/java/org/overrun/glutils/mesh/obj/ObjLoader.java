@@ -96,8 +96,11 @@ public class ObjLoader {
                                 String filename,
                                 int flags) {
         File parent = new File(filename).getParentFile();
+        parent.deleteOnExit();
         String parentPath = parent.getPath().replaceAll("\\\\", "/");
-        new File(TMP + "/" + parentPath).mkdirs();
+        File f = new File(TMP + "/" + parentPath);
+        f.mkdirs();
+        f.deleteOnExit();
         try {
             Enumeration<URL> resources = cl.getResources(parentPath);
             while (resources.hasMoreElements()) {
@@ -113,9 +116,11 @@ public class ObjLoader {
                         String name = entry.getName();
                         if (!entry.isDirectory() && name.startsWith(parentPath)) {
                             try (InputStream in = cl.getResourceAsStream(name)) {
+                                String p = TMP + "/" + name;
                                 Files.copy(requireNonNull(in),
-                                    Paths.get(TMP + "/" + name),
+                                    Paths.get(p),
                                     StandardCopyOption.REPLACE_EXISTING);
+                                new File(p).deleteOnExit();
                             }
                         }
                     }
@@ -126,9 +131,11 @@ public class ObjLoader {
                         for (String file : files) {
                             String path = parentPath + "/" + file;
                             try (InputStream in = cl.getResourceAsStream(path)) {
+                                String p = TMP + "/" + path;
                                 Files.copy(requireNonNull(in),
-                                    Paths.get(TMP + "/" + path),
+                                    Paths.get(p),
                                     StandardCopyOption.REPLACE_EXISTING);
+                                new File(p).deleteOnExit();
                             }
                         }
                     }

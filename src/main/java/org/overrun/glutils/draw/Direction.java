@@ -23,44 +23,53 @@
  *
  */
 
-package org.overrun.glutest;
+package org.overrun.glutils.draw;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3i;
 
 /**
  * @author squid233
+ * @since 1.5.0
  */
-public class Timer {
-    private static final long NS_PER_SECOND = 1_000_000_000;
-    private static final long MAX_NS_PER_UPDATE = 1_000_000_000;
-    private static final int MAX_TICKS_PER_UPDATE = 100;
-    private final float tps;
-    private long lastTime;
-    public int ticks;
-    public float delta;
-    public long lastFps = 0;
-    public int fps = 0;
-    public float passedTime = 0;
+public enum Direction {
+    NORTH(0, 1, 0, 0, -1),
+    SOUTH(1, 0, 0, 0, 1),
+    WEST(2, 3, -1, 0, 0),
+    EAST(3, 2, 1, 0, 0),
+    UP(4, 5, 0, 1, 0),
+    DOWN(5, 4, 0, -1, 0);
 
-    public Timer(float tps) {
-        this.tps = tps;
-        lastTime = System.nanoTime();
+    public final int id;
+    public final int opposite;
+    public final int x;
+    public final int y;
+    public final int z;
+
+    Direction(final int id,
+              final int opposite,
+              final int x,
+              final int y,
+              final int z) {
+        this.id = id;
+        this.opposite = opposite;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
-    public void advanceTime() {
-        long now = System.nanoTime();
-        long passedNs = now - lastTime;
-        lastTime = now;
-        if (passedNs < 0L) {
-            passedNs = 0L;
-        } else if (passedNs > MAX_NS_PER_UPDATE) {
-            passedNs = MAX_NS_PER_UPDATE;
-        }
-        lastFps = MAX_NS_PER_UPDATE / passedNs;
-        passedTime += (float) passedNs * tps / NS_PER_SECOND;
-        ticks = (int) passedTime;
-        if (ticks > MAX_TICKS_PER_UPDATE) {
-            ticks = MAX_TICKS_PER_UPDATE;
-        }
-        passedTime -= ticks;
-        delta = passedTime;
+    public static Direction byId(final int id) {
+        return values()[id];
+    }
+
+    public Direction opposite() {
+        return byId(opposite);
+    }
+
+    @Contract(value = " -> new", pure = true)
+    @NotNull
+    public Vector3i toVector() {
+        return new Vector3i(x, y, z);
     }
 }

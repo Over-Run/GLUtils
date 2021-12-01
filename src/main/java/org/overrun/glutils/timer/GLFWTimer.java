@@ -32,7 +32,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetTime;
  * @since 1.5.0
  */
 public class GLFWTimer extends AbstractTimer {
-    private static final double MAX_S_PER_UPDATE = 1.0;
+    private static final double MAX_SECONDS_PER_UPDATE = 1.0;
     private static final int MAX_TICKS_PER_UPDATE = 100;
     private double lastTime = glfwGetTime();
 
@@ -45,13 +45,13 @@ public class GLFWTimer extends AbstractTimer {
         double now = glfwGetTime();
         double passedS = now - lastTime;
         lastTime = now;
-        if (passedS < 0) {
-            passedS = 0;
+        if (passedS < 0.0) {
+            passedS = 0.0;
         }
-        if (passedS > MAX_S_PER_UPDATE) {
-            passedS = MAX_S_PER_UPDATE;
+        if (passedS > MAX_SECONDS_PER_UPDATE) {
+            passedS = MAX_SECONDS_PER_UPDATE;
         }
-        fps = (float) (MAX_S_PER_UPDATE / passedS);
+        fps = (float) (MAX_SECONDS_PER_UPDATE / passedS);
         passedTime += (float) passedS * timeScale * tps;
         ticks = (int) passedTime;
         if (ticks > MAX_TICKS_PER_UPDATE) {
@@ -63,6 +63,6 @@ public class GLFWTimer extends AbstractTimer {
 
     @Override
     public double getCurrTime() {
-        return glfwGetTime();
+        return lastTime;
     }
 }

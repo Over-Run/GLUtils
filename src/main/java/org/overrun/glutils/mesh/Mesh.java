@@ -189,7 +189,7 @@ public class Mesh extends BaseMesh<Mesh> {
     }
 
     @Override
-    public void render(int mode) {
+    public void render(int primitive) {
         glBindBuffer(GL_ARRAY_BUFFER, vertVbo);
         glBufferData(GL_ARRAY_BUFFER, vertices, vertUsage);
         glEnableVertexAttribArray(vertIdx);
@@ -242,9 +242,9 @@ public class Mesh extends BaseMesh<Mesh> {
             Textures.bind2D(getTexture());
         }
         if (ibo == 0) {
-            glDrawArrays(mode, 0, getVertexCount());
+            glDrawArrays(primitive, 0, getVertexCount());
         } else {
-            glDrawElements(mode, getVertexCount(), GL_UNSIGNED_INT, 0);
+            glDrawElements(primitive, getVertexCount(), GL_UNSIGNED_INT, 0);
         }
         Textures.unbind2D();
     }

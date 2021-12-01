@@ -43,8 +43,8 @@ public class SystemTimer extends AbstractTimer {
         long now = System.nanoTime();
         long passedNs = now - lastTime;
         lastTime = now;
-        if (passedNs < 0) {
-            passedNs = 0;
+        if (passedNs < 0L) {
+            passedNs = 0L;
         }
         if (passedNs > MAX_NS_PER_UPDATE) {
             passedNs = MAX_NS_PER_UPDATE;

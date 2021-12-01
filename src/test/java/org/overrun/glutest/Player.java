@@ -125,7 +125,7 @@ public class Player {
         }*/
     }
 
-    public void rotate(double xOffset, double yOffset) {
+    public void turn(double xOffset, double yOffset) {
         xRot += yOffset;
         yRot += xOffset;
         if (xRot > 90) {
