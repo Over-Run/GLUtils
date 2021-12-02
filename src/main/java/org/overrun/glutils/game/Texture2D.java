@@ -27,9 +27,13 @@ package org.overrun.glutils.game;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.overrun.glutils.AWTImage;
 import org.overrun.glutils.MipmapMode;
 import org.overrun.glutils.Textures;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -39,9 +43,8 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.stb.STBImage.*;
-import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.overrun.glutils.game.GameEngine.app;
 
 /**
  * Managed texture object
@@ -59,31 +62,59 @@ public class Texture2D {
                      final MipmapMode mode) {
         try (InputStream is = requireNonNull(
             l.getResourceAsStream(filename)
-        )) {
-            List<Byte> bytes = new ArrayList<>();
-            int read;
-            while ((read = is.read()) != -1) {
-                bytes.add((byte) read);
-            }
-            byte[] arr = new byte[bytes.size()];
-            for (int i = 0; i < arr.length; i++) {
-                arr[i] = bytes.get(i);
-            }
-            ByteBuffer bb = MemoryUtil.memAlloc(arr.length).put(arr);
-            bb.flip();
-            try (MemoryStack stack = stackPush()) {
-                IntBuffer px = stack.mallocInt(1);
-                IntBuffer py = stack.mallocInt(1);
-                IntBuffer pc = stack.mallocInt(1);
-                ByteBuffer img = stbi_load_from_memory(bb, px, py, pc, STBI_rgb_alpha);
-                if (img == null) {
-                    throw new IOException("Error loading image [" +
-                        filename +
-                        "] : " +
-                        stbi_failure_reason());
+        ); BufferedInputStream bis = new BufferedInputStream(is)) {
+            if (app != null && app.config.useStb) {
+                List<Byte> bytes = new ArrayList<>();
+                int read;
+                while ((read = bis.read()) != -1) {
+                    bytes.add((byte) read);
                 }
-                width = px.get(0);
-                height = py.get(0);
+                byte[] arr = new byte[bytes.size()];
+                for (int i = 0; i < arr.length; i++) {
+                    arr[i] = bytes.get(i);
+                }
+                ByteBuffer bb = MemoryUtil.memAlloc(arr.length).put(arr);
+                bb.flip();
+                try (MemoryStack stack = MemoryStack.stackPush()) {
+                    IntBuffer px = stack.mallocInt(1);
+                    IntBuffer py = stack.mallocInt(1);
+                    IntBuffer pc = stack.mallocInt(1);
+                    ByteBuffer img = stbi_load_from_memory(bb, px, py, pc, STBI_rgb_alpha);
+                    if (img == null) {
+                        throw new IOException("Error loading image [" +
+                            filename +
+                            "] : " +
+                            stbi_failure_reason());
+                    }
+                    width = px.get(0);
+                    height = py.get(0);
+                    id = glGenTextures();
+                    Textures.bind2D(id);
+                    if (mode != null) {
+                        if (mode.minFilter != 0) {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mode.minFilter);
+                        }
+                        if (mode.magFilter != 0) {
+                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mode.magFilter);
+                        }
+                    }
+                    glTexImage2D(GL_TEXTURE_2D,
+                        0,
+                        GL_RGBA,
+                        width,
+                        height,
+                        0,
+                        GL_RGBA,
+                        GL_UNSIGNED_BYTE,
+                        img
+                    );
+                    Textures.genMipmap2D();
+                    stbi_image_free(img);
+                }
+            } else {
+                BufferedImage img = ImageIO.read(bis);
+                width = img.getWidth();
+                height = img.getHeight();
                 id = glGenTextures();
                 Textures.bind2D(id);
                 if (mode != null) {
@@ -102,11 +133,11 @@ public class Texture2D {
                     0,
                     GL_RGBA,
                     GL_UNSIGNED_BYTE,
-                    img
+                    AWTImage.getRGB(img)
                 );
                 Textures.genMipmap2D();
-                stbi_image_free(img);
             }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

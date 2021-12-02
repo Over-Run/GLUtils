@@ -27,6 +27,7 @@ package org.overrun.glutils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Objects;
@@ -63,13 +64,13 @@ public class AWTImage {
      * @param loader class loader
      * @param name   image absolute name
      * @return loaded image
-     * @throws Exception IOE on file not found, etc.
      */
     public static BufferedImage load(ClassLoader loader,
-                                     String name)
-            throws Exception {
+                                     String name) {
         try (InputStream is = loader.getResourceAsStream(name)) {
             return ImageIO.read(Objects.requireNonNull(is));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

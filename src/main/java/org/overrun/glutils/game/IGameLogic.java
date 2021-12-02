@@ -29,7 +29,7 @@ package org.overrun.glutils.game;
  * @author squid233
  * @since 1.5.0
  */
-public interface GameLogic {
+public interface IGameLogic {
     void create();
 
     /**

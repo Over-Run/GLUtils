@@ -38,7 +38,7 @@ import static org.overrun.glutils.game.GameEngine.*;
  * @since 1.5.0
  */
 public class GameApp {
-    public final Game game;
+    public final IGameLogic game;
     public final GameConfig config;
 
     /**
@@ -47,7 +47,7 @@ public class GameApp {
      * @param game   Game logic
      * @param config Game config
      */
-    public GameApp(final Game game,
+    public GameApp(final IGameLogic game,
                    final GameConfig config) {
         this.game = game;
         this.config = config;
@@ -57,7 +57,7 @@ public class GameApp {
             throw new IllegalStateException("Can't init GLFW");
         }
         glfwWindowHint(GLFW_VISIBLE,
-            config.visibleBeforeInitialization ? GLFW_TRUE : GLFW_FALSE);
+            config.hintVisible ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, (int) config.glVersion);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,
             (int) (config.glVersion * 10) - (int) config.glVersion * 10);

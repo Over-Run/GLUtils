@@ -59,7 +59,8 @@ public class GameConfig {
      * without responding.
      * </p>
      */
-    public boolean visibleBeforeInitialization = false;
+    public boolean hintVisible = false;
+    public boolean useStb = false;
     /**
      * Set ticks per seconds.
      */

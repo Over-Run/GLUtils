@@ -29,15 +29,11 @@ import org.jetbrains.annotations.Range;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
@@ -96,17 +92,13 @@ public class Textures {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
         }
-        BufferedImage img;
-        int w, h;
-        try (InputStream is = loader.getResourceAsStream(name)) {
-            img = ImageIO.read(Objects.requireNonNull(is));
-            w = img.getWidth();
-            h = img.getHeight();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        BufferedImage img = AWTImage.load(loader, name);
         int id = glGenTextures();
-        pushToGL(id, mode, w, h, AWTImage.getRGB(img));
+        pushToGL(id,
+            mode,
+            img.getWidth(),
+            img.getHeight(),
+            AWTImage.getRGB(img));
         ID_MAP.put(name, id);
         return id;
     }
@@ -252,6 +244,8 @@ public class Textures {
 
     /**
      * Generate mipmap 2D
+     *
+     * @since 1.5.0
      */
     public static void genMipmap2D() {
         if (GL.getCapabilities().glGenerateMipmap != NULL) {

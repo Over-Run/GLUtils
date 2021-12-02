@@ -228,7 +228,7 @@ public class Tesselator3Test extends Game {
             if (screen == null) {
                 openScreen(new Scr(null));
             } else {
-                screen.close();
+                openScreen(screen.getParent());
             }
         }
         super.keyReleased(key, scancode, mods);

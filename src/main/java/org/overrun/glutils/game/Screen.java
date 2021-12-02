@@ -25,17 +25,20 @@
 
 package org.overrun.glutils.game;
 
-import static org.overrun.glutils.game.GameEngine.app;
-
 /**
  * @author squid233
  * @since 1.5.0
  */
-public class Screen implements GameLogic {
+public class Screen implements IGameLogic {
     protected Screen parent;
     protected int width;
     protected int height;
 
+    /**
+     * Construct the screen with a parent.
+     *
+     * @param parent The parent screen.
+     */
     public Screen(final Screen parent) {
         this.parent = parent;
     }
@@ -59,16 +62,18 @@ public class Screen implements GameLogic {
     }
 
     /**
-     * Close screen.
-     */
-    public void close() {
-        app.game.openScreen(parent);
-    }
-
-    /**
      * Called on closing screen.
      */
     @Override
     public void free() {
+    }
+
+    /**
+     * Get parent screen.
+     *
+     * @return {@link #parent}
+     */
+    public Screen getParent() {
+        return parent;
     }
 }

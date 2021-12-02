@@ -31,7 +31,7 @@ import static org.overrun.glutils.game.GameEngine.framebuffer;
  * @author squid233
  * @since 1.5.0
  */
-public class Game implements GameLogic {
+public class Game implements IGameLogic {
     public Screen screen;
 
     public void openScreen(final Screen s) {

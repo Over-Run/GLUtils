@@ -66,12 +66,7 @@ public class ObjLoader {
     public static final int DEFAULT_FLAGS = aiProcess_JoinIdenticalVertices
         | aiProcess_Triangulate
         | aiProcess_FixInfacingNormals;
-    private static final File TMP = new File("tmp");
-
-    static {
-        TMP.mkdirs();
-        TMP.deleteOnExit();
-    }
+    private static final File TMP = new File("glutils_obj_tmp");
 
     /**
      * pre return
@@ -95,12 +90,11 @@ public class ObjLoader {
     private static AIScene load(ClassLoader cl,
                                 String filename,
                                 int flags) {
-        File parent = new File(filename).getParentFile();
-        parent.deleteOnExit();
-        String parentPath = parent.getPath().replaceAll("\\\\", "/");
+        String fn = filename.replaceAll("\\\\", "/");
+        String parentPath = fn.substring(0, fn.lastIndexOf('/') + 1);
+        //String parentPath = new File(filename).getParentFile().getPath().replaceAll("\\\\", "/");
         File f = new File(TMP + "/" + parentPath);
         f.mkdirs();
-        f.deleteOnExit();
         try {
             Enumeration<URL> resources = cl.getResources(parentPath);
             while (resources.hasMoreElements()) {
@@ -115,13 +109,7 @@ public class ObjLoader {
                         JarEntry entry = entries.nextElement();
                         String name = entry.getName();
                         if (!entry.isDirectory() && name.startsWith(parentPath)) {
-                            try (InputStream in = cl.getResourceAsStream(name)) {
-                                String p = TMP + "/" + name;
-                                Files.copy(requireNonNull(in),
-                                    Paths.get(p),
-                                    StandardCopyOption.REPLACE_EXISTING);
-                                new File(p).deleteOnExit();
-                            }
+                            copyToFS(cl, name);
                         }
                     }
                 } else if (protocol.equals("file")) {
@@ -129,14 +117,7 @@ public class ObjLoader {
                     String[] files = new File(resource.getPath()).list();
                     if (files != null) {
                         for (String file : files) {
-                            String path = parentPath + "/" + file;
-                            try (InputStream in = cl.getResourceAsStream(path)) {
-                                String p = TMP + "/" + path;
-                                Files.copy(requireNonNull(in),
-                                    Paths.get(p),
-                                    StandardCopyOption.REPLACE_EXISTING);
-                                new File(p).deleteOnExit();
-                            }
+                            copyToFS(cl, parentPath + "/" + file);
                         }
                     }
                 }
@@ -144,13 +125,34 @@ public class ObjLoader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        AIScene scene = aiImportFile(TMP + "/" + filename, flags);
+        AIScene scene = aiImportFile(TMP + "/" + fn, flags);
         if (scene == null) {
             throw new RuntimeException(
                 "Error loading model: " +
                     aiGetErrorString());
         }
+        deleteTmpFiles(TMP);
         return scene;
+    }
+
+    private static void copyToFS(ClassLoader cl,
+                                 String p)
+        throws IOException {
+        try (InputStream in = cl.getResourceAsStream(p)) {
+            Files.copy(requireNonNull(in),
+                Paths.get(TMP + "/" + p),
+                StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private static void deleteTmpFiles(File file) {
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File f1 : files) {
+                deleteTmpFiles(f1);
+            }
+        }
+        file.delete();
     }
 
     private static List<Material> createMaterials(ClassLoader cl,
