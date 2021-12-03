@@ -25,46 +25,16 @@
 
 package org.overrun.glutils.math;
 
-import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.overrun.glutils.wnd.SizedObject;
 
 import static org.joml.Math.toRadians;
-import static org.lwjgl.opengl.GL11.glMultMatrixd;
 
 /**
  * @author squid233
  * @since 0.5.0
  */
 public class Transform {
-    private static final double[] IDENTITY_MATRIX = {
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1
-    };
-
-    public static void gluPerspective(
-        double fovy,
-        double aspect,
-        double zNear,
-        double zFar
-    ) {
-        glMultMatrixd();
-    }
-
-    public static void gluPerspective(
-        double fovy,
-        SizedObject sz,
-        double zNear,
-        double zFar
-    ) {
-        gluPerspective(fovy,
-            (double) sz.width() / (double) sz.height(),
-            zNear,
-            zFar);
-    }
-
     /**
      * matrix4f.setPerspective
      * <p>

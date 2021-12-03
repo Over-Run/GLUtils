@@ -38,7 +38,7 @@ import static org.overrun.glutils.ll.Drawer.drawCircle;
 /**
  * @author squid233
  */
-public class SphereTest extends Game {
+public class DrawerTest extends Game {
     private int sphere2DX;
     private int sphere2DY;
     private int sphere2DZ;
@@ -51,17 +51,17 @@ public class SphereTest extends Game {
         sphere2DZ = glGenLists(1);
         glNewList(sphere2DX, GL_COMPILE);
         glBegin(GL_POLYGON);
-        drawCircle(32, 180, NORTH);
+        drawCircle(32, 80, NORTH);
         glEnd();
         glEndList();
         glNewList(sphere2DY, GL_COMPILE);
         glBegin(GL_POLYGON);
-        drawCircle(32, 180, WEST);
+        drawCircle(32, 80, WEST);
         glEnd();
         glEndList();
         glNewList(sphere2DZ, GL_COMPILE);
         glBegin(GL_POLYGON);
-        drawCircle(32, 180, UP);
+        drawCircle(32, 80, UP);
         glEnd();
         glEndList();
     }
@@ -125,6 +125,6 @@ public class SphereTest extends Game {
     }
 
     public static void main(String[] args) {
-        new GameApp(new SphereTest(), new GameConfig());
+        new GameApp(new DrawerTest(), new GameConfig());
     }
 }
