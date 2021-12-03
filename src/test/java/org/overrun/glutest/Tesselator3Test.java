@@ -35,9 +35,11 @@ import org.overrun.glutils.game.*;
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.Direction.*;
 import static org.overrun.glutils.game.GLStateManager.enableBlend;
 import static org.overrun.glutils.game.GLStateManager.enableDepthTest;
 import static org.overrun.glutils.game.GameEngine.*;
+import static org.overrun.glutils.ll.Drawer.drawCircle;
 import static org.overrun.glutils.math.Transform.*;
 
 /**
@@ -73,8 +75,11 @@ public class Tesselator3Test extends Game {
         }
     }
 
+    int vc = 80;
+
     @Override
     public void create() {
+        window.scrollCb((hWnd, xo, yo) -> vc += yo);
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         enableDepthTest();
         enableBlend();
@@ -103,7 +108,7 @@ public class Tesselator3Test extends Game {
         float tz = zo + (z - zo) * delta;
         rotateY(
             rotateX(
-                setPerspective(mat3d, 90, framebuffer, 0.05f, 1000)
+                setPerspective(mat3d, 90, framebuffer, 0.05f, 1000.0f)
                     .translate(0, 0, -0.3f),
                 -xRot),
             yRot).translate(-tx, -ty, -tz);
@@ -138,6 +143,26 @@ public class Tesselator3Test extends Game {
             )
             .draw();
         mat3d.popMatrix();
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        gluPerspective(90, framebuffer, 0.05, 1000.0);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glBegin(GL_TRIANGLES);
+        glVertex3d(3, 3, 3);
+        glVertex3d(4, 3, 3);
+        glVertex3d(3, 4, 3);
+        glEnd();
+        glTranslated(0, 2, 0);
+        glBegin(GL_POLYGON);
+        drawCircle(1, vc, SOUTH);
+        glEnd();
+        glBegin(GL_POLYGON);
+        drawCircle(1, vc, EAST);
+        glEnd();
+        glBegin(GL_POLYGON);
+        drawCircle(1, vc, DOWN);
+        glEnd();
         glClear(GL_DEPTH_BUFFER_BIT);
         sth.bind();
         t.setMatrix(mat2d);
@@ -246,8 +271,8 @@ public class Tesselator3Test extends Game {
         config.width = 854;
         config.height = 480;
         config.title = "Tesselator3 Test";
-        config.glVersion = 3.3;
-        config.coreProfile = true;
+        //config.glVersion = 3.3;
+        //config.coreProfile = true;
         new GameApp(new Tesselator3Test(), config);
     }
 }

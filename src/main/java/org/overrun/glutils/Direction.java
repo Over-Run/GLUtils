@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils.draw;
+package org.overrun.glutils;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

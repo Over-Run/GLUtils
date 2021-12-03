@@ -25,16 +25,46 @@
 
 package org.overrun.glutils.math;
 
+import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.overrun.glutils.wnd.SizedObject;
 
 import static org.joml.Math.toRadians;
+import static org.lwjgl.opengl.GL11.glMultMatrixd;
 
 /**
  * @author squid233
  * @since 0.5.0
  */
 public class Transform {
+    private static final double[] IDENTITY_MATRIX = {
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    };
+
+    public static void gluPerspective(
+        double fovy,
+        double aspect,
+        double zNear,
+        double zFar
+    ) {
+        glMultMatrixd();
+    }
+
+    public static void gluPerspective(
+        double fovy,
+        SizedObject sz,
+        double zNear,
+        double zFar
+    ) {
+        gluPerspective(fovy,
+            (double) sz.width() / (double) sz.height(),
+            zNear,
+            zFar);
+    }
+
     /**
      * matrix4f.setPerspective
      * <p>
@@ -50,11 +80,13 @@ public class Transform {
      * matrix4f.setPerspective}
      * @see Matrix4f#setPerspective(float, float, float, float) setPerspective
      */
-    public static Matrix4f setPerspective(Matrix4f matrix4f,
-                                          float fovy,
-                                          float aspect,
-                                          float zNear,
-                                          float zFar) {
+    public static Matrix4f setPerspective(
+        Matrix4f matrix4f,
+        float fovy,
+        float aspect,
+        float zNear,
+        float zFar
+    ) {
         return matrix4f.setPerspective(toRadians(fovy),
             aspect,
             zNear,
@@ -76,12 +108,14 @@ public class Transform {
      * @return {@link #setPerspective(Matrix4f, float, float, float, float)}
      * @see Matrix4f#setPerspective(float, float, float, float) setPerspective
      */
-    public static Matrix4f setPerspective(Matrix4f matrix4f,
-                                          float fovy,
-                                          int width,
-                                          int height,
-                                          float zNear,
-                                          float zFar) {
+    public static Matrix4f setPerspective(
+        Matrix4f matrix4f,
+        float fovy,
+        int width,
+        int height,
+        float zNear,
+        float zFar
+    ) {
         return setPerspective(matrix4f,
             fovy,
             (float) width / (float) height,
@@ -104,11 +138,13 @@ public class Transform {
      * @see Matrix4f#setPerspective(float, float, float, float) setPerspective
      * @since 1.5.0
      */
-    public static Matrix4f setPerspective(Matrix4f matrix4f,
-                                          float fovy,
-                                          SizedObject sz,
-                                          float zNear,
-                                          float zFar) {
+    public static Matrix4f setPerspective(
+        Matrix4f matrix4f,
+        float fovy,
+        SizedObject sz,
+        float zNear,
+        float zFar
+    ) {
         return setPerspective(matrix4f,
             fovy,
             sz.width(),
@@ -133,12 +169,14 @@ public class Transform {
      * @see Matrix4f#perspective(float, float, float, float) perspective
      * @since 0.6.0
      */
-    public static Matrix4f perspective(Matrix4f matrix4f,
-                                       float fovy,
-                                       int width,
-                                       int height,
-                                       float zNear,
-                                       float zFar) {
+    public static Matrix4f perspective(
+        Matrix4f matrix4f,
+        float fovy,
+        int width,
+        int height,
+        float zNear,
+        float zFar
+    ) {
         return matrix4f.perspective(fovy,
             (float) width / (float) height,
             zNear,
@@ -160,11 +198,13 @@ public class Transform {
      * @see Matrix4f#perspective(float, float, float, float) perspective
      * @since 1.5.0
      */
-    public static Matrix4f perspective(Matrix4f matrix4f,
-                                       float fovy,
-                                       SizedObject sz,
-                                       float zNear,
-                                       float zFar) {
+    public static Matrix4f perspective(
+        Matrix4f matrix4f,
+        float fovy,
+        SizedObject sz,
+        float zNear,
+        float zFar
+    ) {
         return perspective(matrix4f,
             fovy,
             sz.width(),
@@ -181,8 +221,10 @@ public class Transform {
      * @return {@link Matrix4f#rotationX matrix4f.rotationX}
      * @see Matrix4f#rotationX(float) rotationX
      */
-    public static Matrix4f rotationX(Matrix4f matrix4f,
-                                     float angle) {
+    public static Matrix4f rotationX(
+        Matrix4f matrix4f,
+        float angle
+    ) {
         return matrix4f.rotationX(toRadians(angle));
     }
 
@@ -195,8 +237,10 @@ public class Transform {
      * @see Matrix4f#rotationY(float) rotationX
      * @since 1.5.0
      */
-    public static Matrix4f rotationY(Matrix4f matrix4f,
-                                     float angle) {
+    public static Matrix4f rotationY(
+        Matrix4f matrix4f,
+        float angle
+    ) {
         return matrix4f.rotationY(toRadians(angle));
     }
 
@@ -209,8 +253,10 @@ public class Transform {
      * @see Matrix4f#rotationZ(float) rotationZ
      * @since 1.5.0
      */
-    public static Matrix4f rotationZ(Matrix4f matrix4f,
-                                     float angle) {
+    public static Matrix4f rotationZ(
+        Matrix4f matrix4f,
+        float angle
+    ) {
         return matrix4f.rotationZ(toRadians(angle));
     }
 
@@ -223,8 +269,10 @@ public class Transform {
      * @see Matrix4f#rotateX(float) rotateX
      * @since 0.6.0
      */
-    public static Matrix4f rotateX(Matrix4f matrix4f,
-                                   float angle) {
+    public static Matrix4f rotateX(
+        Matrix4f matrix4f,
+        float angle
+    ) {
         return matrix4f.rotateX(toRadians(angle));
     }
 
@@ -236,8 +284,10 @@ public class Transform {
      * @return {@link Matrix4f#rotateY matrix4f.rotateY}
      * @see Matrix4f#rotateY(float) rotateY
      */
-    public static Matrix4f rotateY(Matrix4f matrix4f,
-                                   float angle) {
+    public static Matrix4f rotateY(
+        Matrix4f matrix4f,
+        float angle
+    ) {
         return matrix4f.rotateY(toRadians(angle));
     }
 
@@ -249,8 +299,10 @@ public class Transform {
      * @return {@link Matrix4f#rotateZ matrix4f.rotateZ}
      * @see Matrix4f#rotateZ(float) rotateZ
      */
-    public static Matrix4f rotateZ(Matrix4f matrix4f,
-                                   float angle) {
+    public static Matrix4f rotateZ(
+        Matrix4f matrix4f,
+        float angle
+    ) {
         return matrix4f.rotateZ(toRadians(angle));
     }
 }

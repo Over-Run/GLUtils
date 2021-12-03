@@ -23,42 +23,49 @@
  *
  */
 
-package org.overrun.glutils.draw;
+package org.overrun.glutils.ll;
 
-import org.overrun.glutils.IMR;
+import org.overrun.glutils.Direction;
 
 import static java.lang.Math.*;
+import static org.lwjgl.opengl.GL11.glVertex3d;
 
 /**
  * @author squid233
  * @since 1.5.0
  */
 public class Drawer {
-    public static void drawCircle(final float r,
-                                  final int precision,
-                                  final Direction dir,
-                                  final IMR imr) {
+    /**
+     * Draw a circle with specified radius.
+     *
+     * @param r           The radius of the circle.
+     * @param vertexCount The vertex count of the circle.
+     * @param dir         The direction of the circle.
+     */
+    public static void drawCircle(final double r,
+                                  final int vertexCount,
+                                  final Direction dir) {
         final double C = 2 * PI;
-        for (int i = 0; i < precision; i++) {
-            final double d = C * i / precision;
+        for (int i = 0; i < vertexCount; i++) {
+            final double d = C * i / vertexCount;
             switch (dir) {
                 case NORTH:
                 case SOUTH:
-                    imr.imr_vertex((float) (r * cos(d)),
-                        (float) (r * sin(d)),
+                    glVertex3d(r * cos(d),
+                        r * sin(d),
                         0);
                     break;
                 case WEST:
                 case EAST:
-                    imr.imr_vertex(0,
-                        (float) (r * sin(d)),
-                        (float) (r * cos(d)));
+                    glVertex3d(0,
+                        r * sin(d),
+                        r * sin(d));
                     break;
                 case UP:
                 case DOWN:
-                    imr.imr_vertex((float) (r * cos(d)),
+                    glVertex3d(r * cos(d),
                         0,
-                        (float) (r * sin(d)));
+                        r * cos(d));
                     break;
             }
         }

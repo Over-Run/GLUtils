@@ -31,7 +31,7 @@ package org.overrun.glutils;
  * @author squid233
  * @since 1.2.0
  */
-public interface IVertexBuilder extends IMR {
+public interface IVertexBuilder {
     /**
      * Add a vertex
      *
@@ -105,10 +105,5 @@ public interface IVertexBuilder extends IMR {
      * No effect
      */
     default void next() {
-    }
-
-    @Override
-    default void imr_vertex(float x, float y, float z) {
-        vertex(x, y, z);
     }
 }

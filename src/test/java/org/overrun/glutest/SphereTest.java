@@ -25,16 +25,15 @@
 
 package org.overrun.glutest;
 
-import org.overrun.glutils.draw.Direction;
-import org.overrun.glutils.draw.Drawer;
 import org.overrun.glutils.game.Game;
 import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
-import org.overrun.glutils.ll.LGLRenderer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.Direction.*;
 import static org.overrun.glutils.game.GameEngine.input;
+import static org.overrun.glutils.ll.Drawer.drawCircle;
 
 /**
  * @author squid233
@@ -52,17 +51,17 @@ public class SphereTest extends Game {
         sphere2DZ = glGenLists(1);
         glNewList(sphere2DX, GL_COMPILE);
         glBegin(GL_POLYGON);
-        Drawer.drawCircle(32, 180, Direction.NORTH, LGLRenderer.getInstance());
+        drawCircle(32, 180, NORTH);
         glEnd();
         glEndList();
         glNewList(sphere2DY, GL_COMPILE);
         glBegin(GL_POLYGON);
-        Drawer.drawCircle(32, 180, Direction.WEST, LGLRenderer.getInstance());
+        drawCircle(32, 180, WEST);
         glEnd();
         glEndList();
         glNewList(sphere2DZ, GL_COMPILE);
         glBegin(GL_POLYGON);
-        Drawer.drawCircle(32, 180, Direction.UP, LGLRenderer.getInstance());
+        drawCircle(32, 180, UP);
         glEnd();
         glEndList();
     }
