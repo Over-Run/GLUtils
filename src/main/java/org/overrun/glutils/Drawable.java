@@ -29,6 +29,7 @@ package org.overrun.glutils;
  * @author squid233
  * @since 1.1.0
  */
+@FunctionalInterface
 public interface Drawable {
     /**
      * Render this object.

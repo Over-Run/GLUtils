@@ -28,6 +28,7 @@ package org.overrun.glutils.ll;
 import org.overrun.glutils.Direction;
 
 import static java.lang.Math.*;
+import static org.lwjgl.opengl.GL11.glRectd;
 import static org.lwjgl.opengl.GL11.glVertex3d;
 
 /**
@@ -35,6 +36,21 @@ import static org.lwjgl.opengl.GL11.glVertex3d;
  * @since 1.5.0
  */
 public class Drawer {
+    /**
+     * Draw a rect by {@link org.lwjgl.opengl.GL11#glRectd glRectd}.
+     *
+     * @param x Position x.
+     * @param y Position y.
+     * @param w Rect width.
+     * @param h Rect height.
+     */
+    public static void drawRect(final double x,
+                                final double y,
+                                final double w,
+                                final double h) {
+        glRectd(x, y, w + x, h + y);
+    }
+
     /**
      * Draw a circle with specified radius.
      *
@@ -50,18 +66,30 @@ public class Drawer {
             final double d = C * i / vertexCount;
             switch (dir) {
                 case NORTH:
+                    glVertex3d(r * sin(d),
+                        r * sin(d),
+                        0);
+                    break;
                 case SOUTH:
                     glVertex3d(r * cos(d),
                         r * sin(d),
                         0);
                     break;
                 case WEST:
-                case EAST:
                     glVertex3d(0,
                         r * sin(d),
                         r * sin(d));
                     break;
+                case EAST:
+                    glVertex3d(0,
+                        r * sin(d),
+                        r * cos(d));
+                    break;
                 case UP:
+                    glVertex3d(r * cos(d),
+                        0,
+                        r * sin(d));
+                    break;
                 case DOWN:
                     glVertex3d(r * cos(d),
                         0,

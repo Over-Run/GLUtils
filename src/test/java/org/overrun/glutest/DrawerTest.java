@@ -34,6 +34,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.Direction.*;
 import static org.overrun.glutils.game.GameEngine.input;
 import static org.overrun.glutils.ll.Drawer.drawCircle;
+import static org.overrun.glutils.ll.Drawer.drawRect;
 
 /**
  * @author squid233
@@ -43,6 +44,7 @@ public class DrawerTest extends Game {
     private int sphere2DY;
     private int sphere2DZ;
     private float xr, yr, zr;
+    private float x, y, z;
 
     @Override
     public void create() {
@@ -51,7 +53,7 @@ public class DrawerTest extends Game {
         sphere2DZ = glGenLists(1);
         glNewList(sphere2DX, GL_COMPILE);
         glBegin(GL_POLYGON);
-        drawCircle(32, 80, NORTH);
+        drawCircle(32, 80, SOUTH);
         glEnd();
         glEndList();
         glNewList(sphere2DY, GL_COMPILE);
@@ -69,10 +71,12 @@ public class DrawerTest extends Game {
     @Override
     public void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glPushMatrix();
+        glLoadIdentity();
+        glTranslatef(x, y, z);
         glRotatef(xr, 1, 0, 0);
         glRotatef(yr, 0, 1, 0);
         glRotatef(zr, 0, 0, 1);
+        glPushMatrix();
         glTranslatef(100, 100, 0);
         glCallList(sphere2DX);
         glTranslatef(100, 100, 0);
@@ -80,6 +84,7 @@ public class DrawerTest extends Game {
         glTranslatef(100, 100, 0);
         glCallList(sphere2DZ);
         glPopMatrix();
+        drawRect(0, 0, 100, 100);
         super.render();
     }
 
@@ -103,6 +108,24 @@ public class DrawerTest extends Game {
         if (input.keyPressed(GLFW_KEY_D)) {
             ++zr;
         }
+        if (input.keyPressed(GLFW_KEY_SPACE)) {
+            --y;
+        }
+        if (input.keyPressed(GLFW_KEY_LEFT_SHIFT)) {
+            ++y;
+        }
+        if (input.keyPressed(GLFW_KEY_LEFT)) {
+            --x;
+        }
+        if (input.keyPressed(GLFW_KEY_RIGHT)) {
+            ++x;
+        }
+        if (input.keyPressed(GLFW_KEY_UP)) {
+            --z;
+        }
+        if (input.keyPressed(GLFW_KEY_DOWN)) {
+            ++z;
+        }
         super.tick();
     }
 
@@ -113,7 +136,6 @@ public class DrawerTest extends Game {
         glLoadIdentity();
         glOrtho(0, width, height, 0, -1000, 1000);
         glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
         super.resize(width, height);
     }
 

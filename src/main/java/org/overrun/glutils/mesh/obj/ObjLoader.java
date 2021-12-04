@@ -92,7 +92,6 @@ public class ObjLoader {
                                 int flags) {
         String fn = filename.replaceAll("\\\\", "/");
         String parentPath = fn.substring(0, fn.lastIndexOf('/') + 1);
-        //String parentPath = new File(filename).getParentFile().getPath().replaceAll("\\\\", "/");
         File f = new File(TMP + "/" + parentPath);
         f.mkdirs();
         try {
