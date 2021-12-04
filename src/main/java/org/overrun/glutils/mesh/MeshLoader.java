@@ -29,6 +29,7 @@ import org.overrun.commonutils.MapStr2Str;
 import org.overrun.glutils.CompileException;
 import org.overrun.glutils.GLUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
@@ -44,17 +45,17 @@ import static org.overrun.glutils.mesh.Assemblies.*;
  */
 public class MeshLoader {
     private static final List<String> KEYWORDS = Arrays.asList(
-            DEFINE,
-            UNDEF,
-            REPEAT,
-            SET,
-            OPT_VERT_DIM,
-            OPT_COL_DIM,
-            OPT_TEX_DIM,
-            VERT,
-            VERT_COL,
-            VERT_TEX,
-            FACE
+        DEFINE,
+        UNDEF,
+        REPEAT,
+        SET,
+        OPT_VERT_DIM,
+        OPT_COL_DIM,
+        OPT_TEX_DIM,
+        VERT,
+        VERT_COL,
+        VERT_TEX,
+        FACE
     );
 
     /**
@@ -97,7 +98,7 @@ public class MeshLoader {
         for (int i = offset; i < arr.length; i++) {
             // remove invalid chars and calculating signs
             String macro =
-                    arr[i].replaceAll("[`~!@#%^&*()\\-=+\\[{}\\];'\\\\:\"|,./<>?]", "");
+                arr[i].replaceAll("[`~!@#%^&*()\\-=+\\[{}\\];'\\\\:\"|,./<>?]", "");
             if (definedMacros.contains(macro)) {
                 String v = macros.get(macro);
                 arr[i] = arr[i].replace(macro, v);
@@ -157,15 +158,13 @@ public class MeshLoader {
      * @param file   filename
      * @param macros macros
      * @return mesh file
-     * @throws Exception occurred exception on compiling
      */
     public static MeshFile loadf(ClassLoader cl,
                                  String file,
-                                 MeshMacro... macros)
-            throws Exception {
+                                 MeshMacro... macros) {
         try (InputStream is = cl.getResourceAsStream(file);
              Scanner sc = new Scanner(Objects.requireNonNull(is),
-                     UTF_8.name())) {
+                 UTF_8.name())) {
             MeshFile mf = new MeshFile();
             Set<String> definedMacros = new HashSet<>();
             MapStr2Str mmap = def(macros);
@@ -188,12 +187,12 @@ public class MeshLoader {
                         // check length
                         if (arr.length < 2) {
                             except("Required 1 param at least but found 0",
-                                    currLn);
+                                currLn);
                         }
                         // check identifier whether valid
                         if (isIdInvalid(arr[1])) {
                             except("Invalid identifier",
-                                    currLn);
+                                currLn);
                         }
                         String[] arr2 = ln.split("\\s+", 3);
                         String macro = arr2[1];
@@ -209,13 +208,13 @@ public class MeshLoader {
                         // check length
                         if (arr.length != 2) {
                             except("Required 1 param but found " + (arr.length - 2),
-                                    currLn);
+                                currLn);
                         }
                         String macro = arr[1];
                         // check whether defined
                         if (!definedMacros.contains(macro)) {
                             except("Macro " + macro + " not defined.",
-                                    currLn);
+                                currLn);
                         }
                         definedMacros.remove(macro);
                         mmap.remove(macro);
@@ -225,12 +224,12 @@ public class MeshLoader {
                         // check length
                         if (arr.length < 4) {
                             except("Required 3 param at least but found " + (arr.length - 1),
-                                    currLn);
+                                currLn);
                         }
                         // check identifier whether valid
                         if (isIdInvalid(arr[1])) {
                             except("Invalid identifier",
-                                    currLn);
+                                currLn);
                         }
                         String[] arr2 = ln.split("\\s+", 4);
                         String macro = arr2[1];
@@ -258,7 +257,7 @@ public class MeshLoader {
                         // check length
                         if (arr.length != 3) {
                             except("Required 2 params but found " +
-                                    (arr.length - 1) + " param", currLn);
+                                (arr.length - 1) + " param", currLn);
                         }
                         arr = replaceByMacro(arr, definedMacros, 2, mmap);
                         // set vertDim
@@ -286,7 +285,7 @@ public class MeshLoader {
                         // check length
                         if (arr.length < 2) {
                             except("Required 1 param at least but found 0",
-                                    currLn);
+                                currLn);
                         }
                         arr = replaceByMacro(arr, definedMacros, mmap);
                         for (int i = 1; i < arr.length; i++) {
@@ -301,7 +300,7 @@ public class MeshLoader {
                         // check length
                         if (arr.length < 2) {
                             except("Required 1 param at least but found 0",
-                                    currLn);
+                                currLn);
                         }
                         arr = replaceByMacro(arr, definedMacros, mmap);
                         mf.colored = true;
@@ -317,7 +316,7 @@ public class MeshLoader {
                         // check length
                         if (arr.length < 2) {
                             except("Required 1 param at least but found 0",
-                                    currLn);
+                                currLn);
                         }
                         arr = replaceByMacro(arr, definedMacros, mmap);
                         mf.textured = true;
@@ -335,7 +334,7 @@ public class MeshLoader {
                         // check length
                         if (arr.length < 2) {
                             except("Required 1 param at least but found 0",
-                                    currLn);
+                                currLn);
                         }
                         arr = replaceByMacro(arr, definedMacros, mmap);
                         mf.indexed = true;
@@ -351,6 +350,8 @@ public class MeshLoader {
                 }
             }
             return mf;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -364,15 +365,13 @@ public class MeshLoader {
      * @param macros macros
      * @param <T>    mesh type
      * @return mesh
-     * @throws Exception occurred exception on compiling
      */
     public static <T extends BaseMesh<T>>
     T load(ClassLoader cl,
            String file,
            Consumer<T> pre,
            Class<T> clazz,
-           MeshMacro... macros)
-            throws Exception {
+           MeshMacro... macros) {
         MeshFile mf = loadf(cl, file, macros);
         T mesh = GLUtils.newClass(clazz);
         if (pre != null) {
@@ -398,12 +397,10 @@ public class MeshLoader {
      * @param file   filename
      * @param macros macros
      * @return mesh
-     * @throws Exception occurred exception on compiling
      */
     public static Mesh load(ClassLoader cl,
                             String file,
-                            MeshMacro... macros)
-            throws Exception {
+                            MeshMacro... macros) {
         return load(cl, file, null, Mesh.class, macros);
     }
 
@@ -415,13 +412,11 @@ public class MeshLoader {
      * @param pre    pre-operations
      * @param macros macros
      * @return mesh
-     * @throws Exception occurred exception on compiling
      */
     public static Mesh3 load3(ClassLoader cl,
                               String file,
                               Consumer<Mesh3> pre,
-                              MeshMacro... macros)
-            throws Exception {
+                              MeshMacro... macros) {
         return load(cl, file, pre, Mesh3.class, macros).unbindVao();
     }
 
@@ -433,8 +428,8 @@ public class MeshLoader {
      */
     public static void except(String msg,
                               int currLn)
-            throws CompileException {
+        throws CompileException {
         throw new CompileException("Error loading mesh at line " +
-                currLn + ": " + msg);
+            currLn + ": " + msg);
     }
 }

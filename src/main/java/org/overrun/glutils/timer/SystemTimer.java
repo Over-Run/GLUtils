@@ -23,24 +23,44 @@
  *
  */
 
-package org.overrun.glutils.wnd;
+package org.overrun.glutils.timer;
 
 /**
- * compatibility layer
- *
  * @author squid233
- * @since 1.0.0
+ * @since 1.5.0
  */
-@Deprecated
-public class Window extends GLFWindow {
-    /**
-     * construct and create window
-     *
-     * @param width  window width
-     * @param height window height
-     * @param title  window title
-     */
-    public Window(int width, int height, String title) {
-        super(width, height, title);
+public class SystemTimer extends AbstractTimer {
+    private static final long NS_PER_SECOND = 1_000_000_000L;
+    private static final long MAX_NS_PER_UPDATE = 1_000_000_000L;
+    private long lastTime = System.nanoTime();
+
+    public SystemTimer(float tps) {
+        super(tps);
+    }
+
+    @Override
+    public void advanceTime() {
+        long now = System.nanoTime();
+        long passedNs = now - lastTime;
+        lastTime = now;
+        if (passedNs < 0L) {
+            passedNs = 0L;
+        }
+        if (passedNs > MAX_NS_PER_UPDATE) {
+            passedNs = MAX_NS_PER_UPDATE;
+        }
+        fps = (float) (MAX_NS_PER_UPDATE / passedNs);
+        passedTime += (float) passedNs * timeScale * tps / (double) NS_PER_SECOND;
+        ticks = (int) passedTime;
+        if (ticks > MAX_TICKS_PER_UPDATE) {
+            ticks = MAX_TICKS_PER_UPDATE;
+        }
+        passedTime = passedTime - ticks;
+        delta = passedTime;
+    }
+
+    @Override
+    public double getCurrTime() {
+        return lastTime / (double) NS_PER_SECOND;
     }
 }

@@ -31,24 +31,31 @@ import static java.util.Arrays.fill;
 import static org.lwjgl.opengl.GL30.*;
 
 /**
- * Tesselator for OpenGL 3
+ * Tesselator for OpenGL 3.3
  *
  * @author squid233
  * @since 1.5.0
  */
-public class Tesselator3 {
-    private final GLProgram program;
-    private final int vao;
-    private final Vbo vertVbo;
-    private final float[] array = new float[(3) * 50000];
-    private int r, g, b, a;
-    private int vertices;
-    private int pos;
+public class Tesselator3 implements ITesselator {
+    public static final int VERTEX_COUNT = 50000;
+    private final GLProgram program = new GLProgram();
+    private final Vao vao = new Vao();
+    private final Vbo vbo = new Vbo(GL_ARRAY_BUFFER);
+    private final float[] array = new float[(3 + 4 + 2) * VERTEX_COUNT];
+    private final VertexAttrib vertex = new VertexAttrib(0);
+    private final VertexAttrib color = new VertexAttrib(1);
+    private final VertexAttrib texCoord = new VertexAttrib(2);
+    protected final boolean fixed;
+    protected boolean rendered;
+    private float r, g, b, a, u, v;
+    protected int vertices;
+    protected int pos;
     private boolean hasColor;
     private boolean hasTexture;
+    private Matrix4fc mvp;
 
-    public Tesselator3() {
-        program = new GLProgram();
+    public Tesselator3(boolean fixed) {
+        this.fixed = fixed;
         program.createVsh("#version 330\n" +
             "layout(location = 0) in vec3 vertex;\n" +
             "layout(location = 1) in vec4 color;\n" +
@@ -62,31 +69,30 @@ public class Tesselator3 {
             "    fragTexCoord = texCoord;\n" +
             "}");
         program.createFsh("#version 330\n" +
-            "vec4 fragColor;\n" +
-            "vec2 fragTexCoord;\n" +
+            "in vec4 fragColor;\n" +
+            "in vec2 fragTexCoord;\n" +
             "out vec4 FragColor;\n" +
             "uniform bool hasColor, hasTexture;\n" +
             "uniform sampler2D sampler;\n" +
             "void main() {\n" +
-            "    FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n" +
+            "    FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" +
             "    if (hasColor) {\n" +
             "        FragColor *= fragColor;\n" +
             "    }\n" +
             "    if (hasTexture) {\n" +
-            "        FragColor *= texture2D(sampler, fragTexCoord);\n" +
+            "        FragColor *= texture(sampler, fragTexCoord);\n" +
             "    }\n" +
             "}");
         program.link();
-        vao = glGenVertexArrays();
-        vertVbo = new Vbo(GL_ARRAY_BUFFER);
     }
 
-    private void clear() {
+    protected void clear() {
         fill(array, 0);
         vertices = 0;
         pos = 0;
     }
 
+    @Override
     public Tesselator3 init() {
         clear();
         hasColor = false;
@@ -94,41 +100,114 @@ public class Tesselator3 {
         return this;
     }
 
+    @Override
     public Tesselator3 color(final float r,
                              final float g,
                              final float b,
                              final float a) {
+        hasColor = true;
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
         return this;
     }
 
+    @Override
     public Tesselator3 color(final float r,
                              final float g,
                              final float b) {
         return color(r, g, b, 1);
     }
 
+    @Override
+    public Tesselator3 tex(final float u,
+                           final float v) {
+        hasTexture = true;
+        this.u = u;
+        this.v = v;
+        return this;
+    }
+
+    @Override
+    public Tesselator3 vertexUV(final float x,
+                                final float y,
+                                final float z,
+                                final float u,
+                                final float v) {
+        return tex(u, v).vertex(x, y, z);
+    }
+
+    @Override
     public Tesselator3 vertex(final float x,
                               final float y,
                               final float z) {
         array[pos++] = x;
         array[pos++] = y;
         array[pos++] = z;
+        if (hasColor) {
+            array[pos++] = r;
+            array[pos++] = g;
+            array[pos++] = b;
+            array[pos++] = a;
+        } else {
+            pos += 4;
+        }
+        if (hasTexture) {
+            array[pos++] = u;
+            array[pos++] = v;
+        } else {
+            pos += 2;
+        }
         ++vertices;
         return this;
     }
 
-    public Tesselator3 draw(final Matrix4fc mvp) {
-        glBindVertexArray(vao);
-        vertVbo.bind();
-        vertVbo.data(array, GL_STREAM_DRAW);
-        glVertexAttribPointer(0,
-            3,
+    protected void setupVbo() {
+        final int stride = 9 * Float.BYTES;
+        vbo.bind();
+        vbo.data(array, GL_STREAM_DRAW);
+        vertex.pointer(3,
             GL_FLOAT,
             false,
-            3 * Float.BYTES,
+            stride,
             0);
-        glEnableVertexAttribArray(0);
-        glBindVertexArray(0);
+        vertex.enable();
+        if (hasColor) {
+            color.pointer(4,
+                GL_FLOAT,
+                false,
+                stride,
+                3 * Float.BYTES);
+            color.enable();
+        }
+        if (hasTexture) {
+            texCoord.pointer(2,
+                GL_FLOAT,
+                false,
+                stride,
+                7 * Float.BYTES);
+            texCoord.enable();
+        }
+        vbo.unbind();
+    }
+
+    protected void render() {
+        glDrawArrays(GL_TRIANGLES, 0, vertices);
+    }
+
+    public void setMatrix(final Matrix4fc mvp) {
+        this.mvp = mvp;
+    }
+
+    @Override
+    public Tesselator3 draw() {
+        if (!fixed || !rendered) {
+            vao.bind();
+            setupVbo();
+            vao.unbind();
+            rendered = true;
+        }
         program.bind();
         program.setUniformMat4("mvp", mvp);
         program.setUniform("hasColor", hasColor);
@@ -137,11 +216,20 @@ public class Tesselator3 {
         if (hasTexture) {
             glActiveTexture(GL_TEXTURE0);
         }
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, vertices);
-        glBindVertexArray(0);
+        vao.bind();
+        render();
+        vao.unbind();
         program.unbind();
-        clear();
+        if (!fixed) {
+            clear();
+        }
         return this;
+    }
+
+    @Override
+    public void free() {
+        program.close();
+        vbo.free();
+        vao.free();
     }
 }

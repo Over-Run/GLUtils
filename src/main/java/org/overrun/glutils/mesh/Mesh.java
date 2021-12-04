@@ -26,6 +26,7 @@
 package org.overrun.glutils.mesh;
 
 import org.overrun.glutils.GLProgram;
+import org.overrun.glutils.Textures;
 import org.overrun.glutils.light.Material;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -188,7 +189,7 @@ public class Mesh extends BaseMesh<Mesh> {
     }
 
     @Override
-    public void render(int mode) {
+    public void render(int primitive) {
         glBindBuffer(GL_ARRAY_BUFFER, vertVbo);
         glBufferData(GL_ARRAY_BUFFER, vertices, vertUsage);
         glEnableVertexAttribArray(vertIdx);
@@ -237,15 +238,15 @@ public class Mesh extends BaseMesh<Mesh> {
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         if (material != null) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, getTexture());
+            Textures.active(0);
+            Textures.bind2D(getTexture());
         }
         if (ibo == 0) {
-            glDrawArrays(mode, 0, getVertexCount());
+            glDrawArrays(primitive, 0, getVertexCount());
         } else {
-            glDrawElements(mode, getVertexCount(), GL_UNSIGNED_INT, 0);
+            glDrawElements(primitive, getVertexCount(), GL_UNSIGNED_INT, 0);
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
+        Textures.unbind2D();
     }
 
     @Override

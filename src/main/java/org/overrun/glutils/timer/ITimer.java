@@ -23,24 +23,28 @@
  *
  */
 
-package org.overrun.glutils.wnd;
+package org.overrun.glutils.timer;
 
 /**
- * compatibility layer
- *
  * @author squid233
- * @since 1.0.0
+ * @since 1.5.0
  */
-@Deprecated
-public class Window extends GLFWindow {
+public interface ITimer {
+    void advanceTime();
+
+    int getTicks();
+
     /**
-     * construct and create window
+     * Get delta time in seconds.
      *
-     * @param width  window width
-     * @param height window height
-     * @param title  window title
+     * @return The delta time.
      */
-    public Window(int width, int height, String title) {
-        super(width, height, title);
-    }
+    float getDelta();
+
+    /**
+     * Get current time in seconds.
+     *
+     * @return Current time.
+     */
+    double getCurrTime();
 }

@@ -23,24 +23,46 @@
  *
  */
 
-package org.overrun.glutils.wnd;
+package org.overrun.glutils.timer;
+
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 /**
- * compatibility layer
- *
  * @author squid233
- * @since 1.0.0
+ * @since 1.5.0
  */
-@Deprecated
-public class Window extends GLFWindow {
-    /**
-     * construct and create window
-     *
-     * @param width  window width
-     * @param height window height
-     * @param title  window title
-     */
-    public Window(int width, int height, String title) {
-        super(width, height, title);
+public class GLFWTimer extends AbstractTimer {
+    private static final double MAX_SECONDS_PER_UPDATE = 1.0;
+    private static final int MAX_TICKS_PER_UPDATE = 100;
+    private double lastTime = glfwGetTime();
+
+    public GLFWTimer(float tps) {
+        super(tps);
+    }
+
+    @Override
+    public void advanceTime() {
+        double now = glfwGetTime();
+        double passedS = now - lastTime;
+        lastTime = now;
+        if (passedS < 0.0) {
+            passedS = 0.0;
+        }
+        if (passedS > MAX_SECONDS_PER_UPDATE) {
+            passedS = MAX_SECONDS_PER_UPDATE;
+        }
+        fps = (float) (MAX_SECONDS_PER_UPDATE / passedS);
+        passedTime += (float) passedS * timeScale * tps;
+        ticks = (int) passedTime;
+        if (ticks > MAX_TICKS_PER_UPDATE) {
+            ticks = MAX_TICKS_PER_UPDATE;
+        }
+        passedTime -= ticks;
+        delta = passedTime;
+    }
+
+    @Override
+    public double getCurrTime() {
+        return lastTime;
     }
 }

@@ -146,12 +146,18 @@ public class GLProgram implements AutoCloseable {
         }
         if (vshId != 0) {
             glDetachShader(id, vshId);
+            glDeleteShader(vshId);
+            vshId = 0;
         }
         if (fshId != 0) {
             glDetachShader(id, fshId);
+            glDeleteShader(fshId);
+            fshId = 0;
         }
         if (gshId != 0) {
             glDetachShader(id, gshId);
+            glDeleteShader(gshId);
+            gshId = 0;
         }
         glValidateProgram(id);
         if (glGetProgrami(id, GL_VALIDATE_STATUS) == GL_FALSE) {
@@ -477,21 +483,12 @@ public class GLProgram implements AutoCloseable {
     }
 
     /**
-     * public: ~GlProgram();
+     * Free resources
      */
     @Override
     public void close() {
         if (id != 0) {
             glDeleteProgram(id);
-        }
-        if (vshId != 0) {
-            glDeleteShader(vshId);
-        }
-        if (fshId != 0) {
-            glDeleteShader(fshId);
-        }
-        if (gshId != 0) {
-            glDeleteShader(gshId);
         }
     }
 }

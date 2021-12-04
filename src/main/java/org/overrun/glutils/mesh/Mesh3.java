@@ -25,6 +25,8 @@
 
 package org.overrun.glutils.mesh;
 
+import org.overrun.glutils.Textures;
+
 import static org.lwjgl.opengl.GL30.*;
 
 /**
@@ -191,19 +193,19 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     }
 
     @Override
-    public void render(int mode) {
+    public void render(int primitive) {
         if (material != null) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, getTexture());
+            Textures.active(0);
+            Textures.bind2D(getTexture());
         }
         glBindVertexArray(vao);
         if (ibo == 0) {
-            glDrawArrays(mode, 0, getVertexCount());
+            glDrawArrays(primitive, 0, getVertexCount());
         } else {
-            glDrawElements(mode, getVertexCount(), GL_UNSIGNED_INT, 0);
+            glDrawElements(primitive, getVertexCount(), GL_UNSIGNED_INT, 0);
         }
         glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        Textures.unbind2D();
     }
 
     /**

@@ -23,24 +23,36 @@
  *
  */
 
-package org.overrun.glutils.wnd;
+package org.overrun.glutils.game;
+
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.overrun.glutils.game.GameEngine.app;
 
 /**
- * compatibility layer
- *
  * @author squid233
- * @since 1.0.0
+ * @since 1.5.0
  */
-@Deprecated
-public class Window extends GLFWindow {
+public class Graphics {
+    protected int fps;
     /**
-     * construct and create window
-     *
-     * @param width  window width
-     * @param height window height
-     * @param title  window title
+     * State of vertical synchronizing.
+     * <p>
+     * <b>Note:</b> Don't confuse with {@link GameConfig#vSync}
+     * </p>
      */
-    public Window(int width, int height, String title) {
-        super(width, height, title);
+    protected boolean vSync = app.config.vSync;
+
+    public int getFps() {
+        return fps;
+    }
+
+    public boolean isVSync() {
+        return vSync;
+    }
+
+    public Graphics setVSync(boolean vSync) {
+        this.vSync = vSync;
+        glfwSwapInterval(vSync ? 1 : 0);
+        return this;
     }
 }

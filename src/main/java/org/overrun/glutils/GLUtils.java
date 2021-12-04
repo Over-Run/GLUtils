@@ -29,6 +29,8 @@ import org.overrun.glutils.callback.ErrorCallback;
 import org.overrun.glutils.callback.ThrowableCallback;
 import org.overrun.glutils.callback.WarningCallback;
 
+import java.lang.reflect.InvocationTargetException;
+
 import static org.lwjgl.opengl.GL30.*;
 import static org.overrun.commonutils.ArrayHelper.expand;
 import static org.overrun.commonutils.ArrayHelper.toIArray;
@@ -161,9 +163,9 @@ public final class GLUtils {
         int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
         int[] oth = expand(toIArray(other.split("\\.")), 4);
         return curr[MAJOR] == oth[MAJOR]
-                && curr[MINOR] == oth[MINOR]
-                && curr[PATCH] == oth[PATCH]
-                && curr[PRE_BUILD] == oth[PRE_BUILD];
+            && curr[MINOR] == oth[MINOR]
+            && curr[PATCH] == oth[PATCH]
+            && curr[PRE_BUILD] == oth[PRE_BUILD];
     }
 
     /**
@@ -172,12 +174,17 @@ public final class GLUtils {
      * @param clazz class type
      * @param <T>   type
      * @return instance of clazz
-     * @throws Exception if params found
      * @since 1.1.0
      */
-    public static <T> T newClass(Class<T> clazz)
-            throws Exception {
-        return clazz.getDeclaredConstructor().newInstance();
+    public static <T> T newClass(Class<T> clazz) {
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException
+            | IllegalAccessException
+            | InvocationTargetException
+            | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -191,14 +198,19 @@ public final class GLUtils {
      *                       a wrapper object of the appropriate type (e.g. a {@code float}
      *                       in a {@link Float})
      * @return instance of clazz
-     * @throws Exception if params found
      * @since 1.1.0
      */
     public static <T> T newClass(Class<T> clazz,
                                  Class<?>[] parameterTypes,
-                                 Object... initArgs)
-            throws Exception {
-        return clazz.getDeclaredConstructor(parameterTypes).newInstance(initArgs);
+                                 Object... initArgs) {
+        try {
+            return clazz.getDeclaredConstructor(parameterTypes).newInstance(initArgs);
+        } catch (InstantiationException
+            | IllegalAccessException
+            | InvocationTargetException
+            | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

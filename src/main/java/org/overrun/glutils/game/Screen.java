@@ -23,24 +23,57 @@
  *
  */
 
-package org.overrun.glutils.wnd;
+package org.overrun.glutils.game;
 
 /**
- * compatibility layer
- *
  * @author squid233
- * @since 1.0.0
+ * @since 1.5.0
  */
-@Deprecated
-public class Window extends GLFWindow {
+public class Screen implements IGameLogic {
+    protected Screen parent;
+    protected int width;
+    protected int height;
+
     /**
-     * construct and create window
+     * Construct the screen with a parent.
      *
-     * @param width  window width
-     * @param height window height
-     * @param title  window title
+     * @param parent The parent screen.
      */
-    public Window(int width, int height, String title) {
-        super(width, height, title);
+    public Screen(final Screen parent) {
+        this.parent = parent;
+    }
+
+    /**
+     * Creating screen.
+     */
+    @Override
+    public void create() {
+    }
+
+    @Override
+    public void render() {
+    }
+
+    @Override
+    public void resize(final int width,
+                       final int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    /**
+     * Called on closing screen.
+     */
+    @Override
+    public void free() {
+    }
+
+    /**
+     * Get parent screen.
+     *
+     * @return {@link #parent}
+     */
+    public Screen getParent() {
+        return parent;
     }
 }

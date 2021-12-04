@@ -23,24 +23,44 @@
  *
  */
 
-package org.overrun.glutils.wnd;
+package org.overrun.glutils.game;
+
+import static org.lwjgl.opengl.GL11.*;
 
 /**
- * compatibility layer
- *
  * @author squid233
- * @since 1.0.0
+ * @since 1.5.0
  */
-@Deprecated
-public class Window extends GLFWindow {
-    /**
-     * construct and create window
-     *
-     * @param width  window width
-     * @param height window height
-     * @param title  window title
-     */
-    public Window(int width, int height, String title) {
-        super(width, height, title);
+public class GLStateManager {
+    public static void enableDepthTest() {
+        glEnable(GL_DEPTH_TEST);
+    }
+
+    public static void enableCullFace() {
+        glEnable(GL_CULL_FACE);
+    }
+
+    public static void enableBlend() {
+        glEnable(GL_BLEND);
+    }
+
+    public static void enableTexture2D() {
+        glEnable(GL_TEXTURE_2D);
+    }
+
+    public static void disableDepthTest() {
+        glDisable(GL_DEPTH_TEST);
+    }
+
+    public static void disableCullFace() {
+        glDisable(GL_CULL_FACE);
+    }
+
+    public static void disableBlend() {
+        glDisable(GL_BLEND);
+    }
+
+    public static void disableTexture2D() {
+        glDisable(GL_TEXTURE_2D);
     }
 }

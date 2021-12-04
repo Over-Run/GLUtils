@@ -25,9 +25,7 @@
 
 package org.overrun.glutils;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
@@ -43,11 +41,9 @@ public class ShaderReader {
      * @param loader The ClassLoader.
      * @param name   The filename.
      * @return File contents.
-     * @throws Exception When file not found.
      */
     public static String lines(ClassLoader loader,
-                               String name)
-            throws Exception {
+                               String name) {
         return lines(loader.getResourceAsStream(name));
     }
 
@@ -56,10 +52,8 @@ public class ShaderReader {
      *
      * @param stream The InputStream.
      * @return File contents.
-     * @throws Exception When file not found.
      */
-    public static String lines(InputStream stream)
-            throws Exception {
+    public static String lines(InputStream stream) {
         try (InputStream is = requireNonNull(stream);
              BufferedReader br = new BufferedReader(
                      new InputStreamReader(is, UTF_8)
@@ -74,6 +68,8 @@ public class ShaderReader {
                 sb.append(read);
             }
             return sb.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

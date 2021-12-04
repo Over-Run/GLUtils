@@ -25,80 +25,92 @@
 
 package org.overrun.glutest;
 
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.opengl.GL;
 import org.overrun.glutils.FontTexture;
 import org.overrun.glutils.FontTextures;
+import org.overrun.glutils.game.Game;
+import org.overrun.glutils.game.GameApp;
+import org.overrun.glutils.game.GameConfig;
 import org.overrun.glutils.ll.TextRenderer;
-import org.overrun.glutils.wnd.GLFWindow;
 
 import java.awt.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.game.GLStateManager.enableBlend;
+import static org.overrun.glutils.game.GLStateManager.enableTexture2D;
+import static org.overrun.glutils.game.GameEngine.window;
 
 /**
  * @author squid233
  */
-public class TextRendererTest {
-    static int cx = 0, cy = 0;
+public class TextRendererTest extends Game {
+    private static final boolean btt = false;
+    private int cx = 0, cy = 0;
+    private FontTexture unifont;
 
-    public static void main(String[] args) {
-        // FIXME: 2021/10/26
-        GLFWErrorCallback.createPrint().set();
-        glfwInit();
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        GLFWindow window = new GLFWindow(800, 640, "TextRenderer");
-        window.keyCb((hWnd, key, scancode, action, mods) -> {
-            if (action == GLFW_PRESS) {
-                if (key == GLFW_KEY_ESCAPE) {
-                    window.closeWindow();
-                }
-            }
-        });
-        window.makeCurr();
-        GL.createCapabilities();
-        glfwSwapInterval(1);
+    @Override
+    public void create() {
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
+        enableTexture2D();
+        enableBlend();
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        FontTexture unifont = FontTextures
-            .builder("unifont")
+        unifont = FontTextures.builder("unifont")
             .font(Font.decode("Unifont"))
             .charset(UTF_8)
             .padding(2)
             .build(false);
-        boolean btt = false;
+    }
+
+    @Override
+    public void render() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glPushMatrix();
+        glTranslatef(cx, cy, 0);
+        TextRenderer.drawText("Testing\nMulti lines", unifont, null, btt);
+        glPopMatrix();
+        super.render();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (window.getKey(GLFW_KEY_W) == GLFW_PRESS) {
+            --cy;
+        }
+        if (window.getKey(GLFW_KEY_S) == GLFW_PRESS) {
+            ++cy;
+        }
+        if (window.getKey(GLFW_KEY_A) == GLFW_PRESS) {
+            --cx;
+        }
+        if (window.getKey(GLFW_KEY_D) == GLFW_PRESS) {
+            ++cx;
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        glViewport(0, 0, width, height);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0, 800, btt ? 0 : 600, btt ? 600 : 0, -1, 1);
+        glOrtho(0, width, btt ? 0 : height, btt ? height : 0, -1, 1);
         glMatrixMode(GL_MODELVIEW);
-        window.show();
-        while (!window.shouldClose()) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glPushMatrix();
-            glTranslatef(cx, cy, 0);
-            TextRenderer.drawText("Testing\nMulti lines", unifont, null, btt);
-            glPopMatrix();
-            window.swapBuffers();
-            if (window.getKey(GLFW_KEY_W) == GLFW_PRESS) {
-                --cy;
-            }
-            if (window.getKey(GLFW_KEY_S) == GLFW_PRESS) {
-                ++cy;
-            }
-            if (window.getKey(GLFW_KEY_A) == GLFW_PRESS) {
-                --cx;
-            }
-            if (window.getKey(GLFW_KEY_D) == GLFW_PRESS) {
-                ++cx;
-            }
-            glfwPollEvents();
+        super.resize(width, height);
+    }
+
+    @Override
+    public void keyReleased(int key, int scancode, int mods) {
+        if (key == GLFW_RELEASE) {
+            window.closeWindow();
         }
-        window.free();
-        glfwTerminate();
-        glfwSetErrorCallback(null).free();
+        super.keyReleased(key, scancode, mods);
+    }
+
+    public static void main(String[] args) {
+        GameConfig config = new GameConfig();
+        config.title = "TextRenderer";
+        config.tps = 100;
+        new GameApp(new TextRendererTest(), config);
     }
 }

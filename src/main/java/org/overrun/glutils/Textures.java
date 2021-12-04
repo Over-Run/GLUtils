@@ -25,19 +25,19 @@
 
 package org.overrun.glutils;
 
+import org.jetbrains.annotations.Range;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
  * @author squid233
@@ -48,30 +48,57 @@ public class Textures {
     private static int maxSize;
 
     /**
+     * Bind texture for 2D
+     *
+     * @param id Texture ID.
+     * @since 1.5.0
+     */
+    public static void bind2D(int id) {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
+
+    /**
+     * Unbind texture for 2D
+     *
+     * @since 1.5.0
+     */
+    public static void unbind2D() {
+        bind2D(0);
+    }
+
+    /**
+     * Active texture
+     *
+     * @param unit Texture unit.
+     * @since 1.5.0
+     */
+    public static void active(@Range(from = 0, to = 31) int unit) {
+        glActiveTexture(GL_TEXTURE0 + unit);
+    }
+
+    /**
      * Load texture from stream by AWT.
      *
      * @param loader ClassLoader of loader class.
      * @param name   The filename.
      * @param mode   Processor mode.
      * @return The texture id.
-     * @throws Exception When file not found.
+     * @throws RuntimeException When file not found.
      */
     public static int loadAWT(ClassLoader loader,
                               String name,
                               int mode)
-            throws Exception {
+        throws RuntimeException {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
         }
-        BufferedImage img;
-        int w, h;
-        try (InputStream is = loader.getResourceAsStream(name)) {
-            img = ImageIO.read(Objects.requireNonNull(is));
-            w = img.getWidth();
-            h = img.getHeight();
-        }
+        BufferedImage img = AWTImage.load(loader, name);
         int id = glGenTextures();
-        pushToGL(id, mode, w, h, AWTImage.getRGB(img));
+        pushToGL(id,
+            mode,
+            img.getWidth(),
+            img.getHeight(),
+            AWTImage.getRGB(img));
         ID_MAP.put(name, id);
         return id;
     }
@@ -96,11 +123,10 @@ public class Textures {
             IntBuffer pc = stack.mallocInt(1);
             data = stbi_load(name, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
-                GLUtils.getErrorCb().error("Error loading image \"" +
-                        name +
-                        "\" from file system: " +
-                        stbi_failure_reason());
-                return 0;
+                throw new RuntimeException("Error loading image [" +
+                    name +
+                    "] from file system: " +
+                    stbi_failure_reason());
             }
             w = pw.get(0);
             h = ph.get(0);
@@ -135,11 +161,10 @@ public class Textures {
             IntBuffer pc = stack.mallocInt(1);
             data = stbi_load_from_memory(buffer, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
-                GLUtils.getErrorCb().error("Error loading image \"" +
-                        identifier +
-                        "\": " +
-                        stbi_failure_reason());
-                return 0;
+                throw new RuntimeException("Error loading image \"" +
+                    identifier +
+                    "\": " +
+                    stbi_failure_reason());
             }
             w = pw.get(0);
             h = ph.get(0);
@@ -183,7 +208,7 @@ public class Textures {
      */
     private static void processTexture(int id,
                                        int mode) {
-        glBindTexture(GL_TEXTURE_2D, id);
+        bind2D(id);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mode);
     }
@@ -205,15 +230,27 @@ public class Textures {
                                 ByteBuffer data) {
         processTexture(id, mode);
         glTexImage2D(GL_TEXTURE_2D,
-                0,
-                GL_RGBA,
-                w,
-                h,
-                0,
-                GL_RGBA,
-                GL_UNSIGNED_BYTE,
-                data
+            0,
+            GL_RGBA,
+            w,
+            h,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            data
         );
+        genMipmap2D();
+    }
+
+    /**
+     * Generate mipmap 2D
+     *
+     * @since 1.5.0
+     */
+    public static void genMipmap2D() {
+        if (GL.getCapabilities().glGenerateMipmap != NULL) {
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
     }
 
     /**
@@ -233,14 +270,14 @@ public class Textures {
                                 int[] data) {
         processTexture(id, mode);
         glTexImage2D(GL_TEXTURE_2D,
-                0,
-                GL_RGBA,
-                w,
-                h,
-                0,
-                GL_RGBA,
-                GL_UNSIGNED_BYTE,
-                data
+            0,
+            GL_RGBA,
+            w,
+            h,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            data
         );
     }
 
@@ -260,12 +297,22 @@ public class Textures {
     /**
      * Cleanup all resources.
      *
-     * @since 0.2.0
+     * @since 1.5.0
      */
-    public static void close() {
+    public static void free() {
         for (int id : ID_MAP.values()) {
             glDeleteTextures(id);
         }
         ID_MAP.clear();
+    }
+
+    /**
+     * Cleanup all resources.
+     *
+     * @since 0.2.0
+     */
+    @Deprecated
+    public static void close() {
+        free();
     }
 }

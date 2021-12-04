@@ -23,18 +23,58 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.game;
+
+import org.lwjgl.glfw.GLFWErrorCallback;
 
 /**
  * @author squid233
- * @since 1.1.0
+ * @since 1.5.0
  */
-@FunctionalInterface
-public interface Drawable {
+public class GameConfig {
     /**
-     * Render this object.
-     *
-     * @throws Exception Any exception.
+     * Default window width
      */
-    void render() throws Exception;
+    public int width = 800;
+    /**
+     * Default window height
+     */
+    public int height = 600;
+    /**
+     * Default window title
+     */
+    public String title = "GLUtils Game";
+    /**
+     * Minimum required OpenGL version
+     */
+    public double glVersion = 1.1;
+    /**
+     * Option to enable core profile
+     */
+    public boolean coreProfile = false;
+    /**
+     * Set whether the window is visible before initialization.
+     * <p>
+     * If set to true, the window will be visible and display a white screen
+     * without responding.
+     * </p>
+     */
+    public boolean hintVisible = false;
+    public boolean useStb = false;
+    /**
+     * Set ticks per seconds.
+     */
+    public float tps = 20;
+    /**
+     * Option to enable vertical synchronize.
+     * <p>
+     * <b>Note:</b> Don't confuse with {@link Graphics#vSync}
+     * </p>
+     */
+    public boolean vSync = false;
+    /**
+     * Set GLFW error callback.
+     */
+    public GLFWErrorCallback errorCallback =
+        GLFWErrorCallback.createPrint();
 }

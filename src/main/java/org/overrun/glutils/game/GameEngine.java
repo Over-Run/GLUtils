@@ -23,24 +23,21 @@
  *
  */
 
-package org.overrun.glutils.wnd;
+package org.overrun.glutils.game;
+
+import org.overrun.glutils.timer.ITimer;
+import org.overrun.glutils.wnd.Framebuffer;
+import org.overrun.glutils.wnd.GLFWindow;
 
 /**
- * compatibility layer
- *
  * @author squid233
- * @since 1.0.0
+ * @since 1.5.0
  */
-@Deprecated
-public class Window extends GLFWindow {
-    /**
-     * construct and create window
-     *
-     * @param width  window width
-     * @param height window height
-     * @param title  window title
-     */
-    public Window(int width, int height, String title) {
-        super(width, height, title);
-    }
+public class GameEngine {
+    public static GameApp app;
+    public static GLFWindow window;
+    public static Framebuffer framebuffer;
+    public static ITimer timer;
+    public static Input input;
+    public static Graphics graphics;
 }

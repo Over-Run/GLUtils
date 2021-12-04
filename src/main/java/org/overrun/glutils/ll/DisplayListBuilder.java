@@ -138,7 +138,7 @@ public class DisplayListBuilder
     /**
      * Render the list
      * <p>
-     * <b>Note: </b>{@code mode} is ignored.
+     * <b>Note:</b> {@code mode} is ignored.
      *
      * @param mode Geometry mode
      */
