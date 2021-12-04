@@ -25,6 +25,7 @@
 
 package org.overrun.glutils.game;
 
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.overrun.glutils.timer.SystemTimer;
 import org.overrun.glutils.wnd.Framebuffer;
@@ -60,7 +61,7 @@ public class GameApp {
             config.hintVisible ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, (int) config.glVersion);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,
-            (int) (config.glVersion * 10) - (int) config.glVersion * 10);
+            ((int) (config.glVersion * 10)) - (((int) config.glVersion) * 10));
         glfwWindowHint(GLFW_OPENGL_PROFILE,
             config.coreProfile
                 ? GLFW_OPENGL_CORE_PROFILE
@@ -115,6 +116,9 @@ public class GameApp {
         game.free();
         window.free();
         glfwTerminate();
-        glfwSetErrorCallback(null).free();
+        GLFWErrorCallback cb = glfwSetErrorCallback(null);
+        if (cb != null) {
+            cb.free();
+        }
     }
 }
