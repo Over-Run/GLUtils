@@ -27,6 +27,8 @@ package org.overrun.glutils;
 
 import org.lwjgl.opengl.*;
 
+import java.nio.FloatBuffer;
+
 import static org.lwjgl.opengl.GL15.*;
 
 /**
@@ -94,6 +96,18 @@ public class Vbo {
      * @param usage The usage of the data.
      */
     public void data(final float[] data,
+                     final int usage) {
+        glBufferData(target, data, usage);
+    }
+
+    /**
+     * Set data.
+     *
+     * @param data  The data.
+     * @param usage The usage of the data.
+     * @since 1.6.0
+     */
+    public void data(final FloatBuffer data,
                      final int usage) {
         glBufferData(target, data, usage);
     }

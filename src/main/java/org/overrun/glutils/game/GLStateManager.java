@@ -28,6 +28,8 @@ package org.overrun.glutils.game;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
+ * Some methods for calling GL functions quickly.
+ *
  * @author squid233
  * @since 1.5.0
  */

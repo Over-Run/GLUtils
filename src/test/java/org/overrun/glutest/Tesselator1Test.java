@@ -23,45 +23,32 @@
  *
  */
 
-package org.overrun.glutils.timer;
+package org.overrun.glutest;
 
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
+import org.overrun.glutils.game.Game;
+import org.overrun.glutils.game.GameApp;
+import org.overrun.glutils.game.GameConfig;
+import org.overrun.glutils.ll.Tesselator;
+
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * @author squid233
- * @since 1.5.0
  */
-public class GLFWTimer extends AbstractTimer {
-    private static final double MAX_SECONDS_PER_UPDATE = 1.0;
-    private double lastTime = glfwGetTime();
-
-    public GLFWTimer(float tps) {
-        super(tps);
+public class Tesselator1Test extends Game {
+    @Override
+    public void render() {
+        glClear(GL_COLOR_BUFFER_BIT);
+        Tesselator t = Tesselator.getInstance();
+        t.init()
+            .color(1, 0, 0).vertex(0, 0.5f, 0)
+            .color(0, 1, 0).vertex(-0.5f, -0.5f, 0)
+            .color(0, 0, 1).vertex(0.5f, -0.5f, 0)
+            .draw(GL_TRIANGLES);
+        super.render();
     }
 
-    @Override
-    public void advanceTime() {
-        double now = glfwGetTime();
-        double passedS = now - lastTime;
-        lastTime = now;
-        if (passedS < 0.0) {
-            passedS = 0.0;
-        }
-        if (passedS > MAX_SECONDS_PER_UPDATE) {
-            passedS = MAX_SECONDS_PER_UPDATE;
-        }
-        fps = (float) (MAX_SECONDS_PER_UPDATE / passedS);
-        passedTime += (float) passedS * timeScale * tps;
-        ticks = (int) passedTime;
-        if (ticks > MAX_TICKS_PER_UPDATE) {
-            ticks = MAX_TICKS_PER_UPDATE;
-        }
-        passedTime -= ticks;
-        delta = passedTime;
-    }
-
-    @Override
-    public double getCurrTime() {
-        return lastTime;
+    public static void main(String[] args) {
+        new GameApp(new Tesselator1Test(), new GameConfig());
     }
 }

@@ -28,7 +28,7 @@ package org.overrun.glutils;
 import org.joml.Matrix4fc;
 
 import static java.util.Arrays.fill;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL15.*;
 
 /**
  * Tesselator for OpenGL 3.3
@@ -37,11 +37,12 @@ import static org.lwjgl.opengl.GL30.*;
  * @since 1.5.0
  */
 public class Tesselator3 implements ITesselator {
-    public static final int VERTEX_COUNT = 50000;
+    public static final int VERTEX_COUNT = 60000;
+    public static final int MEMORY_USE = (3 + 4 + 2) * VERTEX_COUNT;
     private final GLProgram program = new GLProgram();
     private final Vao vao = new Vao();
     private final Vbo vbo = new Vbo(GL_ARRAY_BUFFER);
-    private final float[] array = new float[(3 + 4 + 2) * VERTEX_COUNT];
+    private final float[] array = new float[MEMORY_USE];
     private final VertexAttrib vertex = new VertexAttrib(0);
     private final VertexAttrib color = new VertexAttrib(1);
     private final VertexAttrib texCoord = new VertexAttrib(2);
@@ -117,7 +118,8 @@ public class Tesselator3 implements ITesselator {
     public Tesselator3 color(final float r,
                              final float g,
                              final float b) {
-        return color(r, g, b, 1);
+        ITesselator.super.color(r, g, b);
+        return this;
     }
 
     @Override
@@ -192,8 +194,8 @@ public class Tesselator3 implements ITesselator {
         vbo.unbind();
     }
 
-    protected void render() {
-        glDrawArrays(GL_TRIANGLES, 0, vertices);
+    protected void render(int primitive) {
+        glDrawArrays(primitive, 0, vertices);
     }
 
     public void setMatrix(final Matrix4fc mvp) {
@@ -202,6 +204,16 @@ public class Tesselator3 implements ITesselator {
 
     @Override
     public Tesselator3 draw() {
+        return draw(GL_TRIANGLES);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.6.0
+     */
+    @Override
+    public Tesselator3 draw(int primitive) {
         if (!fixed || !rendered) {
             vao.bind();
             setupVbo();
@@ -217,7 +229,7 @@ public class Tesselator3 implements ITesselator {
             glActiveTexture(GL_TEXTURE0);
         }
         vao.bind();
-        render();
+        render(primitive);
         vao.unbind();
         program.unbind();
         if (!fixed) {
