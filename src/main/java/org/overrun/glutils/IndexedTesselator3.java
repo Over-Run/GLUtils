@@ -107,7 +107,7 @@ public class IndexedTesselator3 extends Tesselator3 {
     protected void setupVbo() {
         super.setupVbo();
         ebo.bind();
-        ebo.data(array, GL_STREAM_DRAW);
+        ebo.data(array, GL_DYNAMIC_DRAW);
     }
 
     @Override

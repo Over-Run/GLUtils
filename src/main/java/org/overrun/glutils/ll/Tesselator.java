@@ -40,7 +40,7 @@ import static org.lwjgl.system.MemoryUtil.memFree;
  * @since 1.6.0
  */
 public class Tesselator implements ITesselator {
-    public static final int VERTEX_COUNT = 50000;
+    public static final int VERTEX_COUNT = 60000;
     public static final int MEMORY_USE = (2 + 3 + 3) * VERTEX_COUNT;
     private static final Tesselator INSTANCE = new Tesselator();
     private final float[] array = new float[MEMORY_USE];
