@@ -31,6 +31,7 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.memAllocFloat;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 /**
  * {@link ITesselator Tesselator} for OpenGL in immediate mode
@@ -131,15 +132,14 @@ public class Tesselator implements ITesselator {
         buffer.put(array, 0, pos);
         buffer.flip();
 
-        int mode;
-        if (hasTexture && hasColor) {
-            mode = GL_T2F_C3F_V3F;
-        } else if (hasTexture) {
-            mode = GL_T2F_V3F;
-        } else if (hasColor) {
-            mode = GL_C3F_V3F;
-        } else {
-            mode = GL_V3F;
+        int mode = GL_V3F;
+        if (hasColor) {
+            // +c3f
+            mode += 3;
+        }
+        if (hasTexture) {
+            // +t2f
+            mode += 6;
         }
         glInterleavedArrays(mode, 0, buffer);
 
@@ -167,5 +167,6 @@ public class Tesselator implements ITesselator {
 
     @Override
     public void free() {
+        memFree(buffer);
     }
 }
