@@ -51,6 +51,9 @@ public class Tesselator implements ITesselator {
     private boolean hasColor;
     private boolean hasTexture;
 
+    private Tesselator() {
+    }
+
     public static Tesselator getInstance() {
         return INSTANCE;
     }

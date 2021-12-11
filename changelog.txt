@@ -1,9 +1,9 @@
 Update Versions.java on adding new versions
 
-2.0.0 [Large changing, in the future]
+2.0.0 [Large changing]
 Added: GLULogger
 Removed: Callbacks
-Changed: Use Java 17!!
+Changed: Use Java 11
 
 1.6.0
 Added: `Tesselator`

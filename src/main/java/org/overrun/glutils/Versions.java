@@ -39,9 +39,11 @@ public class Versions {
      */
     @Contract(pure = true)
     public static String current() {
-        return VERSION_1_6_0;
+        return VERSION_2_0_0;
     }
 
+    /** 2.0.0 */
+    public static final String VERSION_2_0_0 = "2.0.0";
     /** 1.6.0 */
     public static final String VERSION_1_6_0 = "1.6.0";
     /** 1.5.0 */

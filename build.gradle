@@ -5,11 +5,11 @@ plugins {
     id 'maven-publish'
 }
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
 
 group 'io.github.over-run'
 archivesBaseName = 'glutils'
-version = '1.6.0'
+version = '2.0.0-SNAPSHOT'
 
 repositories {
     mavenCentral()

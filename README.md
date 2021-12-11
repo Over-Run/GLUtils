@@ -24,7 +24,7 @@ Utils for developing OpenGL for Java:coffee:.
 
 ```groovy
 dependencies {
-    implementation "io.github.over-run:glutils:1.6.0"
+    implementation "io.github.over-run:glutils:2.0.0"
 }
 ```
 
@@ -52,17 +52,3 @@ public class Example {
 
 - [Overrun Organization](https://github.com/Over-Run/)
 - [Funny Developers](https://github.com/Funny-Developers/)
-
-##
-
-<table>
-<tr>
-<td>-1.0,1.0</td><td>0.0,1.0</td><td>1.0,1.0</td>
-</tr>
-<tr>
-<td>-1.0,0.0</td><td>0.0,0.0</td><td>1.0,0.0</td>
-</tr>
-<tr>
-<td>-1.0,-1.0</td><td>0.0,-1.0</td><td>1.0,-1.0</td>
-</tr>
-</table>
