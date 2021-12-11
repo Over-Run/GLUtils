@@ -28,8 +28,8 @@ package org.overrun.glutest;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.overrun.glutils.IndexedTesselator3;
-import org.overrun.glutils.MipmapMode;
-import org.overrun.glutils.Tesselator3;
+import org.overrun.glutils.gl.MipmapMode;
+import org.overrun.glutils.gl.Tesselator3;
 import org.overrun.glutils.game.*;
 
 import static java.lang.Math.*;

@@ -23,10 +23,12 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.gl;
 
 import org.joml.*;
 import org.lwjgl.system.MemoryStack;
+import org.overrun.glutils.CompileException;
+import org.overrun.glutils.LinesReader;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.Material;
 import org.overrun.glutils.light.PointLight;
@@ -37,15 +39,14 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static org.lwjgl.opengl.GL20.*;
-import static org.overrun.glutils.GLString.toJava;
-import static org.overrun.glutils.GLUtils.getErrorCb;
-import static org.overrun.glutils.GLUtils.getWarningCb;
+import static org.overrun.glutils.util.GLString.toJava;
+import static org.overrun.glutils.GLUtils.getLogger;
 
 /**
  * @author squid233
  * @since 0.1.0
  */
-public class GLProgram implements AutoCloseable {
+public class GLProgram {
     private static final float[] MATRIX4F_BUF = new float[16];
 
     /**
@@ -109,7 +110,7 @@ public class GLProgram implements AutoCloseable {
      * Create a shader.
      *
      * @param src  The shader source code. May get from
-     *             {@link ShaderReader#lines(ClassLoader, String) lines}.
+     *             {@link LinesReader#lines(ClassLoader, String) lines}.
      * @param type The shader type.
      */
     private int createShader(String src, ShaderType type)
@@ -161,7 +162,7 @@ public class GLProgram implements AutoCloseable {
         }
         glValidateProgram(id);
         if (glGetProgrami(id, GL_VALIDATE_STATUS) == GL_FALSE) {
-            getWarningCb().warn(toJava(glGetProgramInfoLog(id)));
+            getLogger().warn(toJava(glGetProgramInfoLog(id)));
         }
     }
 
@@ -407,7 +408,7 @@ public class GLProgram implements AutoCloseable {
         }
         int loc = glGetAttribLocation(id, name);
         if (loc < 0) {
-            getErrorCb().error("Couldn't find attribute: \"" +
+            getLogger().error("Couldn't find attribute: \"" +
                 name +
                 "\"");
             return -1;
@@ -485,8 +486,7 @@ public class GLProgram implements AutoCloseable {
     /**
      * Free resources
      */
-    @Override
-    public void close() {
+    public void free() {
         if (id != 0) {
             glDeleteProgram(id);
         }

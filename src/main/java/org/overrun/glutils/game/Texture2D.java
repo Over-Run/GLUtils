@@ -28,8 +28,8 @@ package org.overrun.glutils.game;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.overrun.glutils.AWTImage;
-import org.overrun.glutils.MipmapMode;
-import org.overrun.glutils.Textures;
+import org.overrun.glutils.gl.MipmapMode;
+import org.overrun.glutils.gl.Textures;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

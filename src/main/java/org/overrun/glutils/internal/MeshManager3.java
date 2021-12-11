@@ -68,9 +68,9 @@ public class MeshManager3 {
      * @return a mesh
      */
     public static Mesh3 putOrGet(boolean colored,
-                          boolean textured,
-                          boolean indexed,
-                          boolean normalized) {
+                                 boolean textured,
+                                 boolean indexed,
+                                 boolean normalized) {
         byte bit = 0b0000;
         if (colored) {
             bit |= COLORED;

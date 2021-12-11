@@ -31,10 +31,10 @@ import org.overrun.glutils.game.GameConfig;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.Direction.*;
 import static org.overrun.glutils.game.GameEngine.input;
-import static org.overrun.glutils.ll.Drawer.drawCircle;
-import static org.overrun.glutils.ll.Drawer.drawRect;
+import static org.overrun.glutils.light.Direction.*;
+import static org.overrun.glutils.gl.ll.Drawer.drawCircle;
+import static org.overrun.glutils.gl.ll.Drawer.drawRect;
 
 /**
  * @author squid233

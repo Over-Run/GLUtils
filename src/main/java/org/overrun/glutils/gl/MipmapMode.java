@@ -23,18 +23,23 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.gl;
 
 /**
  * @author squid233
- * @since 1.1.0
+ * @since 1.5.0
  */
-@FunctionalInterface
-public interface Drawable {
-    /**
-     * Render this object.
-     *
-     * @throws Exception Any exception.
-     */
-    void render() throws Exception;
+public class MipmapMode {
+    public int minFilter;
+    public int magFilter;
+
+    public MipmapMode minFilter(int minFilter) {
+        this.minFilter = minFilter;
+        return this;
+    }
+
+    public MipmapMode magFilter(int magFilter) {
+        this.magFilter = magFilter;
+        return this;
+    }
 }

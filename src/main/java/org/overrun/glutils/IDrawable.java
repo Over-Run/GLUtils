@@ -23,24 +23,18 @@
  *
  */
 
-package org.overrun.glutils.wnd;
+package org.overrun.glutils;
 
 /**
- * compatibility layer
- *
  * @author squid233
- * @since 1.0.0
+ * @since 1.1.0
  */
-@Deprecated
-public class Window extends GLFWindow {
+@FunctionalInterface
+public interface IDrawable {
     /**
-     * construct and create window
+     * Render this object.
      *
-     * @param width  window width
-     * @param height window height
-     * @param title  window title
+     * @throws Exception Any exception.
      */
-    public Window(int width, int height, String title) {
-        super(width, height, title);
-    }
+    void render() throws Exception;
 }

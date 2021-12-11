@@ -23,9 +23,9 @@
  *
  */
 
-package org.overrun.glutils.ll;
+package org.overrun.glutils.gl.ll;
 
-import org.overrun.glutils.Direction;
+import org.overrun.glutils.light.Direction;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.glRectd;

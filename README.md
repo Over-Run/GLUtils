@@ -1,6 +1,6 @@
 # GLUtils ![GitHub](https://img.shields.io/github/license/Over-run/GLUtils)
 
-[![Java CI with Gradle](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml/badge.svg?event=push)](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml)  
+[![Java CI with Gradle](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml/badge.svg?branch=2.x&event=push)](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml)  
 ![GitHub all releases](https://img.shields.io/github/downloads/Over-Run/GLUtils/total)
 
 ![GitHub issues](https://img.shields.io/github/issues/Over-Run/GLUtils)
@@ -12,7 +12,7 @@
 ![Maven Central](https://img.shields.io/maven-central/v/io.github.over-run/glutils)
 ![Sonatype Nexus (Releases)](https://img.shields.io/nexus/r/io.github.over-run/glutils?server=https%3A%2F%2Fs01.oss.sonatype.org)
 
-![Java Version](https://img.shields.io/badge/Java%20Version-8-red)
+![Java Version](https://img.shields.io/badge/Java%20Version-11-red)
 
 ![GitHub Discussions](https://img.shields.io/github/discussions/Over-Run/GLUtils)
 
@@ -34,16 +34,45 @@ dependencies {
 
 ```java
 import org.overrun.glutils.*;
-public class Example {
-    static GLProgram prg;
-    public static void main(String[] args) {
-        init();
-        ClassLoader cl = Example.class.getClassLoader();
+import org.overrun.glutils.gl.*;
+import org.overrun.glutils.mesh.obj.*;
+
+public class Example extends Game {
+    private static ClassLoader cl = Example.class.getClassLoader();
+    private GLProgram prg;
+    private ObjModel3 model;
+
+    @Override
+    public void create() {
         prg = new GLProgram();
-        prg.createVsh(ShaderReader.lines(cl, "shaders/scene.vsh"));
-        prg.createFsh(ShaderReader.lines(cl, "shaders/scene.fsh"));
+        prg.createVsh(LinesReader.lines(cl, "shaders/scene.vsh"));
+        prg.createFsh(LinesReader.lines(cl, "shaders/scene.fsh"));
         prg.link();
-        render();
+        model = ObjLoader.load3(cl,
+            "models/cube.obj",
+            (m, v, i) -> m.vertIdx(0)
+                .texIdx(1)
+                .normalIdx(2));
+    }
+
+    @Override
+    public void render() {
+        prg.bind();
+        prg.unbind();
+    }
+
+    @Override
+    public void free() {
+        model.free();
+        prg.free();
+    }
+
+    public static void main(String[] args) {
+        GameConfig cfg = new GameConfig();
+        cfg.width = 854;
+        cfg.height = 480;
+        cfg.title = "Example";
+        new GameApp(new Example(), cfg);
     }
 }
 ```

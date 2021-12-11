@@ -23,7 +23,9 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.gui;
+
+import org.overrun.glutils.gl.Textures;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.gui;
 
 import java.awt.Font;
 import java.nio.charset.Charset;

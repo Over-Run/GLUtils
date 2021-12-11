@@ -25,12 +25,12 @@
 
 package org.overrun.glutest;
 
-import org.overrun.glutils.FontTexture;
-import org.overrun.glutils.FontTextures;
+import org.overrun.glutils.gui.FontTexture;
+import org.overrun.glutils.gui.FontTextures;
 import org.overrun.glutils.game.Game;
 import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
-import org.overrun.glutils.ll.TextRenderer;
+import org.overrun.glutils.gl.ll.TextRenderer;
 
 import java.awt.*;
 
@@ -102,7 +102,7 @@ public class TextRendererTest extends Game {
     @Override
     public void keyReleased(int key, int scancode, int mods) {
         if (key == GLFW_RELEASE) {
-            window.closeWindow();
+            window.close();
         }
         super.keyReleased(key, scancode, mods);
     }

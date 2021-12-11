@@ -41,7 +41,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * @author squid233
  * @since 1.0.0
  */
-public class GLFWindow implements AutoCloseable, SizedObject {
+public class GLFWindow implements SizedObject {
     /**
      * window handle
      */
@@ -291,16 +291,16 @@ public class GLFWindow implements AutoCloseable, SizedObject {
     }
 
     /**
-     * close window
+     * Close window
      *
-     * @since 1.3.0
+     * @since 2.0.0
      */
-    public void closeWindow() {
+    public void close() {
         glfwSetWindowShouldClose(hWnd, true);
     }
 
     /**
-     * free callbacks and destroy window
+     * Free callbacks and destroy window
      */
     public void free() {
         glfwFreeCallbacks(hWnd);
@@ -504,11 +504,5 @@ public class GLFWindow implements AutoCloseable, SizedObject {
      */
     public long getHandle() {
         return hWnd;
-    }
-
-    @Override
-    @Deprecated
-    public void close() {
-        free();
     }
 }

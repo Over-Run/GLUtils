@@ -23,9 +23,10 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.gl;
 
 import org.joml.Matrix4fc;
+import org.overrun.glutils.ITesselator;
 
 import java.nio.FloatBuffer;
 
@@ -251,7 +252,7 @@ public class Tesselator3 implements ITesselator {
     @Override
     public void free() {
         memFree(buffer);
-        program.close();
+        program.free();
         vbo.free();
         vao.free();
     }

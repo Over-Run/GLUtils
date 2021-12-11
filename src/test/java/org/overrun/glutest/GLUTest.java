@@ -30,7 +30,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.overrun.glutils.GLUtils;
-import org.overrun.glutils.Textures;
+import org.overrun.glutils.gl.Textures;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.PointLight;
 import org.overrun.glutils.timer.SystemTimer;
@@ -78,7 +78,7 @@ public class GLUTest implements AutoCloseable {
         window.keyCb((hWnd, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {
                 if (key == GLFW_KEY_ESCAPE) {
-                    window.closeWindow();
+                    window.close();
                 }
                 if (key == GLFW_KEY_GRAVE_ACCENT) {
                     grabbing = !grabbing;
@@ -204,6 +204,7 @@ public class GLUTest implements AutoCloseable {
 
     @Override
     public void close() {
+        renderer.free();
         Textures.free();
         window.free();
         glfwTerminate();

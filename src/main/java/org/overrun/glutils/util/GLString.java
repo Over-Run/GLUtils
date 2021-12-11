@@ -23,53 +23,22 @@
  *
  */
 
-package org.overrun.glutils;
-
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3i;
+package org.overrun.glutils.util;
 
 /**
  * @author squid233
- * @since 1.5.0
+ * @since 0.4.0
  */
-public enum Direction {
-    NORTH(0, 1, 0, 0, -1),
-    SOUTH(1, 0, 0, 0, 1),
-    WEST(2, 3, -1, 0, 0),
-    EAST(3, 2, 1, 0, 0),
-    UP(4, 5, 0, 1, 0),
-    DOWN(5, 4, 0, -1, 0);
-
-    public final int id;
-    public final int opposite;
-    public final int x;
-    public final int y;
-    public final int z;
-
-    Direction(final int id,
-              final int opposite,
-              final int x,
-              final int y,
-              final int z) {
-        this.id = id;
-        this.opposite = opposite;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public static Direction byId(final int id) {
-        return values()[id];
-    }
-
-    public Direction opposite() {
-        return byId(opposite);
-    }
-
-    @Contract(value = " -> new", pure = true)
-    @NotNull
-    public Vector3i toVector() {
-        return new Vector3i(x, y, z);
+public class GLString {
+    /**
+     * Convert C String to Java String.
+     *
+     * @param str Null terminated string.
+     * @return String
+     */
+    public static String toJava(String str) {
+        return str.endsWith("\0")
+                ? str.substring(0, str.length() - 1)
+                : str;
     }
 }

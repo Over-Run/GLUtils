@@ -25,9 +25,8 @@
 
 package org.overrun.glutils;
 
-import org.overrun.glutils.callback.ErrorCallback;
-import org.overrun.glutils.callback.ThrowableCallback;
-import org.overrun.glutils.callback.WarningCallback;
+import org.overrun.glutils.util.GLULoggerImpl;
+import org.overrun.glutils.util.IGLULogger;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -50,24 +49,27 @@ public final class GLUtils {
      */
     public static final String NO_ERR = "GL_NO_ERROR (0)";
     /**
-     * version major index
+     * The version major index
      */
     private static final int MAJOR = 0;
     /**
-     * version minor index
+     * The version minor index
      */
     private static final int MINOR = 1;
     /**
-     * version patch index
+     * The version patch index
      */
     private static final int PATCH = 2;
     /**
-     * version pre-build index
+     * The version pre-build index
      */
     private static final int PRE_BUILD = 3;
-    private static ThrowableCallback throwableCb = Throwable::printStackTrace;
-    private static WarningCallback warningCb = GLUtils::defaultWarningCb;
-    private static ErrorCallback errorCb = GLUtils::defaultErrorCb;
+    /**
+     * The logger.
+     *
+     * @since 2.0.0
+     */
+    private static IGLULogger logger = GLULoggerImpl.getInstance();
 
     /**
      * Check current version older than {@code other}
@@ -252,7 +254,7 @@ public final class GLUtils {
      */
     public static void glPrintError(int i) {
         String err = glErrorString();
-        String s = i + ":" + err;
+        String s = i + ": " + err;
         if (err.equals(NO_ERR)) {
             System.out.println(s);
         } else {
@@ -261,79 +263,25 @@ public final class GLUtils {
     }
 
     /**
-     * default warning callback
+     * Set the logger for GLUtils.
      *
-     * @param msg    message
-     * @param format objects to replace to msg
+     * @param l The logger.
+     * @since 2.0.0
      */
-    public static void defaultWarningCb(Object msg, Object... format) {
-        defaultErrorCb(msg, format);
+    public static void setLogger(IGLULogger l) {
+        if (l == null) {
+            l = GLULoggerImpl.getInstance();
+        }
+        logger = l;
     }
 
     /**
-     * default warning callback
+     * Get the logger in GLUtils.
      *
-     * @param msg    message
-     * @param format objects to replace to msg
+     * @return The {@link #logger}.
+     * @since 2.0.0
      */
-    public static void defaultErrorCb(Object msg, Object... format) {
-        System.err.printf(msg + "%n", format);
-    }
-
-    /**
-     * set warning callback
-     *
-     * @param cb callback to set
-     */
-    public static void setWarningCb(WarningCallback cb) {
-        warningCb = cb;
-    }
-
-    /**
-     * get warning callback
-     *
-     * @return warning callback
-     */
-    public static WarningCallback getWarningCb() {
-        return warningCb;
-    }
-
-    /**
-     * set error callback
-     *
-     * @param cb callback to set
-     */
-    public static void setErrorCb(ErrorCallback cb) {
-        errorCb = cb;
-    }
-
-    /**
-     * get error callback
-     *
-     * @return error callback
-     */
-    public static ErrorCallback getErrorCb() {
-        return errorCb;
-    }
-
-    /**
-     * Set the throwable callback.
-     * <p>
-     * You can set the callback to your logger.
-     * </p>
-     *
-     * @param cb Consumer with a Throwable.
-     */
-    public static void setThrowableCb(ThrowableCallback cb) {
-        throwableCb = cb;
-    }
-
-    /**
-     * get throwable callback
-     *
-     * @return throwable callback
-     */
-    public static ThrowableCallback getThrowableCb() {
-        return throwableCb;
+    public static IGLULogger getLogger() {
+        return logger;
     }
 }

@@ -27,7 +27,7 @@ package org.overrun.glutils.internal;
 
 import org.overrun.commonutils.Dimension;
 import org.overrun.glutils.AtlasLoom;
-import org.overrun.glutils.Textures;
+import org.overrun.glutils.gl.Textures;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;

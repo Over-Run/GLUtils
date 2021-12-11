@@ -33,22 +33,22 @@ import java.nio.ByteBuffer;
  * @author squid233
  * @since 0.4.0
  */
-public class StbImg implements AutoCloseable {
+public class StbImg {
     /**
-     * default recycler
+     * Default cleaner
      */
-    public static final Recycler RECYCLER = STBImage::stbi_image_free;
+    public static final Cleaner CLEANER = STBImage::stbi_image_free;
     private final int width;
     private final int height;
     private final ByteBuffer data;
-    private final Recycler recycler;
+    private final Cleaner cleaner;
     private final boolean failed;
 
     /**
      * @author squid233
      * @since 0.4.0
      */
-    public interface Recycler {
+    public interface Cleaner {
         /**
          * free memory
          *
@@ -58,32 +58,32 @@ public class StbImg implements AutoCloseable {
     }
 
     /**
-     * get default recycler
+     * get default cleaner
      *
-     * @return {@link #RECYCLER}
+     * @return {@link #CLEANER}
      */
-    public static Recycler defaultRecycler() {
-        return RECYCLER;
+    public static Cleaner defaultCleaner() {
+        return CLEANER;
     }
 
     /**
      * construct
      *
-     * @param width    image width
-     * @param height   image height
-     * @param data     image data
-     * @param recycler recycler
-     * @param failed   is failed
+     * @param width   image width
+     * @param height  image height
+     * @param data    image data
+     * @param cleaner cleaner
+     * @param failed  is failed
      */
     public StbImg(int width,
                   int height,
                   ByteBuffer data,
-                  Recycler recycler,
+                  Cleaner cleaner,
                   boolean failed) {
         this.width = width;
         this.height = height;
         this.data = data;
-        this.recycler = recycler;
+        this.cleaner = cleaner;
         this.failed = failed;
     }
 
@@ -115,12 +115,12 @@ public class StbImg implements AutoCloseable {
     }
 
     /**
-     * get recycler
+     * get cleaner
      *
-     * @return {@link #recycler}
+     * @return {@link #cleaner}
      */
-    public Recycler getRecycler() {
-        return recycler;
+    public Cleaner getCleaner() {
+        return cleaner;
     }
 
     /**
@@ -132,8 +132,7 @@ public class StbImg implements AutoCloseable {
         return failed;
     }
 
-    @Override
-    public void close() {
-        recycler.free(data);
+    public void free() {
+        cleaner.free(data);
     }
 }

@@ -29,7 +29,11 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.overrun.glutils.*;
+import org.overrun.glutils.gl.GLProgram;
+import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.gui.DrawableText;
+import org.overrun.glutils.gui.FontTexture;
+import org.overrun.glutils.gui.FontTextures;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.PointLight;
 import org.overrun.glutils.mesh.Mesh3;
@@ -42,14 +46,14 @@ import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.overrun.glutest.GLUTest.fps;
-import static org.overrun.glutils.ShaderReader.lines;
+import static org.overrun.glutils.LinesReader.lines;
 import static org.overrun.glutils.game.GLStateManager.*;
 import static org.overrun.glutils.math.Transform.*;
 
 /**
  * @author squid233
  */
-public class GameRenderer implements AutoCloseable {
+public class GameRenderer {
     public static final float[] LOW_FPS_COLOR = {
         1, 0, 0, 1,
         1, 0, 0, 1,
@@ -99,7 +103,7 @@ public class GameRenderer implements AutoCloseable {
                 .texIdx(1)
                 .normalIdx(2)
         );
-        cube.setPreRender(m -> program.setUniform("material.ambient",
+        cube.setProcessor(m -> program.setUniform("material.ambient",
             "material.diffuse",
             "material.specular",
             "material.textured",
@@ -278,22 +282,21 @@ public class GameRenderer implements AutoCloseable {
         modelv.popMatrix();
     }
 
-    @Override
-    public void close() {
+    public void free() {
         if (cube != null) {
-            cube.close();
+            cube.free();
         }
         if (crossing != null) {
-            crossing.close();
+            crossing.free();
         }
         if (text != null) {
-            text.close();
+            text.free();
         }
         if (program != null) {
-            program.close();
+            program.free();
         }
         if (guiProgram != null) {
-            guiProgram.close();
+            guiProgram.free();
         }
     }
 }

@@ -23,57 +23,34 @@
  *
  */
 
-package org.overrun.glutils;
-
-import static org.lwjgl.opengl.GL32.*;
+package org.overrun.glutils.util;
 
 /**
  * @author squid233
- * @since 0.1.0
+ * @since 2.0.0
  */
-public enum ShaderType {
-    /**
-     * fragmentShader
-     */
-    FRAGMENT_SHADER(GL_FRAGMENT_SHADER),
-    /**
-     * vertexShader
-     */
-    VERTEX_SHADER(GL_VERTEX_SHADER),
-    /**
-     * geometryShader
-     */
-    GEOMETRY_SHADER(GL_GEOMETRY_SHADER);
+public class GLULoggerImpl implements IGLULogger {
+    private static final GLULoggerImpl instance = new GLULoggerImpl();
 
-    /**
-     * GL type constant
-     */
-    private final int type;
-
-    ShaderType(int type) {
-        this.type = type;
+    public static GLULoggerImpl getInstance() {
+        return instance;
     }
 
-    /**
-     * get gl constant
-     *
-     * @return gl constant
-     */
-    public int getType() {
-        return type;
-    }
-
-    /**
-     * get name
-     *
-     * @return name
-     */
-    public String getName() {
-        return name().toLowerCase().replace("_", " ");
+    protected GLULoggerImpl() {
     }
 
     @Override
-    public String toString() {
-        return getName();
+    public void warn(String msg) {
+        System.err.println(msg);
+    }
+
+    @Override
+    public void error(String msg) {
+        System.err.println(msg);
+    }
+
+    @Override
+    public void catching(Throwable t) {
+        t.printStackTrace();
     }
 }

@@ -31,7 +31,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
-import org.overrun.glutils.Textures;
+import org.overrun.glutils.gl.Textures;
 import org.overrun.glutils.light.Material;
 import org.overrun.glutils.mesh.Mesh;
 import org.overrun.glutils.mesh.Mesh3;
@@ -61,7 +61,7 @@ import static org.lwjgl.opengl.GL11.GL_NEAREST;
  */
 public class ObjLoader {
     /**
-     *
+     * The default flags for Assimp.
      */
     public static final int DEFAULT_FLAGS = aiProcess_JoinIdenticalVertices
         | aiProcess_Triangulate
@@ -69,12 +69,13 @@ public class ObjLoader {
     private static final File TMP = new File("glutils_obj_tmp");
 
     /**
-     * pre return
+     * Vertices processor
      *
      * @author squid233
+     * @since 2.0.0
      */
     @FunctionalInterface
-    public interface PreReturn {
+    public interface VertProcessor {
         /**
          * Set attribute index before return.
          *
@@ -82,9 +83,9 @@ public class ObjLoader {
          * @param vertices  Vertices
          * @param meshIndex The order of the index of the mesh
          */
-        void accept(Mesh3 mesh,
-                    float[] vertices,
-                    int meshIndex);
+        void process(Mesh3 mesh,
+                     float[] vertices,
+                     int meshIndex);
     }
 
     private static AIScene load(ClassLoader cl,
@@ -295,7 +296,7 @@ public class ObjLoader {
 
     private static Mesh3 processMesh(AIMesh aiMesh,
                                      List<Material> materials,
-                                     @Nullable PreReturn preReturn,
+                                     @Nullable VertProcessor vertProcessor,
                                      int index) {
         FloatArray vertices = new FloatArray();
         FloatArray colors = new FloatArray();
@@ -319,8 +320,8 @@ public class ObjLoader {
 
         Mesh3 mesh = new Mesh3();
         float[] v = vertices.toFArray();
-        if (preReturn != null) {
-            preReturn.accept(mesh, v, index);
+        if (vertProcessor != null) {
+            vertProcessor.process(mesh, v, index);
         }
         if (!colors.isEmpty()) {
             mesh.colors(colors.toFArray());
@@ -372,30 +373,30 @@ public class ObjLoader {
     /**
      * Load object file with default flags.
      *
-     * @param cl        Class loader
-     * @param filename  Object filename in classpath.
-     * @param preReturn Set attribute index before return.
+     * @param cl            Class loader
+     * @param filename      Object filename in classpath.
+     * @param vertProcessor Set attribute index before return.
      * @return Meshes v3.
      */
     public static ObjModel3 load3(ClassLoader cl,
                                   String filename,
-                                  @Nullable PreReturn preReturn) {
-        return load3(cl, filename, DEFAULT_FLAGS, preReturn);
+                                  @Nullable VertProcessor vertProcessor) {
+        return load3(cl, filename, DEFAULT_FLAGS, vertProcessor);
     }
 
     /**
      * Load object file.
      *
-     * @param cl        Class loader
-     * @param filename  Object filename in classpath (in relative path).
-     * @param flags     Assimp flags.
-     * @param preReturn Set attribute index before return.
+     * @param cl            Class loader
+     * @param filename      Object filename in classpath (in relative path).
+     * @param flags         Assimp flags.
+     * @param vertProcessor Set attribute index before return.
      * @return Meshes v3.
      */
     public static ObjModel3 load3(ClassLoader cl,
                                   String filename,
                                   int flags,
-                                  @Nullable PreReturn preReturn) {
+                                  @Nullable VertProcessor vertProcessor) {
         AIScene scene = load(cl, filename, flags);
         List<Material> materials = createMaterials(cl, scene, filename);
         int numMeshes = scene.mNumMeshes();
@@ -403,7 +404,7 @@ public class ObjLoader {
         Mesh3[] meshes = new Mesh3[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(requireNonNull(aiMeshes).get(i));
-            Mesh3 mesh = processMesh(aiMesh, materials, preReturn, i)
+            Mesh3 mesh = processMesh(aiMesh, materials, vertProcessor, i)
                 .unbindVao();
             meshes[i] = mesh;
         }

@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils.ll;
+package org.overrun.glutils.gl.ll;
 
 import org.overrun.glutils.ITesselator;
 

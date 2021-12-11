@@ -28,7 +28,7 @@ package org.overrun.glutest;
 import org.overrun.glutils.game.Game;
 import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
-import org.overrun.glutils.ll.Tesselator;
+import org.overrun.glutils.gl.ll.Tesselator;
 
 import static org.lwjgl.opengl.GL11.*;
 

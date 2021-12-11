@@ -25,22 +25,26 @@
 
 package org.overrun.glutils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
 /**
  * @author squid233
- * @since 0.1.0
+ * @since 2.0.0
  */
-public class ShaderReader {
+public class LinesReader {
     /**
      * Read lines from stream by loader.
      *
      * @param loader The ClassLoader.
      * @param name   The filename.
      * @return File contents.
+     * @since 0.1.0
      */
     public static String lines(ClassLoader loader,
                                String name) {
@@ -52,11 +56,12 @@ public class ShaderReader {
      *
      * @param stream The InputStream.
      * @return File contents.
+     * @since 0.1.0
      */
     public static String lines(InputStream stream) {
         try (InputStream is = requireNonNull(stream);
              BufferedReader br = new BufferedReader(
-                     new InputStreamReader(is, UTF_8)
+                 new InputStreamReader(is, UTF_8)
              )
         ) {
             StringBuilder sb = new StringBuilder();

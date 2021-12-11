@@ -27,7 +27,8 @@ package org.overrun.glutils;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.overrun.glutils.StbImg.Recycler;
+import org.overrun.glutils.StbImg.Cleaner;
+import org.overrun.glutils.gl.Textures;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -36,6 +37,7 @@ import java.util.Map;
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.*;
+import static org.overrun.glutils.GLUtils.getLogger;
 
 /**
  * @author squid233
@@ -68,15 +70,15 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
             IntBuffer pc = stack.mallocInt(1);
             for (String img : imageMap.keySet()) {
                 int w, h;
-                Recycler recycler;
+                Cleaner recycler;
                 ByteBuffer bb = stbi_load(img, pw, ph, pc, STBI_rgb_alpha);
                 boolean failed = false;
                 if (bb == null) {
                     failed = true;
-                    GLUtils.getErrorCb().error("Can't load image \"" +
-                            img +
-                            "\": " +
-                            stbi_failure_reason());
+                    getLogger().error("Can't load image \"" +
+                        img +
+                        "\": " +
+                        stbi_failure_reason());
                     bb = MemoryUtil.memAlloc(defaultW * defaultH * 4);
                     w = defaultW;
                     h = defaultH;
@@ -86,7 +88,7 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                     ph.flip();
                     w = pw.get();
                     h = ph.get();
-                    recycler = StbImg.defaultRecycler();
+                    recycler = StbImg.defaultCleaner();
                 }
                 imageMap.put(img, new StbImg(w, h, bb, recycler, failed));
                 if (w > maxWper) {

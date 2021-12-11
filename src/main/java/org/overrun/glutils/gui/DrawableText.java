@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.gui;
 
 import org.jetbrains.annotations.Nullable;
 import org.overrun.commonutils.FloatArray;

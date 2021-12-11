@@ -25,6 +25,8 @@
 
 package org.overrun.glutils.light;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
@@ -79,7 +81,7 @@ public enum Direction {
     }
 
     /**
-     * get direction by id
+     * Get direction by id
      *
      * @param vector vector contains axis
      * @return a direction
@@ -95,7 +97,7 @@ public enum Direction {
     }
 
     /**
-     * get direction by id
+     * Get direction by id
      *
      * @param id direction id
      * @return a direction
@@ -105,7 +107,7 @@ public enum Direction {
     }
 
     /**
-     * get id
+     * Get id
      *
      * @return {@link #id}
      */
@@ -114,7 +116,7 @@ public enum Direction {
     }
 
     /**
-     * get opposite id
+     * Get opposite id
      *
      * @return {@link #oppositeId}
      */
@@ -123,7 +125,7 @@ public enum Direction {
     }
 
     /**
-     * get opposite direction
+     * Get opposite direction
      *
      * @return opposite direction
      */
@@ -132,7 +134,7 @@ public enum Direction {
     }
 
     /**
-     * get axisX
+     * Get axisX
      *
      * @return {@link #axisX}
      */
@@ -141,7 +143,7 @@ public enum Direction {
     }
 
     /**
-     * get axisY
+     * Get axisY
      *
      * @return {@link #axisY}
      */
@@ -150,7 +152,7 @@ public enum Direction {
     }
 
     /**
-     * get axisZ
+     * Get axisZ
      *
      * @return {@link #axisZ}
      */
@@ -159,14 +161,16 @@ public enum Direction {
     }
 
     /**
-     * convert to vector
+     * Convert to vector.
      *
      * @return Vector3i contains vec xyz
      */
+    @Contract(" -> new")
+    @NotNull
     public Vector3i toVector() {
         if (CACHE_VECTOR[id] == null) {
             CACHE_VECTOR[id] = new Vector3i(axisX, axisY, axisZ);
         }
-        return CACHE_VECTOR[id];
+        return new Vector3i(CACHE_VECTOR[id]);
     }
 }

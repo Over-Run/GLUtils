@@ -23,15 +23,15 @@
  *
  */
 
-package org.overrun.glutils.ll;
+package org.overrun.glutils.gl.ll;
 
 import org.jetbrains.annotations.Nullable;
-import org.overrun.glutils.DrawableText.ColorFunction;
-import org.overrun.glutils.FontTexture;
-import org.overrun.glutils.Textures;
+import org.overrun.glutils.gui.DrawableText.ColorFunction;
+import org.overrun.glutils.gui.FontTexture;
+import org.overrun.glutils.gl.Textures;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.DrawableText.DEFAULT_COLOR;
+import static org.overrun.glutils.gui.DrawableText.DEFAULT_COLOR;
 
 /**
  * Text renderer for legacy GL.

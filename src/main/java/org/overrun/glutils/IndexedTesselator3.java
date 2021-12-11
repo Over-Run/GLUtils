@@ -25,6 +25,9 @@
 
 package org.overrun.glutils;
 
+import org.overrun.glutils.gl.Tesselator3;
+import org.overrun.glutils.gl.Vbo;
+
 import static org.lwjgl.opengl.GL15.*;
 
 /**

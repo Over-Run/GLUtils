@@ -23,19 +23,57 @@
  *
  */
 
-package org.overrun.glutils.callback;
+package org.overrun.glutils.gl;
+
+import static org.lwjgl.opengl.GL32.*;
 
 /**
  * @author squid233
  * @since 0.1.0
  */
-@FunctionalInterface
-public interface WarningCallback {
+public enum ShaderType {
     /**
-     * send warning message
-     *
-     * @param msg message
-     * @param format objects to replace to msg
+     * fragmentShader
      */
-    void warn(Object msg, Object... format);
+    FRAGMENT_SHADER(GL_FRAGMENT_SHADER),
+    /**
+     * vertexShader
+     */
+    VERTEX_SHADER(GL_VERTEX_SHADER),
+    /**
+     * geometryShader
+     */
+    GEOMETRY_SHADER(GL_GEOMETRY_SHADER);
+
+    /**
+     * GL type constant
+     */
+    private final int type;
+
+    ShaderType(int type) {
+        this.type = type;
+    }
+
+    /**
+     * get gl constant
+     *
+     * @return gl constant
+     */
+    public int getType() {
+        return type;
+    }
+
+    /**
+     * get name
+     *
+     * @return name
+     */
+    public String getName() {
+        return name().toLowerCase().replace("_", " ");
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

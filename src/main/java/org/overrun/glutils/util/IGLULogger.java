@@ -23,22 +23,14 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.util;
 
 /**
  * @author squid233
- * @since 0.4.0
+ * @since 2.0.0
  */
-public class GLString {
-    /**
-     * Convert C String to Java String.
-     *
-     * @param str Null terminated string.
-     * @return String
-     */
-    public static String toJava(String str) {
-        return str.endsWith("\0")
-                ? str.substring(0, str.length() - 1)
-                : str;
-    }
+public interface IGLULogger {
+    void warn(String msg);
+    void error(String msg);
+    void catching(Throwable t);
 }

@@ -23,11 +23,12 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.gl;
 
 import org.jetbrains.annotations.Range;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
+import org.overrun.glutils.AWTImage;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;

@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.gl;
 
 import org.lwjgl.opengl.*;
 

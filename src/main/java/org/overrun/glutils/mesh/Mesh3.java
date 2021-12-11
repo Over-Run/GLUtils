@@ -25,7 +25,7 @@
 
 package org.overrun.glutils.mesh;
 
-import org.overrun.glutils.Textures;
+import org.overrun.glutils.gl.Textures;
 
 import static org.lwjgl.opengl.GL30.*;
 
@@ -276,7 +276,7 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     }
 
     @Override
-    public void close() {
+    public void free() {
         glDisableVertexAttribArray(vertIdx);
         if (colorIdx != -1) {
             glDisableVertexAttribArray(colorIdx);

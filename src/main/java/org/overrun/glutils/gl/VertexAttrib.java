@@ -23,19 +23,39 @@
  *
  */
 
-package org.overrun.glutils.callback;
+package org.overrun.glutils.gl;
+
+import static org.lwjgl.opengl.GL20.*;
 
 /**
  * @author squid233
- * @since 0.1.0
+ * @since 1.5.0
  */
-@FunctionalInterface
-public interface ErrorCallback {
-    /**
-     * send error message
-     *
-     * @param msg message
-     * @param format objects to replace to msg
-     */
-    void error(Object msg, Object... format);
+public class VertexAttrib {
+    public final int index;
+
+    public VertexAttrib(final int index) {
+        this.index = index;
+    }
+
+    public void enable() {
+        glEnableVertexAttribArray(index);
+    }
+
+    public void disable() {
+        glDisableVertexAttribArray(index);
+    }
+
+    public void pointer(final int size,
+                        final int type,
+                        final boolean normalized,
+                        final int stride,
+                        final long pointer) {
+        glVertexAttribPointer(index,
+            size,
+            type,
+            normalized,
+            stride,
+            pointer);
+    }
 }

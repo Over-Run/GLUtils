@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils.ll;
+package org.overrun.glutils.gl.ll;
 
 import org.overrun.glutils.IVertexBuilder;
 
@@ -33,8 +33,7 @@ import static org.lwjgl.opengl.GL11.*;
  * @author squid233
  * @since 1.4.0
  */
-public class DisplayListBuilder
-    implements IVertexBuilder, AutoCloseable {
+public class DisplayListBuilder implements IVertexBuilder {
     private final int list;
 
     /**
@@ -110,7 +109,7 @@ public class DisplayListBuilder
     }
 
     @Override
-    public IVertexBuilder color(float r, float g, float b) {
+    public DisplayListBuilder color(float r, float g, float b) {
         glColor3f(r, g, b);
         return this;
     }
@@ -150,8 +149,7 @@ public class DisplayListBuilder
     /**
      * Delete the list.
      */
-    @Override
-    public void close() {
+    public void free() {
         glDeleteLists(list, 1);
     }
 }

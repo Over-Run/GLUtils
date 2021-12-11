@@ -70,7 +70,7 @@ public class MeshVertexBuilder extends BaseMeshVertexBuilder {
     }
 
     @Override
-    public void close() {
-        mesh.close();
+    public void free() {
+        mesh.free();
     }
 }

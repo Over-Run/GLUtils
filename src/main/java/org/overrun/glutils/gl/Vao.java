@@ -23,39 +23,28 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.gl;
 
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 /**
  * @author squid233
  * @since 1.5.0
  */
-public class VertexAttrib {
-    public final int index;
+public class Vao {
+    private final int id = glGenVertexArrays();
 
-    public VertexAttrib(final int index) {
-        this.index = index;
+    public void bind() {
+        glBindVertexArray(id);
     }
 
-    public void enable() {
-        glEnableVertexAttribArray(index);
+    public void unbind() {
+        glBindVertexArray(0);
     }
 
-    public void disable() {
-        glDisableVertexAttribArray(index);
-    }
-
-    public void pointer(final int size,
-                        final int type,
-                        final boolean normalized,
-                        final int stride,
-                        final long pointer) {
-        glVertexAttribPointer(index,
-            size,
-            type,
-            normalized,
-            stride,
-            pointer);
+    public void free() {
+        glDeleteBuffers(id);
     }
 }

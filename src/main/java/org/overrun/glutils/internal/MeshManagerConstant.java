@@ -33,19 +33,19 @@ public class MeshManagerConstant {
     /**
      * Colored mesh
      */
-    public static final byte COLORED = 0b1000;
+    public static final byte COLORED = 1 << 3;
     /**
      * Textured mesh
      */
-    public static final byte TEXTURED = 0b0100;
+    public static final byte TEXTURED = 1 << 2;
     /**
      * Indexed mesh
      */
-    public static final byte INDEXED = 0b0010;
+    public static final byte INDEXED = 1 << 1;
     /**
      * Normalized mesh
      */
-    public static final byte NORMALIZED = 0b0001;
+    public static final byte NORMALIZED = 1;
 
     /**
      * Is mesh colored

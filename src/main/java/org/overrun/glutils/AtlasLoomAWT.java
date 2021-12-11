@@ -25,6 +25,8 @@
 
 package org.overrun.glutils;
 
+import org.overrun.glutils.gl.Textures;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -34,6 +36,7 @@ import java.util.Objects;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.GLUtils.getLogger;
 
 /**
  * @author squid233
@@ -66,7 +69,7 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
             try (InputStream is = cl.getResourceAsStream(img)) {
                 bi = ImageIO.read(Objects.requireNonNull(is));
             } catch (IOException e) {
-                GLUtils.getThrowableCb().accept(e);
+                getLogger().catching(e);
                 bi = new BufferedImage(defaultW,
                         defaultH,
                         BufferedImage.TYPE_INT_ARGB);

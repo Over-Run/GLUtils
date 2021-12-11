@@ -25,8 +25,8 @@
 
 package org.overrun.glutils.mesh;
 
-import org.overrun.glutils.GLProgram;
-import org.overrun.glutils.Textures;
+import org.overrun.glutils.gl.GLProgram;
+import org.overrun.glutils.gl.Textures;
 import org.overrun.glutils.light.Material;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -250,7 +250,7 @@ public class Mesh extends BaseMesh<Mesh> {
     }
 
     @Override
-    public void close() {
+    public void free() {
         if (vertIdx >= 0) {
             glDisableVertexAttribArray(vertIdx);
         }
