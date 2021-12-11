@@ -23,44 +23,32 @@
  *
  */
 
-package org.overrun.glutils.timer;
+package org.overrun.glutest;
+
+import org.overrun.glutils.game.Game;
+import org.overrun.glutils.game.GameApp;
+import org.overrun.glutils.game.GameConfig;
+import org.overrun.glutils.ll.Tesselator;
+
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * @author squid233
- * @since 1.5.0
  */
-public class SystemTimer extends AbstractTimer {
-    private static final long NS_PER_SECOND = 1_000_000_000L;
-    private static final long MAX_NS_PER_UPDATE = 1_000_000_000L;
-    private long lastTime = System.nanoTime();
-
-    public SystemTimer(float tps) {
-        super(tps);
+public class Tesselator1Test extends Game {
+    @Override
+    public void render() {
+        glClear(GL_COLOR_BUFFER_BIT);
+        Tesselator t = Tesselator.getInstance();
+        t.init()
+            .color(1, 0, 0).vertex(0, 0.5f, 0)
+            .color(0, 1, 0).vertex(-0.5f, -0.5f, 0)
+            .color(0, 0, 1).vertex(0.5f, -0.5f, 0)
+            .draw(GL_TRIANGLES);
+        super.render();
     }
 
-    @Override
-    public void advanceTime() {
-        long now = System.nanoTime();
-        long passedNs = now - lastTime;
-        lastTime = now;
-        if (passedNs < 0L) {
-            passedNs = 0L;
-        }
-        if (passedNs > MAX_NS_PER_UPDATE) {
-            passedNs = MAX_NS_PER_UPDATE;
-        }
-        fps = (float) (MAX_NS_PER_UPDATE / passedNs);
-        passedTime += (float) passedNs * timeScale * tps / (float) NS_PER_SECOND;
-        ticks = (int) passedTime;
-        if (ticks > MAX_TICKS_PER_UPDATE) {
-            ticks = MAX_TICKS_PER_UPDATE;
-        }
-        passedTime = passedTime - ticks;
-        delta = passedTime;
-    }
-
-    @Override
-    public double getCurrTime() {
-        return lastTime / (double) NS_PER_SECOND;
+    public static void main(String[] args) {
+        new GameApp(new Tesselator1Test(), new GameConfig());
     }
 }

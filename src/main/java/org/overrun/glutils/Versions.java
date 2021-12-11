@@ -25,20 +25,25 @@
 
 package org.overrun.glutils;
 
+import org.jetbrains.annotations.Contract;
+
 /**
  * @author squid233
  * @since 1.0.0
  */
 public class Versions {
     /**
-     * current version
+     * Get current version.
      *
      * @return current version
      */
+    @Contract(pure = true)
     public static String current() {
-        return VERSION_1_5_0;
+        return VERSION_1_6_0;
     }
 
+    /** 1.6.0 */
+    public static final String VERSION_1_6_0 = "1.6.0";
     /** 1.5.0 */
     public static final String VERSION_1_5_0 = "1.5.0";
     /** 1.4.0 */

@@ -87,6 +87,17 @@ public class IndexedTesselator3 extends Tesselator3 {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.6.0
+     */
+    @Override
+    public IndexedTesselator3 draw(int primitive) {
+        super.draw(primitive);
+        return this;
+    }
+
     public IndexedTesselator3 indices(final int... indices) {
         array = indices;
         return this;
@@ -96,12 +107,12 @@ public class IndexedTesselator3 extends Tesselator3 {
     protected void setupVbo() {
         super.setupVbo();
         ebo.bind();
-        ebo.data(array, GL_STREAM_DRAW);
+        ebo.data(array, GL_DYNAMIC_DRAW);
     }
 
     @Override
-    protected void render() {
-        glDrawElements(GL_TRIANGLES, array.length, GL_UNSIGNED_INT, 0);
+    protected void render(int primitive) {
+        glDrawElements(primitive, array.length, GL_UNSIGNED_INT, 0);
     }
 
     @Override

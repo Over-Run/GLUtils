@@ -60,5 +60,16 @@ public interface ITesselator {
 
     ITesselator draw();
 
+    /**
+     * Draw elements as specified primitive.
+     *
+     * @param primitive The primitive.
+     * @return this
+     * @since 1.6.0
+     */
+    default ITesselator draw(int primitive) {
+        return this;
+    }
+
     void free();
 }

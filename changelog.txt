@@ -5,9 +5,13 @@ Added: GLULogger
 Removed: Callbacks
 Changed: Use Java 17!!
 
+1.6.0
+Added: `Tesselator`
+Changed: Use JOML 1.10.3
+
 1.5.0 [Large changing]
 Added: Loading matrix from array
-Added: Tesselator
+Added: `Tesselator3`
 Added: Timer
 Added: `Vao`
 Added: Game engine

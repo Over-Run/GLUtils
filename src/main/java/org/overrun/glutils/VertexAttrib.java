@@ -45,6 +45,7 @@ public class VertexAttrib {
     public void disable() {
         glDisableVertexAttribArray(index);
     }
+
     public void pointer(final int size,
                         final int type,
                         final boolean normalized,

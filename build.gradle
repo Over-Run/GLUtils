@@ -9,7 +9,7 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 group 'io.github.over-run'
 archivesBaseName = 'glutils'
-version = '1.5.0'
+version = '1.6.0'
 
 repositories {
     mavenCentral()
@@ -29,7 +29,7 @@ dependencies {
     api 'org.lwjgl:lwjgl-opengl'
     api 'org.lwjgl:lwjgl-stb'
     api 'org.lwjgl:lwjgl-assimp'
-    api 'org.joml:joml:1.10.2'
+    api 'org.joml:joml:1.10.3'
     api 'io.github.over-run:common-utils:0.2.0'
 
     compileOnly 'org.jetbrains:annotations:22.0.0'

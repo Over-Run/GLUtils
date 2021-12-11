@@ -85,12 +85,13 @@ public class ObjModel<T extends IMesh> implements Drawable, AutoCloseable {
      */
     @FunctionalInterface
     public interface PreRender<T extends IMesh>
-            extends Consumer<T> {
+        extends Consumer<T> {
         /**
          * Set uniforms before render.
          *
          * @param mesh Mesh to set
          */
+        @Override
         void accept(T mesh);
     }
 
