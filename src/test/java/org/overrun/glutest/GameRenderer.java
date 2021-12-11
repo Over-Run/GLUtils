@@ -42,12 +42,12 @@ import org.overrun.glutils.mesh.MeshLoader;
 import org.overrun.glutils.mesh.obj.ObjLoader;
 import org.overrun.glutils.mesh.obj.ObjModel3;
 
-import java.awt.Font;
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL15.*;
-import static org.overrun.glutest.GLUTest.fps;
 import static org.overrun.glutils.LinesReader.lines;
+import static org.overrun.glutils.game.GameEngine.*;
 import static org.overrun.glutils.gl.GLStateManager.*;
 import static org.overrun.glutils.math.Transform.*;
 
@@ -131,9 +131,7 @@ public class GameRenderer {
             .unbindVao();
     }
 
-    public void render(int w,
-                       int h,
-                       Player player,
+    public void render(Player player,
                        Vector3f ambientLight,
                        PointLight pointLight,
                        DirectionalLight light,
@@ -149,13 +147,25 @@ public class GameRenderer {
         modelv.pushMatrix();
         Matrix4f viewMatrix = new Matrix4f(rotateY(rotateX(modelv, -xRot), yRot));
         modelv.popMatrix();
+        {
+            final float x = player.x,
+                y = player.y,
+                z = player.z,
+                xo = player.xo,
+                yo = player.yo,
+                zo = player.zo;
+            float delta = timer.getDelta();
+            float tx = xo + (x - xo) * delta;
+            float ty = yo + (y - yo) * delta;
+            float tz = zo + (z - zo) * delta;
+            viewMatrix.translate(-tx, -ty, -tz);
+        }
 
         modelv.mul(viewMatrix);
         program.setUniformMat4("proj",
             setPerspective(proj,
                 90,
-                w,
-                h,
+                framebuffer,
                 0.05f,
                 1000.0f));
 
@@ -201,7 +211,7 @@ public class GameRenderer {
         disableDepthTest();
         disableCullFace();
         enableBlend();
-        renderGui(player, w, h, lightAngle);
+        renderGui(player, lightAngle);
         disableBlend();
         modelv.popMatrix();
     }
@@ -210,12 +220,9 @@ public class GameRenderer {
                             float x,
                             float y,
                             float z) {
-        float cameraX = player.x;
-        float cameraY = player.y;
-        float cameraZ = player.z;
-        float fx = x == 0 ? -cameraX : -cameraX + (x * 0.9375f);
-        float fy = y == 0 ? -cameraY : -cameraY + (y * 0.9375f);
-        float fz = z == 0 ? -cameraZ : -cameraZ + (z * 0.9375f);
+        float fx = x * 0.9375f;
+        float fy = y * 0.9375f;
+        float fz = z * 0.9375f;
         modelv.pushMatrix();
         program.setUniformMat4("modelv", modelv.translate(fx, fy, fz));
         cube.render();
@@ -223,8 +230,6 @@ public class GameRenderer {
     }
 
     public void renderGui(Player player,
-                          int w,
-                          int h,
                           float lightAngle) {
         float cameraX = player.x;
         float cameraY = player.y;
@@ -235,10 +240,18 @@ public class GameRenderer {
         guiProgram.setUniform("texSampler", 0);
         guiProgram.setUniform("textured", true);
         //todo scale
-        guiProgram.setUniformMat4("proj", modelv.setOrtho2D(0, w, h, 0));
-        guiProgram.setUniformMat4("modelv", modelv.translation(w / 2f, h / 2f, 0));
+        guiProgram.setUniformMat4("proj",
+            modelv.setOrtho2D(0,
+                framebuffer.width(),
+                framebuffer.height(),
+                0));
+        guiProgram.setUniformMat4("modelv",
+            modelv.translation(framebuffer.width() / 2f,
+                framebuffer.height() / 2f,
+                0));
         crossing.render();
         guiProgram.setUniformMat4("modelv", modelv.translation(2, 2, 0));
+        int fps = graphics.getFps();
         String fpsSt = "FPS: " + fps;
         String st = fpsSt + "\nLight angle: " + lightAngle;
         st += "\nCamera pos: " + cameraX + ", " + cameraY + ", " + cameraZ;

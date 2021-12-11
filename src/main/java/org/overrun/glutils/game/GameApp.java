@@ -27,6 +27,7 @@ package org.overrun.glutils.game;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import org.overrun.glutils.gl.Textures;
 import org.overrun.glutils.timer.SystemTimer;
 import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
@@ -93,32 +94,36 @@ public class GameApp {
         GL.createCapabilities();
         glfwSwapInterval(config.vSync ? 1 : 0);
         graphics = new Graphics();
-        game.create();
-        window.show();
-        long lastTime = System.currentTimeMillis();
-        int frames = 0;
-        while (!window.shouldClose()) {
-            timer.advanceTime();
-            for (int i = 0; i < timer.getTicks(); i++) {
-                game.tick();
+        try {
+            game.create();
+            window.show();
+            long lastTime = System.currentTimeMillis();
+            int frames = 0;
+            while (!window.shouldClose()) {
+                timer.advanceTime();
+                for (int i = 0; i < timer.getTicks(); i++) {
+                    game.tick();
+                }
+                game.render();
+                window.swapBuffers();
+                glfwPollEvents();
+                game.onUpdated();
+                ++frames;
+                while (System.currentTimeMillis() >= lastTime + 1000) {
+                    graphics.fps = frames;
+                    lastTime += 1000;
+                    frames = 0;
+                }
             }
-            game.render();
-            window.swapBuffers();
-            glfwPollEvents();
-            game.onUpdated();
-            ++frames;
-            while (System.currentTimeMillis() >= lastTime + 1000) {
-                graphics.fps = frames;
-                lastTime += 1000;
-                frames = 0;
+        } finally {
+            Textures.free();
+            game.free();
+            window.free();
+            glfwTerminate();
+            GLFWErrorCallback cb = glfwSetErrorCallback(null);
+            if (cb != null) {
+                cb.free();
             }
-        }
-        game.free();
-        window.free();
-        glfwTerminate();
-        GLFWErrorCallback cb = glfwSetErrorCallback(null);
-        if (cb != null) {
-            cb.free();
         }
     }
 }

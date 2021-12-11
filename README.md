@@ -68,7 +68,7 @@ public class Example extends Game {
     }
 
     public static void main(String[] args) {
-        GameConfig cfg = new GameConfig();
+        var cfg = new GameConfig();
         cfg.width = 854;
         cfg.height = 480;
         cfg.title = "Example";

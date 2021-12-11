@@ -381,20 +381,6 @@ public class GLFWindow implements SizedObject {
     }
 
     /**
-     * Set mouse pos.
-     *
-     * @param mouseX mouse x
-     * @param mouseY mouse y
-     * @return this
-     * @since 1.3.0
-     */
-    @Deprecated
-    public GLFWindow setMousePos(final int mouseX,
-                                 final int mouseY) {
-        return setCursorPos(mouseX, mouseY);
-    }
-
-    /**
      * Set cursor pos.
      *
      * @param posX cursor x

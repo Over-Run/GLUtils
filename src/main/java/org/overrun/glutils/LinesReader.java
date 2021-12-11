@@ -59,12 +59,12 @@ public class LinesReader {
      * @since 0.1.0
      */
     public static String lines(InputStream stream) {
-        try (InputStream is = requireNonNull(stream);
-             BufferedReader br = new BufferedReader(
+        try (var is = requireNonNull(stream);
+             var br = new BufferedReader(
                  new InputStreamReader(is, UTF_8)
              )
         ) {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             String read;
             for (int i = 0; (read = br.readLine()) != null; i++) {
                 if (i > 0) {

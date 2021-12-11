@@ -311,14 +311,4 @@ public class Textures {
         }
         ID_MAP.clear();
     }
-
-    /**
-     * Cleanup all resources.
-     *
-     * @since 0.2.0
-     */
-    @Deprecated
-    public static void close() {
-        free();
-    }
 }
