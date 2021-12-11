@@ -37,12 +37,12 @@ public class DisplayListBuilder implements IVertexBuilder {
     private final int list;
 
     /**
-     * Construct and generate a GL list.
+     * Construct and generate an OpenGL list.
      */
     public DisplayListBuilder() {
         list = glGenLists(1);
         if (!glIsList(list)) {
-            throw new RuntimeException("Can't create GL list");
+            throw new RuntimeException("Can't create OpenGL list");
         }
     }
 
@@ -59,11 +59,11 @@ public class DisplayListBuilder implements IVertexBuilder {
     /**
      * Begin drawing
      *
-     * @param mode Geometry mode
+     * @param primitive OpenGL primitive
      * @return this
      */
-    public DisplayListBuilder begin(int mode) {
-        glBegin(mode);
+    public DisplayListBuilder begin(int primitive) {
+        glBegin(primitive);
         return this;
     }
 

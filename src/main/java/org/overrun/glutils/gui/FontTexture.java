@@ -35,8 +35,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static java.awt.RenderingHints.*;
-import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.AWTImage.getRGB;
+import static org.overrun.glutils.gl.MipmapMode.glLinear;
+import static org.overrun.glutils.gl.MipmapMode.glNearest;
 
 /**
  * @author squid233
@@ -183,7 +184,7 @@ public class FontTexture {
                 width,
                 height,
                 getRGB(bi),
-                GL_NEAREST);
+                antialias ? glLinear() : glNearest());
     }
 
     /**

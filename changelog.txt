@@ -1,11 +1,14 @@
 Update Versions.java on adding new versions
 
 2.0.0 [Large changing]
+Warning: This is a broken changing which many API has been changed.
 News: We know CVE-2021-44228 in Log4j2. GLULogger use `System.out` default
 Added: GLULogger
 Added: gui package
-Removed: Callbacks
 Changed: Use Java 11
+Changed: MipmapMode in Textures
+Renamed: ShaderReader to LinesReader
+Removed: Callbacks
 
 1.6.0
 Added: `Tesselator`

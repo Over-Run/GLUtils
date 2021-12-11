@@ -91,12 +91,8 @@ public class Texture2D {
                     id = glGenTextures();
                     Textures.bind2D(id);
                     if (mode != null) {
-                        if (mode.minFilter != 0) {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mode.minFilter);
-                        }
-                        if (mode.magFilter != 0) {
-                            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mode.magFilter);
-                        }
+                        mode.glMinFilter(GL_TEXTURE_2D);
+                        mode.glMagFilter(GL_TEXTURE_2D);
                     }
                     glTexImage2D(GL_TEXTURE_2D,
                         0,
@@ -118,12 +114,8 @@ public class Texture2D {
                 id = glGenTextures();
                 Textures.bind2D(id);
                 if (mode != null) {
-                    if (mode.minFilter != 0) {
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mode.minFilter);
-                    }
-                    if (mode.magFilter != 0) {
-                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mode.magFilter);
-                    }
+                    mode.glMinFilter(GL_TEXTURE_2D);
+                    mode.glMagFilter(GL_TEXTURE_2D);
                 }
                 glTexImage2D(GL_TEXTURE_2D,
                     0,

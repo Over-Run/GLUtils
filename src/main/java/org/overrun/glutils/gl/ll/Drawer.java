@@ -70,6 +70,7 @@ public class Drawer {
                         r * sin(d),
                         0);
                     break;
+                // The most using
                 case SOUTH:
                     glVertex3d(r * cos(d),
                         r * sin(d),

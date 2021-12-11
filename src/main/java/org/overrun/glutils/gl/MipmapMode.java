@@ -25,6 +25,10 @@
 
 package org.overrun.glutils.gl;
 
+import org.lwjgl.opengl.GL11;
+
+import static org.lwjgl.opengl.GL11.*;
+
 /**
  * @author squid233
  * @since 1.5.0
@@ -33,11 +37,69 @@ public class MipmapMode {
     public int minFilter;
     public int magFilter;
 
+    /**
+     * Construct a MipmapMode by param {@link GL11#GL_NEAREST NEAREST}.
+     *
+     * @return The mipmap mode.
+     */
+    public static MipmapMode glNearest() {
+        var mode = new MipmapMode();
+        return mode.minFilter(GL_NEAREST).magFilter(GL_NEAREST);
+    }
+
+    /**
+     * Construct a MipmapMode by param {@link GL11#GL_LINEAR LINEAR}.
+     *
+     * @return The mipmap mode.
+     */
+    public static MipmapMode glLinear() {
+        var mode = new MipmapMode();
+        return mode.minFilter(GL_LINEAR).magFilter(GL_LINEAR);
+    }
+
+    /**
+     * Call {@link GL11#glTexParameteri TexParameteri} to set
+     * {@link GL11#GL_TEXTURE_MIN_FILTER MIN_FILTER}.
+     *
+     * @param target The texture target.
+     * @since 2.0.0
+     */
+    public void glMinFilter(int target) {
+        if (minFilter != 0) {
+            glTexParameteri(target, GL_TEXTURE_MIN_FILTER, minFilter);
+        }
+    }
+
+    /**
+     * Call {@link GL11#glTexParameteri TexParameteri} to set
+     * {@link GL11#GL_TEXTURE_MAG_FILTER MAG_FILTER}.
+     *
+     * @param target The texture target.
+     * @since 2.0.0
+     */
+    public void glMagFilter(int target) {
+        if (magFilter != 0) {
+            glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilter);
+        }
+    }
+
+    /**
+     * Set {@link #minFilter}.
+     *
+     * @param minFilter minFilter to set
+     * @return this
+     */
     public MipmapMode minFilter(int minFilter) {
         this.minFilter = minFilter;
         return this;
     }
 
+    /**
+     * Set {@link #magFilter}.
+     *
+     * @param magFilter magFilter to set
+     * @return this
+     */
     public MipmapMode magFilter(int magFilter) {
         this.magFilter = magFilter;
         return this;

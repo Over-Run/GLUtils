@@ -25,13 +25,13 @@
 
 package org.overrun.glutils;
 
+import org.overrun.glutils.gl.MipmapMode;
 import org.overrun.glutils.gl.Textures;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.Math.*;
@@ -57,7 +57,7 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
     public int load(ClassLoader cl,
                     int defaultW,
                     int defaultH,
-                    int mode,
+                    MipmapMode mode,
                     String... images) {
         for (String img : images) {
             addImg(img);
@@ -71,8 +71,8 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
             } catch (IOException e) {
                 getLogger().catching(e);
                 bi = new BufferedImage(defaultW,
-                        defaultH,
-                        BufferedImage.TYPE_INT_ARGB);
+                    defaultH,
+                    BufferedImage.TYPE_INT_ARGB);
                 isNull = true;
             }
             imageMap.put(img, new AWTImage(isNull, bi));
@@ -88,14 +88,14 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
         int siz = (int) ceil(sqrt(images.length));
         width = height = max(siz * maxWper, siz * maxHper);
         atlasId = Textures.load(name + "-atlas",
-                width,
-                height,
-                new int[width * height],
-                mode);
+            width,
+            height,
+            new int[width * height],
+            mode);
         int u0 = 0, v0 = 0;
-        for (Map.Entry<String, AWTImage> e : imageMap.entrySet()) {
-            AWTImage awti = e.getValue();
-            BufferedImage bi = awti.img;
+        for (var e : imageMap.entrySet()) {
+            var awti = e.getValue();
+            var bi = awti.img;
             int w = bi.getWidth();
             int h = bi.getHeight();
             int[] pixels;
@@ -130,14 +130,14 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
                 }
             }
             glTexSubImage2D(GL_TEXTURE_2D,
-                    0,
-                    width - u0 - 1,
-                    height - v0 - 1,
-                    w,
-                    h,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
-                    pixels);
+                0,
+                width - u0 - 1,
+                height - v0 - 1,
+                w,
+                h,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                pixels);
             u0 += w;
             uvMap.put(e.getKey(), new UV(u0, v0, u0 + w, v0 + h));
         }

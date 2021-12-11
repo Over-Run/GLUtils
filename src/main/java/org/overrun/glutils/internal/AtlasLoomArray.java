@@ -27,6 +27,7 @@ package org.overrun.glutils.internal;
 
 import org.overrun.commonutils.Dimension;
 import org.overrun.glutils.AtlasLoom;
+import org.overrun.glutils.gl.MipmapMode;
 import org.overrun.glutils.gl.Textures;
 
 import static java.lang.Math.*;
@@ -58,10 +59,11 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
      * @param images images
      * @param dims dimensions
      * @return {@link #atlasId}
+     * @since 2.0.0
      */
     public int load(int defaultW,
                     int defaultH,
-                    int mode,
+                    MipmapMode mode,
                     int[][] images,
                     Dimension[] dims) {
         int maxWper = defaultW, maxHper = defaultH;
@@ -70,7 +72,7 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
             if (img == null) {
                 dims[i] = new Dimension(defaultW, defaultH);
             }
-            Dimension dim = dims[i];
+            var dim = dims[i];
             int w = dim.getWidth();
             int h = dim.getHeight();
             if (w > maxWper) {
@@ -90,7 +92,7 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
         int u0 = 0, v0 = 0;
         for (int i = 0; i < images.length; i++) {
             int[] img = images[i];
-            Dimension dim = dims[i];
+            var dim = dims[i];
             int w = dim.getWidth();
             int h = dim.getHeight();
             int[] pixels;
@@ -152,7 +154,7 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
     public int load(ClassLoader loader,
                     int defaultW,
                     int defaultH,
-                    int mode,
+                    MipmapMode mode,
                     String... images) {
         throw new UnsupportedOperationException();
     }

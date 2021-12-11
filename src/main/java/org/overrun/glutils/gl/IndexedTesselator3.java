@@ -23,10 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
-
-import org.overrun.glutils.gl.Tesselator3;
-import org.overrun.glutils.gl.Vbo;
+package org.overrun.glutils.gl;
 
 import static org.lwjgl.opengl.GL15.*;
 

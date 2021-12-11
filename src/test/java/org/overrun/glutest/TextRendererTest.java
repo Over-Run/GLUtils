@@ -37,8 +37,8 @@ import java.awt.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.game.GLStateManager.enableBlend;
-import static org.overrun.glutils.game.GLStateManager.enableTexture2D;
+import static org.overrun.glutils.gl.GLStateManager.enableBlend;
+import static org.overrun.glutils.gl.GLStateManager.enableTexture2D;
 import static org.overrun.glutils.game.GameEngine.window;
 
 /**

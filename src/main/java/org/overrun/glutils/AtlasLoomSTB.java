@@ -28,16 +28,14 @@ package org.overrun.glutils;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.overrun.glutils.StbImg.Cleaner;
+import org.overrun.glutils.gl.MipmapMode;
 import org.overrun.glutils.gl.Textures;
-
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.Map;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.*;
 import static org.overrun.glutils.GLUtils.getLogger;
+import static org.overrun.glutils.StbImg.defaultCleaner;
 
 /**
  * @author squid233
@@ -58,20 +56,20 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
     public int load(ClassLoader loader,
                     int defaultW,
                     int defaultH,
-                    int mode,
+                    MipmapMode mode,
                     String... images) {
         for (String img : images) {
             addImg(img);
         }
         int maxWper = defaultW, maxHper = defaultH;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer pw = stack.mallocInt(1);
-            IntBuffer ph = stack.mallocInt(1);
-            IntBuffer pc = stack.mallocInt(1);
+        try (var stack = MemoryStack.stackPush()) {
+            var pw = stack.mallocInt(1);
+            var ph = stack.mallocInt(1);
+            var pc = stack.mallocInt(1);
             for (String img : imageMap.keySet()) {
                 int w, h;
-                Cleaner recycler;
-                ByteBuffer bb = stbi_load(img, pw, ph, pc, STBI_rgb_alpha);
+                Cleaner cleaner;
+                var bb = stbi_load(img, pw, ph, pc, STBI_rgb_alpha);
                 boolean failed = false;
                 if (bb == null) {
                     failed = true;
@@ -82,15 +80,15 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                     bb = MemoryUtil.memAlloc(defaultW * defaultH * 4);
                     w = defaultW;
                     h = defaultH;
-                    recycler = MemoryUtil::memFree;
+                    cleaner = MemoryUtil::memFree;
                 } else {
                     pw.flip();
                     ph.flip();
                     w = pw.get();
                     h = ph.get();
-                    recycler = StbImg.defaultCleaner();
+                    cleaner = defaultCleaner();
                 }
-                imageMap.put(img, new StbImg(w, h, bb, recycler, failed));
+                imageMap.put(img, new StbImg(w, h, bb, cleaner, failed));
                 if (w > maxWper) {
                     maxWper = w;
                 }
@@ -102,13 +100,13 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
         int siz = (int) ceil(sqrt(images.length));
         width = height = max(siz * maxWper, siz * maxHper);
         atlasId = Textures.load(name + "-atlas",
-                width,
-                height,
-                new int[width * height],
-                mode);
+            width,
+            height,
+            new int[width * height],
+            mode);
         int u0 = 0, v0 = 0;
-        for (Map.Entry<String, StbImg> e : imageMap.entrySet()) {
-            StbImg si = e.getValue();
+        for (var e : imageMap.entrySet()) {
+            var si = e.getValue();
             int w = si.getWidth();
             int h = si.getHeight();
             int[] pixels;
@@ -143,14 +141,14 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                 }
             }
             glTexSubImage2D(GL_TEXTURE_2D,
-                    0,
-                    width - u0 - 1,
-                    height - v0 - 1,
-                    w,
-                    h,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
-                    pixels);
+                0,
+                width - u0 - 1,
+                height - v0 - 1,
+                w,
+                h,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                pixels);
             u0 += w;
             uvMap.put(e.getKey(), new UV(u0, v0, u0 + w, v0 + h));
         }

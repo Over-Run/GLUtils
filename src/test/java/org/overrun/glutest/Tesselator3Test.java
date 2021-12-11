@@ -27,7 +27,7 @@ package org.overrun.glutest;
 
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
-import org.overrun.glutils.IndexedTesselator3;
+import org.overrun.glutils.gl.IndexedTesselator3;
 import org.overrun.glutils.gl.MipmapMode;
 import org.overrun.glutils.gl.Tesselator3;
 import org.overrun.glutils.game.*;
@@ -35,8 +35,8 @@ import org.overrun.glutils.game.*;
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.game.GLStateManager.enableBlend;
-import static org.overrun.glutils.game.GLStateManager.enableDepthTest;
+import static org.overrun.glutils.gl.GLStateManager.enableBlend;
+import static org.overrun.glutils.gl.GLStateManager.enableDepthTest;
 import static org.overrun.glutils.game.GameEngine.*;
 import static org.overrun.glutils.math.Transform.*;
 
@@ -118,10 +118,10 @@ public class Tesselator3Test extends Game {
             .color(c0, c0, c0).vertex(0, 0, 0)
             .color(c1, c0, c0).vertex(1, 0, 0)
             .color(c1, c1, c0).vertex(1, 1, 0)
-            .color(c0, c1, c1).vertex(0, 1, -1)
-            .color(c0, c0, c1).vertex(0, 0, -1)
-            .color(c1, c0, c1).vertex(1, 0, -1)
-            .color(c1, c1, c1).vertex(1, 1, -1)
+            .color(c0, c1, c1).vertex(0, 1, 1)
+            .color(c0, c0, c1).vertex(0, 0, 1)
+            .color(c1, c0, c1).vertex(1, 0, 1)
+            .color(c1, c1, c1).vertex(1, 1, 1)
             .indices(
                 // south
                 0, 1, 2, 2, 3, 0,

@@ -25,6 +25,8 @@
 
 package org.overrun.glutils;
 
+import org.overrun.glutils.gl.MipmapMode;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,17 +95,18 @@ public abstract class AtlasLoom<T> {
     /**
      * load
      *
-     * @param loader class loader
+     * @param loader   class loader
      * @param defaultW default width
      * @param defaultH default height
-     * @param mode mipmap mode
-     * @param images images
+     * @param mode     mipmap mode
+     * @param images   images
      * @return {@link #atlasId}
+     * @since 2.0.0
      */
     public abstract int load(ClassLoader loader,
                              int defaultW,
                              int defaultH,
-                             int mode,
+                             MipmapMode mode,
                              String... images);
 
     /**

@@ -31,6 +31,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
+import org.overrun.glutils.gl.MipmapMode;
 import org.overrun.glutils.gl.Textures;
 import org.overrun.glutils.light.Material;
 import org.overrun.glutils.mesh.Mesh;
@@ -53,7 +54,6 @@ import java.util.jar.JarFile;
 
 import static java.util.Objects.requireNonNull;
 import static org.lwjgl.assimp.Assimp.*;
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
 
 /**
  * @author squid233
@@ -187,29 +187,56 @@ public class ObjLoader {
         String texPath = path.dataString();
         int texture = 0;
         if (!texPath.isEmpty()) {
-            texture = Textures.loadAWT(cl, filename + "/../" + texPath, GL_NEAREST);
+            texture = Textures.loadAWT(cl,
+                filename + "/../" + texPath,
+                MipmapMode.glNearest());
         }
         path.close();
 
         Vector4f ambient = Material.DEFAULT_COLOR;
-        int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, color);
+        int result = aiGetMaterialColor(aiMaterial,
+            AI_MATKEY_COLOR_AMBIENT,
+            aiTextureType_NONE,
+            0,
+            color);
         if (result == 0) {
-            ambient = new Vector4f(color.r(), color.g(), color.b(), color.a());
+            ambient = new Vector4f(color.r(),
+                color.g(),
+                color.b(),
+                color.a());
         }
 
         Vector4f diffuse = Material.DEFAULT_COLOR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, color);
+        result = aiGetMaterialColor(aiMaterial,
+            AI_MATKEY_COLOR_DIFFUSE,
+            aiTextureType_NONE,
+            0,
+            color);
         if (result == 0) {
-            diffuse = new Vector4f(color.r(), color.g(), color.b(), color.a());
+            diffuse = new Vector4f(color.r(),
+                color.g(),
+                color.b(),
+                color.a());
         }
 
         Vector4f specular = Material.DEFAULT_COLOR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, color);
+        result = aiGetMaterialColor(aiMaterial,
+            AI_MATKEY_COLOR_SPECULAR,
+            aiTextureType_NONE,
+            0,
+            color);
         if (result == 0) {
-            specular = new Vector4f(color.r(), color.g(), color.b(), color.a());
+            specular = new Vector4f(color.r(),
+                color.g(),
+                color.b(),
+                color.a());
         }
 
-        materials.add(new Material(ambient, diffuse, specular, texture, 1.0f));
+        materials.add(new Material(ambient,
+            diffuse,
+            specular,
+            texture,
+            1.0f));
     }
 
     private static void processVertices(AIMesh mesh,
