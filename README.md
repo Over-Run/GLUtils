@@ -12,7 +12,7 @@
 ![Maven Central](https://img.shields.io/maven-central/v/io.github.over-run/glutils)
 ![Sonatype Nexus (Releases)](https://img.shields.io/nexus/r/io.github.over-run/glutils?server=https%3A%2F%2Fs01.oss.sonatype.org)
 
-![Java Version](https://img.shields.io/badge/dynamic/yaml?label=Java%20Version&query=jobs.build.strategy.matrix.java%5B0%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2FOver-Run%2FGLUtils%2F1.x%2F.github%2Fworkflows%2Fgradle.yml)
+![Java Version](https://img.shields.io/badge/Java%20Version-8-red)
 
 ![GitHub Discussions](https://img.shields.io/github/discussions/Over-Run/GLUtils)
 
@@ -24,7 +24,7 @@ Utils for developing OpenGL for Java:coffee:.
 
 ```groovy
 dependencies {
-    implementation "io.github.over-run:glutils:1.5.0"
+    implementation "io.github.over-run:glutils:1.6.0"
 }
 ```
 
