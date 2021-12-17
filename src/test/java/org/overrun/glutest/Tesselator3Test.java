@@ -28,7 +28,7 @@ package org.overrun.glutest;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.overrun.glutils.gl.IndexedTesselator3;
-import org.overrun.glutils.gl.MipmapMode;
+import org.overrun.glutils.gl.TexParam;
 import org.overrun.glutils.gl.Tesselator3;
 import org.overrun.glutils.game.*;
 
@@ -90,7 +90,7 @@ public class Tesselator3Test extends Game {
             .vertexUV(0, 0, 0, 0, 0);
         sth = new Texture2D(ClassLoader.getSystemClassLoader(),
             "tstest.png",
-            new MipmapMode()
+            new TexParam()
                 .minFilter(GL_NEAREST)
                 .magFilter(GL_NEAREST));
     }

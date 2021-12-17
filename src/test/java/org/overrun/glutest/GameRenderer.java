@@ -30,7 +30,7 @@ import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.overrun.glutils.gl.GLProgram;
-import org.overrun.glutils.gl.MipmapMode;
+import org.overrun.glutils.gl.TexParam;
 import org.overrun.glutils.gl.Textures;
 import org.overrun.glutils.gui.DrawableText;
 import org.overrun.glutils.gui.FontTexture;
@@ -115,7 +115,7 @@ public class GameRenderer {
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2))
             .texture(Textures.loadAWT(cl,
                 "crossing.png",
-                MipmapMode.glNearest()));
+                TexParam.glNearest()));
         text = new Mesh3()
             .vertUsage(GL_DYNAMIC_DRAW)
             .vertIdx(0)

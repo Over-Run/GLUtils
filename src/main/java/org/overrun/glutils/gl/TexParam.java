@@ -33,27 +33,27 @@ import static org.lwjgl.opengl.GL11.*;
  * @author squid233
  * @since 1.5.0
  */
-public class MipmapMode {
+public class TexParam {
     public int minFilter;
     public int magFilter;
 
     /**
-     * Construct a MipmapMode by param {@link GL11#GL_NEAREST NEAREST}.
+     * Construct a TexParam by param {@link GL11#GL_NEAREST NEAREST}.
      *
      * @return The mipmap mode.
      */
-    public static MipmapMode glNearest() {
-        var mode = new MipmapMode();
+    public static TexParam glNearest() {
+        var mode = new TexParam();
         return mode.minFilter(GL_NEAREST).magFilter(GL_NEAREST);
     }
 
     /**
-     * Construct a MipmapMode by param {@link GL11#GL_LINEAR LINEAR}.
+     * Construct a TexParam by param {@link GL11#GL_LINEAR LINEAR}.
      *
      * @return The mipmap mode.
      */
-    public static MipmapMode glLinear() {
-        var mode = new MipmapMode();
+    public static TexParam glLinear() {
+        var mode = new TexParam();
         return mode.minFilter(GL_LINEAR).magFilter(GL_LINEAR);
     }
 
@@ -89,7 +89,7 @@ public class MipmapMode {
      * @param minFilter minFilter to set
      * @return this
      */
-    public MipmapMode minFilter(int minFilter) {
+    public TexParam minFilter(int minFilter) {
         this.minFilter = minFilter;
         return this;
     }
@@ -100,7 +100,7 @@ public class MipmapMode {
      * @param magFilter magFilter to set
      * @return this
      */
-    public MipmapMode magFilter(int magFilter) {
+    public TexParam magFilter(int magFilter) {
         this.magFilter = magFilter;
         return this;
     }

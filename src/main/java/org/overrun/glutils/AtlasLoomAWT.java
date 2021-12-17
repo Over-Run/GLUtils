@@ -25,7 +25,7 @@
 
 package org.overrun.glutils;
 
-import org.overrun.glutils.gl.MipmapMode;
+import org.overrun.glutils.gl.TexParam;
 import org.overrun.glutils.gl.Textures;
 
 import javax.imageio.ImageIO;
@@ -57,7 +57,7 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
     public int load(ClassLoader cl,
                     int defaultW,
                     int defaultH,
-                    MipmapMode mode,
+                    TexParam param,
                     String... images) {
         for (String img : images) {
             addImg(img);
@@ -91,7 +91,7 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
             width,
             height,
             new int[width * height],
-            mode);
+            param);
         int u0 = 0, v0 = 0;
         for (var e : imageMap.entrySet()) {
             var awti = e.getValue();

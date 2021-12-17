@@ -28,7 +28,7 @@ package org.overrun.glutils.game;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.overrun.glutils.AWTImage;
-import org.overrun.glutils.gl.MipmapMode;
+import org.overrun.glutils.gl.TexParam;
 import org.overrun.glutils.gl.Textures;
 
 import javax.imageio.ImageIO;
@@ -59,7 +59,7 @@ public class Texture2D {
 
     public Texture2D(final ClassLoader l,
                      final String filename,
-                     final MipmapMode mode) {
+                     final TexParam param) {
         try (InputStream is = requireNonNull(
             l.getResourceAsStream(filename)
         ); BufferedInputStream bis = new BufferedInputStream(is)) {
@@ -90,9 +90,9 @@ public class Texture2D {
                     height = py.get(0);
                     id = glGenTextures();
                     Textures.bind2D(id);
-                    if (mode != null) {
-                        mode.glMinFilter(GL_TEXTURE_2D);
-                        mode.glMagFilter(GL_TEXTURE_2D);
+                    if (param != null) {
+                        param.glMinFilter(GL_TEXTURE_2D);
+                        param.glMagFilter(GL_TEXTURE_2D);
                     }
                     glTexImage2D(GL_TEXTURE_2D,
                         0,
@@ -113,9 +113,9 @@ public class Texture2D {
                 height = img.getHeight();
                 id = glGenTextures();
                 Textures.bind2D(id);
-                if (mode != null) {
-                    mode.glMinFilter(GL_TEXTURE_2D);
-                    mode.glMagFilter(GL_TEXTURE_2D);
+                if (param != null) {
+                    param.glMinFilter(GL_TEXTURE_2D);
+                    param.glMagFilter(GL_TEXTURE_2D);
                 }
                 glTexImage2D(GL_TEXTURE_2D,
                     0,

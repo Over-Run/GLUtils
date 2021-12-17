@@ -31,7 +31,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
-import org.overrun.glutils.gl.MipmapMode;
+import org.overrun.glutils.gl.TexParam;
 import org.overrun.glutils.gl.Textures;
 import org.overrun.glutils.light.Material;
 import org.overrun.glutils.mesh.Mesh;
@@ -189,7 +189,7 @@ public class ObjLoader {
         if (!texPath.isEmpty()) {
             texture = Textures.loadAWT(cl,
                 filename + "/../" + texPath,
-                MipmapMode.glNearest());
+                TexParam.glNearest());
         }
         path.close();
 
