@@ -31,7 +31,7 @@ package org.overrun.glutils.timer;
  */
 public abstract class AbstractTimer implements ITimer {
     protected static final int MAX_TICKS_PER_UPDATE = 100;
-    protected final float tps;
+    public float tps;
     public int ticks;
     public float delta;
     public float timeScale = 1;
@@ -39,6 +39,16 @@ public abstract class AbstractTimer implements ITimer {
     public float passedTime = 0;
 
     public AbstractTimer(float tps) {
+        this.tps = tps;
+    }
+
+    @Override
+    public float getTps() {
+        return tps;
+    }
+
+    @Override
+    public void setTps(float tps) {
         this.tps = tps;
     }
 

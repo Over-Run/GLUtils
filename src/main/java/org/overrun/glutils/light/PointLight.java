@@ -70,9 +70,10 @@ public class PointLight {
      */
     public PointLight(PointLight pointLight) {
         this(new Vector3f(pointLight.getColor()),
-                new Vector3f(pointLight.getPosition()),
-                pointLight.getIntensity(),
-                pointLight.getAttenuation());
+            new Vector3f(pointLight.getPosition()),
+            pointLight.getIntensity(),
+            pointLight.getAttenuation()
+        );
     }
 
     /**

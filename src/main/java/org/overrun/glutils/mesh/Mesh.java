@@ -117,14 +117,14 @@ public class Mesh extends BaseMesh<Mesh> {
                           String texIdx,
                           int[] indices) {
         return of(program,
-                vertices,
-                vertIdx,
-                colors,
-                colorIdx,
-                indices)
-                .material(material)
-                .texIdx(texIdx)
-                .texCoords(texCoords);
+            vertices,
+            vertIdx,
+            colors,
+            colorIdx,
+            indices)
+            .material(material)
+            .texIdx(texIdx)
+            .texCoords(texCoords);
     }
 
     /**
@@ -151,14 +151,14 @@ public class Mesh extends BaseMesh<Mesh> {
                           String texIdx,
                           int[] indices) {
         return of(program,
-                vertices,
-                vertIdx,
-                colors,
-                colorIdx,
-                texCoords,
-                new Material(texture, 1),
-                texIdx,
-                indices);
+            vertices,
+            vertIdx,
+            colors,
+            colorIdx,
+            texCoords,
+            new Material(texture, 1),
+            texIdx,
+            indices);
     }
 
     /**
@@ -180,68 +180,68 @@ public class Mesh extends BaseMesh<Mesh> {
                           String colorIdx,
                           int[] indices) {
         return new Mesh()
-                .program(program)
-                .vertIdx(vertIdx)
-                .vertices(vertices)
-                .colorIdx(colorIdx)
-                .colors(colors)
-                .indices(indices);
+            .program(program)
+            .vertIdx(vertIdx)
+            .vertices(vertices)
+            .colorIdx(colorIdx)
+            .colors(colors)
+            .indices(indices);
     }
 
     @Override
     public void render(int primitive) {
-        glBindBuffer(GL_ARRAY_BUFFER, vertVbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices, vertUsage);
+        vertVbo.bind();
+        vertVbo.data(vertices, vertUsage);
         glEnableVertexAttribArray(vertIdx);
         glVertexAttribPointer(vertIdx,
-                vertDim,
-                GL_FLOAT,
-                vertNormalized,
-                vertStride,
-                0);
-        if (colorVbo != 0 && colorIdx >= -1) {
-            glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
-            glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
+            vertDim,
+            GL_FLOAT,
+            vertNormalized,
+            vertStride,
+            0);
+        if (colorVbo != null && colorIdx >= -1) {
+            colorVbo.bind();
+            colorVbo.data(colors, colorUsage);
             glEnableVertexAttribArray(colorIdx);
             glVertexAttribPointer(colorIdx,
-                    colorDim,
-                    GL_FLOAT,
-                    colorNormalized,
-                    colorStride,
-                    0);
+                colorDim,
+                GL_FLOAT,
+                colorNormalized,
+                colorStride,
+                0);
         }
-        if (texVbo != 0 && texIdx >= -1) {
-            glBindBuffer(GL_ARRAY_BUFFER, texVbo);
-            glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
+        if (texVbo != null && texIdx >= -1) {
+            texVbo.bind();
+            texVbo.data(texCoords, texUsage);
             glEnableVertexAttribArray(texIdx);
             glVertexAttribPointer(texIdx,
-                    texDim,
-                    GL_FLOAT,
-                    texNormalized,
-                    texStride,
-                    0);
+                texDim,
+                GL_FLOAT,
+                texNormalized,
+                texStride,
+                0);
         }
-        if (normalVbo != 0 && normalIdx >= -1) {
-            glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
-            glBufferData(GL_ARRAY_BUFFER, normalVert, normalUsage);
+        if (normalVbo != null && normalIdx >= -1) {
+            normalVbo.bind();
+            normalVbo.data(normalVert, normalUsage);
             glEnableVertexAttribArray(normalIdx);
             glVertexAttribPointer(normalIdx,
-                    normalDim,
-                    GL_FLOAT,
-                    normalNormalized,
-                    normalStride,
-                    0);
+                normalDim,
+                GL_FLOAT,
+                normalNormalized,
+                normalStride,
+                0);
         }
-        if (ibo != 0) {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, indexUsage);
+        if (ibo != null) {
+            ibo.bind();
+            ibo.data(indices, indexUsage);
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         if (material != null) {
             Textures.active(0);
             Textures.bind2D(getTexture());
         }
-        if (ibo == 0) {
+        if (ibo == null) {
             glDrawArrays(primitive, 0, getVertexCount());
         } else {
             glDrawElements(primitive, getVertexCount(), GL_UNSIGNED_INT, 0);
@@ -264,20 +264,20 @@ public class Mesh extends BaseMesh<Mesh> {
             glDisableVertexAttribArray(normalIdx);
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        if (vertVbo != 0) {
-            glDeleteBuffers(vertVbo);
+        if (vertVbo.check()) {
+            vertVbo.free();
         }
-        if (colorVbo != 0) {
-            glDeleteBuffers(colorVbo);
+        if (colorVbo != null && colorVbo.check()) {
+            colorVbo.free();
         }
-        if (texVbo != 0) {
-            glDeleteBuffers(texVbo);
+        if (texVbo != null && texVbo.check()) {
+            texVbo.free();
         }
-        if (normalVbo != 0) {
-            glDeleteBuffers(normalVbo);
+        if (normalVbo != null && normalVbo.check()) {
+            normalVbo.free();
         }
-        if (ibo != 0) {
-            glDeleteBuffers(ibo);
+        if (ibo != null && ibo.check()) {
+            ibo.free();
         }
     }
 

@@ -46,15 +46,15 @@ public class TextRenderer {
                                 FontTexture font,
                                 @Nullable ColorFunction fgColor,
                                 boolean bottomToTop) {
-        String[] ln = text.split("[\\r\\n]");
+        var ln = text.split("[\\r\\n]");
         int currLn = 0;
         int ftw = font.getWidth();
         int fth = font.getHeight();
         int gh = font.getGlyphHeight();
 
         Textures.bind2D(font.getTextureId());
-        for (String t : ln) {
-            char[] ca = t.toCharArray();
+        for (var t : ln) {
+            var ca = t.toCharArray();
             float startX = 0;
             int i = 0;
             glBegin(GL_QUADS);
@@ -71,7 +71,7 @@ public class TextRenderer {
                 float texStartY = (float) gsy / (float) fth;
                 float texEndX = ((float) gsx + (float) gw) / (float) ftw;
                 float texEndY = ((float) gsy + (float) gh) / (float) fth;
-                float[] colors = DEFAULT_COLOR;
+                var colors = DEFAULT_COLOR;
                 if (fgColor != null) {
                     colors = fgColor.apply(c, i);
                 }
@@ -105,7 +105,8 @@ public class TextRenderer {
         return font.getGlyphHeight();
     }
 
-    public static int getWidth(String text, FontTexture font) {
+    public static int getWidth(String text,
+                               FontTexture font) {
         int i = 0;
         for (char c : text.toCharArray()) {
             i += font.getGlyph(c).getWidth();

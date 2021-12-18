@@ -31,6 +31,8 @@ package org.overrun.glutils.util;
  */
 public interface IGLULogger {
     void warn(String msg);
+
     void error(String msg);
+
     void catching(Throwable t);
 }

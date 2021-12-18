@@ -1,6 +1,6 @@
 # GLUtils ![GitHub](https://img.shields.io/github/license/Over-run/GLUtils)
 
-[![Java CI with Gradle](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml/badge.svg?branch=2.x&event=push)](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml)  
+[![Java CI with Gradle](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml/badge.svg?branch=2.0-dev&event=push)](https://github.com/Over-Run/GLUtils/actions/workflows/gradle.yml)  
 ![GitHub all releases](https://img.shields.io/github/downloads/Over-Run/GLUtils/total)
 
 ![GitHub issues](https://img.shields.io/github/issues/Over-Run/GLUtils)

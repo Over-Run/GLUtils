@@ -30,9 +30,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.overrun.glutils.AWTImage;
 
-import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,7 +92,7 @@ public class Textures {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
         }
-        BufferedImage img = AWTImage.load(loader, name);
+        var img = AWTImage.load(loader, name);
         int id = glGenTextures();
         pushToGL(id,
             param,
@@ -120,10 +118,10 @@ public class Textures {
         }
         int w, h;
         ByteBuffer data;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer pw = stack.mallocInt(1);
-            IntBuffer ph = stack.mallocInt(1);
-            IntBuffer pc = stack.mallocInt(1);
+        try (var stack = MemoryStack.stackPush()) {
+            var pw = stack.mallocInt(1);
+            var ph = stack.mallocInt(1);
+            var pc = stack.mallocInt(1);
             data = stbi_load(name, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
                 throw new RuntimeException("Error loading image [" +
@@ -158,10 +156,10 @@ public class Textures {
         }
         int w, h;
         ByteBuffer data;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer pw = stack.mallocInt(1);
-            IntBuffer ph = stack.mallocInt(1);
-            IntBuffer pc = stack.mallocInt(1);
+        try (var stack = MemoryStack.stackPush()) {
+            var pw = stack.mallocInt(1);
+            var ph = stack.mallocInt(1);
+            var pc = stack.mallocInt(1);
             data = stbi_load_from_memory(buffer, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
                 throw new RuntimeException("Error loading image \"" +

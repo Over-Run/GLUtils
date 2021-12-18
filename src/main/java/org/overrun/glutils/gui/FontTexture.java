@@ -30,7 +30,7 @@ import org.overrun.glutils.gl.Textures;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -44,6 +44,8 @@ import static org.overrun.glutils.gl.TexParam.glNearest;
  * @since 1.1.0
  */
 public class FontTexture {
+    private static final Map<String, FontTexture> FONT_TEXTURES =
+        new HashMap<>();
     private final Font font;
     private final Charset charset;
     private final Map<Character, Glyph> charMap = new LinkedHashMap<>();
@@ -52,6 +54,110 @@ public class FontTexture {
     private int width;
     private int height;
     private int glyphHeight;
+
+    /**
+     * construct builder
+     *
+     * @param texName texture name
+     * @return font texture builder
+     * @since 2.0.0
+     */
+    public static Builder builder(String texName) {
+        return new Builder(texName);
+    }
+
+    /**
+     * Font texture builder
+     *
+     * @since 2.0.0
+     */
+    public static class Builder {
+        private final String texName;
+        private Font font;
+        private Charset charset;
+        private int padding = 0;
+
+        /**
+         * construct
+         *
+         * @param texName texture name
+         */
+        public Builder(String texName) {
+            this.texName = texName;
+        }
+
+        /**
+         * set font
+         *
+         * @param font font
+         * @return this
+         */
+        public Builder font(Font font) {
+            this.font = font;
+            return this;
+        }
+
+        /**
+         * set charset
+         *
+         * @param charset charset
+         * @return this
+         */
+        public Builder charset(Charset charset) {
+            this.charset = charset;
+            return this;
+        }
+
+        /**
+         * set charset
+         *
+         * @param charsetName charset name
+         * @return this
+         */
+        public Builder charset(String charsetName) {
+            this.charset = Charset.forName(charsetName);
+            return this;
+        }
+
+        /**
+         * set padding
+         *
+         * @param padding padding
+         * @return this
+         */
+        public Builder padding(int padding) {
+            this.padding = padding;
+            return this;
+        }
+
+        /**
+         * build font texture
+         *
+         * @return font texture
+         */
+        public FontTexture build() {
+            return build(true);
+        }
+
+        /**
+         * build font texture
+         *
+         * @param antialias enable antialias
+         * @return font texture
+         * @since 1.4.0
+         */
+        public FontTexture build(boolean antialias) {
+            if (FONT_TEXTURES.containsKey(texName)) {
+                return FONT_TEXTURES.get(texName);
+            }
+            FontTexture ft = new FontTexture(font,
+                charset,
+                padding,
+                antialias);
+            FONT_TEXTURES.put(texName, ft);
+            return ft;
+        }
+    }
 
     /**
      * construct and build texture
@@ -69,9 +175,9 @@ public class FontTexture {
     /**
      * construct and build texture
      *
-     * @param font    font
-     * @param charset charset
-     * @param padding char padding
+     * @param font      font
+     * @param charset   charset
+     * @param padding   char padding
      * @param antialias enable antialias
      * @since 1.4.0
      */
@@ -121,8 +227,8 @@ public class FontTexture {
     }
 
     private String getAllAvailableChars() {
-        CharsetEncoder ce = charset.newEncoder();
-        StringBuilder result = new StringBuilder();
+        var ce = charset.newEncoder();
+        var result = new StringBuilder();
         for (char c = 0; c < Character.MAX_VALUE; c++) {
             if (ce.canEncode(c)) {
                 result.append(c);
@@ -132,15 +238,15 @@ public class FontTexture {
     }
 
     private void buildTexture(boolean antialias) {
-        Object aa = antialias
+        var aa = antialias
             ? VALUE_ANTIALIAS_ON
             : VALUE_ANTIALIAS_OFF;
-        BufferedImage bi = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = bi.createGraphics();
+        var bi = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        var g = bi.createGraphics();
         g.setRenderingHint(KEY_ANTIALIASING, aa);
         g.setFont(font);
-        FontMetrics fm = g.getFontMetrics();
-        char[] allChars = getAllAvailableChars().toCharArray();
+        var fm = g.getFontMetrics();
+        var allChars = getAllAvailableChars().toCharArray();
         glyphHeight = fm.getHeight();
         int maxSize = Textures.getMaxSize();
         int startX = 0;
@@ -155,7 +261,7 @@ public class FontTexture {
                 startX = 0;
                 y += glyphHeight;
             }
-            Glyph glyph = new Glyph(startX, y, cw);
+            var glyph = new Glyph(startX, y, cw);
             charMap.put(c, glyph);
             startX += glyph.getWidth() + padding;
         }
@@ -181,10 +287,10 @@ public class FontTexture {
         }
         g.dispose();
         textureId = Textures.load(font.toString() + charset + padding,
-                width,
-                height,
-                getRGB(bi),
-                antialias ? glLinear() : glNearest());
+            width,
+            height,
+            getRGB(bi),
+            antialias ? glLinear() : glNearest());
     }
 
     /**

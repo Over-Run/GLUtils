@@ -41,8 +41,8 @@ public class GLFWTimer extends AbstractTimer {
 
     @Override
     public void advanceTime() {
-        double now = glfwGetTime();
-        double passedS = now - lastTime;
+        var now = glfwGetTime();
+        var passedS = now - lastTime;
         lastTime = now;
         if (passedS < 0.0) {
             passedS = 0.0;

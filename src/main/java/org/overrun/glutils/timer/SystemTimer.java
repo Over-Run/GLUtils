@@ -40,8 +40,8 @@ public class SystemTimer extends AbstractTimer {
 
     @Override
     public void advanceTime() {
-        long now = System.nanoTime();
-        long passedNs = now - lastTime;
+        var now = System.nanoTime();
+        var passedNs = now - lastTime;
         lastTime = now;
         if (passedNs < 0L) {
             passedNs = 0L;

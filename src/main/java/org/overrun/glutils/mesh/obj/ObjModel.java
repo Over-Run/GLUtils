@@ -28,24 +28,26 @@ package org.overrun.glutils.mesh.obj;
 import org.overrun.glutils.IDrawable;
 import org.overrun.glutils.mesh.IMesh;
 
+import java.util.function.Consumer;
+
 /**
  * @author squid233
  * @since 1.2.0
  */
 public class ObjModel<T extends IMesh> implements IDrawable {
     private final T[] meshes;
-    private MeshProcessor<T> processor;
+    private Consumer<T> consumer;
 
     /**
      * construct
      *
-     * @param meshes    meshes
-     * @param processor mesh processor
+     * @param meshes   meshes
+     * @param consumer mesh consumer
      */
     public ObjModel(T[] meshes,
-                    MeshProcessor<T> processor) {
+                    Consumer<T> consumer) {
         this.meshes = meshes;
-        this.processor = processor;
+        this.consumer = consumer;
     }
 
     /**
@@ -58,13 +60,13 @@ public class ObjModel<T extends IMesh> implements IDrawable {
     }
 
     /**
-     * Set mesh processor
+     * Set mesh consumer
      *
-     * @param processor pre render
+     * @param consumer pre render
      * @since 2.0.0
      */
-    public void setProcessor(MeshProcessor<T> processor) {
-        this.processor = processor;
+    public void setConsumer(Consumer<T> consumer) {
+        this.consumer = consumer;
     }
 
     /**
@@ -77,30 +79,11 @@ public class ObjModel<T extends IMesh> implements IDrawable {
         return meshes;
     }
 
-    /**
-     * Processing mesh
-     * <p>
-     * function: {@link MeshProcessor#process process}
-     * </p>
-     *
-     * @author squid233
-     * @since 2.0.0
-     */
-    @FunctionalInterface
-    public interface MeshProcessor<T extends IMesh> {
-        /**
-         * Set uniforms before render.
-         *
-         * @param mesh Mesh to set
-         */
-        void process(T mesh);
-    }
-
     @Override
     public void render() {
         for (T mesh : meshes) {
-            if (processor != null) {
-                processor.process(mesh);
+            if (consumer != null) {
+                consumer.accept(mesh);
             }
             mesh.render();
         }

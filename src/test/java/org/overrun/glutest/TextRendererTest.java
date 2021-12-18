@@ -25,21 +25,20 @@
 
 package org.overrun.glutest;
 
-import org.overrun.glutils.gui.FontTexture;
-import org.overrun.glutils.gui.FontTextures;
 import org.overrun.glutils.game.Game;
 import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
 import org.overrun.glutils.gl.ll.TextRenderer;
+import org.overrun.glutils.gui.FontTexture;
 
 import java.awt.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.overrun.glutils.game.GameEngine.window;
 import static org.overrun.glutils.gl.GLStateManager.enableBlend;
 import static org.overrun.glutils.gl.GLStateManager.enableTexture2D;
-import static org.overrun.glutils.game.GameEngine.window;
 
 /**
  * @author squid233
@@ -55,7 +54,7 @@ public class TextRendererTest extends Game {
         enableTexture2D();
         enableBlend();
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        unifont = FontTextures.builder("unifont")
+        unifont = FontTexture.builder("unifont")
             .font(Font.decode("Unifont"))
             .charset(UTF_8)
             .padding(2)

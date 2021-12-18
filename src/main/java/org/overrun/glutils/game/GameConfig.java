@@ -62,7 +62,7 @@ public class GameConfig {
     public boolean hintVisible = false;
     public boolean useStb = false;
     /**
-     * Set ticks per seconds.
+     * Option to set ticks per seconds.
      */
     public float tps = 20;
     /**

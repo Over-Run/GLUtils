@@ -88,7 +88,7 @@ public enum Direction {
      */
     @Nullable
     public static Direction getByVector(Vector3ic vector) {
-        for (Direction c : values()) {
+        for (var c : values()) {
             if (c.toVector().equals(vector.x(), vector.y(), vector.z())) {
                 return c;
             }

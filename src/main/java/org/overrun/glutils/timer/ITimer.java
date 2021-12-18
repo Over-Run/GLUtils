@@ -32,6 +32,10 @@ package org.overrun.glutils.timer;
 public interface ITimer {
     void advanceTime();
 
+    float getTps();
+
+    void setTps(float tps);
+
     int getTicks();
 
     /**

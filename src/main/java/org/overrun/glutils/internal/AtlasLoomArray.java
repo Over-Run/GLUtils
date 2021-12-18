@@ -68,7 +68,7 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
                     Dimension[] dims) {
         int maxWper = defaultW, maxHper = defaultH;
         for (int i = 0; i < images.length; i++) {
-            int[] img = images[i];
+            var img = images[i];
             if (img == null) {
                 dims[i] = new Dimension(defaultW, defaultH);
             }
@@ -91,7 +91,7 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
             param);
         int u0 = 0, v0 = 0;
         for (int i = 0; i < images.length; i++) {
-            int[] img = images[i];
+            var img = images[i];
             var dim = dims[i];
             int w = dim.getWidth();
             int h = dim.getHeight();

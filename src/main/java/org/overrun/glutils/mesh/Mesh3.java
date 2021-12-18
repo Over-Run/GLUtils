@@ -26,6 +26,7 @@
 package org.overrun.glutils.mesh;
 
 import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.gl.Vao;
 
 import static org.lwjgl.opengl.GL30.*;
 
@@ -37,7 +38,7 @@ import static org.lwjgl.opengl.GL30.*;
  * @since 0.2.0
  */
 public class Mesh3 extends BaseMesh<Mesh3> {
-    private final int vao;
+    private final Vao vao = new Vao();
     private int vertIdx;
     private int colorIdx = -1;
     private int texIdx = -1;
@@ -47,8 +48,7 @@ public class Mesh3 extends BaseMesh<Mesh3> {
      * construct
      */
     public Mesh3() {
-        vao = glGenVertexArrays();
-        glBindVertexArray(vao);
+        bindVao();
     }
 
     /**
@@ -98,7 +98,7 @@ public class Mesh3 extends BaseMesh<Mesh3> {
      * @since 1.1.0
      */
     public Mesh3 bindVao() {
-        glBindVertexArray(vao);
+        vao.bind();
         return this;
     }
 
@@ -109,22 +109,22 @@ public class Mesh3 extends BaseMesh<Mesh3> {
      * @since 1.1.0
      */
     public Mesh3 unbindVao() {
-        glBindVertexArray(0);
+        vao.unbind();
         return this;
     }
 
     @Override
     public Mesh3 vertices(float[] vertices) {
         if (vertIdx > -1) {
-            glBindBuffer(GL_ARRAY_BUFFER, vertVbo);
-            glBufferData(GL_ARRAY_BUFFER, vertices, vertUsage);
+            vertVbo.bind();
+            vertVbo.data(vertices, vertUsage);
             glEnableVertexAttribArray(vertIdx);
             glVertexAttribPointer(vertIdx,
-                    vertDim,
-                    GL_FLOAT,
-                    vertNormalized,
-                    vertStride,
-                    0);
+                vertDim,
+                GL_FLOAT,
+                vertNormalized,
+                vertStride,
+                0);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
         return super.vertices(vertices);
@@ -134,15 +134,15 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     public Mesh3 colors(float[] colors) {
         super.colors(colors);
         if (colorIdx > -1) {
-            glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
-            glBufferData(GL_ARRAY_BUFFER, colors, colorUsage);
+            colorVbo.bind();
+            colorVbo.data(colors, colorUsage);
             glEnableVertexAttribArray(colorIdx);
             glVertexAttribPointer(colorIdx,
-                    colorDim,
-                    GL_FLOAT,
-                    colorNormalized,
-                    colorStride,
-                    0);
+                colorDim,
+                GL_FLOAT,
+                colorNormalized,
+                colorStride,
+                0);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
         return this;
@@ -152,15 +152,15 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     public Mesh3 texCoords(float[] texCoords) {
         super.texCoords(texCoords);
         if (texIdx > -1) {
-            glBindBuffer(GL_ARRAY_BUFFER, texVbo);
-            glBufferData(GL_ARRAY_BUFFER, texCoords, texUsage);
+            texVbo.bind();
+            texVbo.data(texCoords, texUsage);
             glEnableVertexAttribArray(texIdx);
             glVertexAttribPointer(texIdx,
-                    texDim,
-                    GL_FLOAT,
-                    texNormalized,
-                    texStride,
-                    0);
+                texDim,
+                GL_FLOAT,
+                texNormalized,
+                texStride,
+                0);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
         return this;
@@ -170,15 +170,15 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     public Mesh3 normalVert(float[] normalVert) {
         super.normalVert(normalVert);
         if (normalIdx > -1) {
-            glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
-            glBufferData(GL_ARRAY_BUFFER, normalVert, normalUsage);
+            normalVbo.bind();
+            normalVbo.data(normalVert, normalUsage);
             glEnableVertexAttribArray(normalIdx);
             glVertexAttribPointer(normalIdx,
-                    normalDim,
-                    GL_FLOAT,
-                    normalNormalized,
-                    normalStride,
-                    0);
+                normalDim,
+                GL_FLOAT,
+                normalNormalized,
+                normalStride,
+                0);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
         return this;
@@ -187,8 +187,8 @@ public class Mesh3 extends BaseMesh<Mesh3> {
     @Override
     public Mesh3 indices(int[] indices) {
         super.indices(indices);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, indexUsage);
+        ibo.bind();
+        ibo.data(indices, indexUsage);
         return this;
     }
 
@@ -198,13 +198,13 @@ public class Mesh3 extends BaseMesh<Mesh3> {
             Textures.active(0);
             Textures.bind2D(getTexture());
         }
-        glBindVertexArray(vao);
-        if (ibo == 0) {
+        bindVao();
+        if (ibo == null) {
             glDrawArrays(primitive, 0, getVertexCount());
         } else {
             glDrawElements(primitive, getVertexCount(), GL_UNSIGNED_INT, 0);
         }
-        glBindVertexArray(0);
+        unbindVao();
         Textures.unbind2D();
     }
 
@@ -213,7 +213,7 @@ public class Mesh3 extends BaseMesh<Mesh3> {
      *
      * @return {@link #vao}
      */
-    public int getVao() {
+    public Vao getVao() {
         return vao;
     }
 
@@ -239,15 +239,15 @@ public class Mesh3 extends BaseMesh<Mesh3> {
                            int texIdx,
                            int[] indices) {
         return new Mesh3()
-                .vertIdx(vertIdx)
-                .vertices(vertices)
-                .colorIdx(colorIdx)
-                .colors(colors)
-                .texture(texture)
-                .texIdx(texIdx)
-                .texCoords(texCoords)
-                .indices(indices)
-                .unbindVao();
+            .vertIdx(vertIdx)
+            .vertices(vertices)
+            .colorIdx(colorIdx)
+            .colors(colors)
+            .texture(texture)
+            .texIdx(texIdx)
+            .texCoords(texCoords)
+            .indices(indices)
+            .unbindVao();
     }
 
     /**
@@ -267,12 +267,12 @@ public class Mesh3 extends BaseMesh<Mesh3> {
                            int colorIdx,
                            int[] indices) {
         return new Mesh3()
-                .vertIdx(vertIdx)
-                .vertices(vertices)
-                .colorIdx(colorIdx)
-                .colors(colors)
-                .indices(indices)
-                .unbindVao();
+            .vertIdx(vertIdx)
+            .vertices(vertices)
+            .colorIdx(colorIdx)
+            .colors(colors)
+            .indices(indices)
+            .unbindVao();
     }
 
     @Override
@@ -288,23 +288,23 @@ public class Mesh3 extends BaseMesh<Mesh3> {
             glDisableVertexAttribArray(normalIdx);
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        if (vertVbo != 0) {
-            glDeleteBuffers(vertVbo);
+        if (vertVbo.check()) {
+            vertVbo.free();
         }
-        if (colorVbo != 0) {
-            glDeleteBuffers(colorVbo);
+        if (colorVbo != null && colorVbo.check()) {
+            colorVbo.free();
         }
-        if (texVbo != 0) {
-            glDeleteBuffers(texVbo);
+        if (texVbo != null && texVbo.check()) {
+            texVbo.free();
         }
-        if (normalVbo != 0) {
-            glDeleteBuffers(normalVbo);
+        if (normalVbo != null && normalVbo.check()) {
+            normalVbo.free();
         }
-        if (ibo != 0) {
-            glDeleteBuffers(ibo);
+        if (ibo != null && ibo.check()) {
+            ibo.free();
         }
-        glBindVertexArray(0);
-        glDeleteVertexArrays(vao);
+        vao.unbind();
+        vao.free();
     }
 
     @Override

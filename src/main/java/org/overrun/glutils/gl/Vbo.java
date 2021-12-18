@@ -74,6 +74,33 @@ public class Vbo {
     }
 
     /**
+     * Check if this buffer valid.
+     *
+     * @param throwing Throw exception when failed.
+     * @return If the {@link #id} valid.
+     * @since 2.0.0
+     */
+    public boolean check(final boolean throwing) {
+        if (glIsBuffer(id)) {
+            return true;
+        }
+        if (throwing) {
+            throw new RuntimeException("Check buffer");
+        }
+        return false;
+    }
+
+    /**
+     * Check if this buffer valid.
+     *
+     * @return If the {@link #id} valid.
+     * @since 2.0.0
+     */
+    public boolean check() {
+        return check(false);
+    }
+
+    /**
      * Bind buffer.
      */
     public void bind() {

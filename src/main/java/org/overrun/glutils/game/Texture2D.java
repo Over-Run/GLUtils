@@ -32,14 +32,9 @@ import org.overrun.glutils.gl.TexParam;
 import org.overrun.glutils.gl.Textures;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 import static org.lwjgl.opengl.GL11.*;
@@ -60,26 +55,26 @@ public class Texture2D {
     public Texture2D(final ClassLoader l,
                      final String filename,
                      final TexParam param) {
-        try (InputStream is = requireNonNull(
+        try (var is = requireNonNull(
             l.getResourceAsStream(filename)
-        ); BufferedInputStream bis = new BufferedInputStream(is)) {
+        ); var bis = new BufferedInputStream(is)) {
             if (app != null && app.config.useStb) {
-                List<Byte> bytes = new ArrayList<>();
+                var bytes = new ArrayList<Byte>();
                 int read;
                 while ((read = bis.read()) != -1) {
                     bytes.add((byte) read);
                 }
-                byte[] arr = new byte[bytes.size()];
+                var arr = new byte[bytes.size()];
                 for (int i = 0; i < arr.length; i++) {
                     arr[i] = bytes.get(i);
                 }
-                ByteBuffer bb = MemoryUtil.memAlloc(arr.length).put(arr);
+                var bb = MemoryUtil.memAlloc(arr.length).put(arr);
                 bb.flip();
-                try (MemoryStack stack = MemoryStack.stackPush()) {
-                    IntBuffer px = stack.mallocInt(1);
-                    IntBuffer py = stack.mallocInt(1);
-                    IntBuffer pc = stack.mallocInt(1);
-                    ByteBuffer img = stbi_load_from_memory(bb, px, py, pc, STBI_rgb_alpha);
+                try (var stack = MemoryStack.stackPush()) {
+                    var px = stack.mallocInt(1);
+                    var py = stack.mallocInt(1);
+                    var pc = stack.mallocInt(1);
+                    var img = stbi_load_from_memory(bb, px, py, pc, STBI_rgb_alpha);
                     if (img == null) {
                         throw new IOException("Error loading image [" +
                             filename +
@@ -108,7 +103,7 @@ public class Texture2D {
                     stbi_image_free(img);
                 }
             } else {
-                BufferedImage img = ImageIO.read(bis);
+                var img = ImageIO.read(bis);
                 width = img.getWidth();
                 height = img.getHeight();
                 id = glGenTextures();

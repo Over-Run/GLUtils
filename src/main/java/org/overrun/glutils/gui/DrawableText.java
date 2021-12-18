@@ -29,8 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
 
-import java.util.function.BiFunction;
-
 /**
  * vertex dimensions are 3
  *
@@ -64,14 +62,14 @@ public class DrawableText {
      * @param text     text for rendering
      * @param bgColor  Background color function.
      * @param fgColor  Foreground color function.
-     * @param consumer Consumer to set mesh.
+     * @param setter MeshSetter to set mesh.
      */
     public static void build(final FontTexture texture,
                              final String text,
                              final ColorFunction bgColor,
                              final ColorFunction fgColor,
-                             final Consumer consumer) {
-        build(texture, text, 3, bgColor, fgColor, consumer);
+                             final MeshSetter setter) {
+        build(texture, text, 3, bgColor, fgColor, setter);
     }
 
     /**
@@ -82,20 +80,20 @@ public class DrawableText {
      * @param colorDim Color dimensions.
      * @param bgColor  Background color function.
      * @param fgColor  Foreground color function.
-     * @param consumer Consumer to set mesh.
+     * @param setter MeshSetter to set mesh.
      */
     public static void build(final FontTexture font,
                              final String text,
                              final int colorDim,
                              @Nullable final ColorFunction bgColor,
                              @Nullable final ColorFunction fgColor,
-                             final Consumer consumer) {
-        FloatArray vertices = new FloatArray();
-        FloatArray colors = new FloatArray();
-        FloatArray tex = new FloatArray();
-        IntArray indices = new IntArray();
-        FloatArray bcolors = new FloatArray();
-        char[] ca = text.toCharArray();
+                             final MeshSetter setter) {
+        var vertices = new FloatArray();
+        var colors = new FloatArray();
+        var tex = new FloatArray();
+        var indices = new IntArray();
+        var bcolors = new FloatArray();
+        var ca = text.toCharArray();
         float startY = 0;
         int i = 0;
         int numChar = 0;
@@ -122,7 +120,7 @@ public class DrawableText {
                 numChar = 0;
                 continue;
             }
-            FontTexture.Glyph glyph = font.getGlyph(c);
+            var glyph = font.getGlyph(c);
             int gw = glyph.getWidth();
             int gsx = glyph.getStartX();
             int gsy = glyph.getStartY();
@@ -172,23 +170,22 @@ public class DrawableText {
             i2 += 4;
             i3 += 4;
         }
-        float[] vtf = vertices.toFArray();
-        int[] idi = indices.toIArray();
-        consumer.accept(vtf,
+        setter.set(vertices.toFArray(),
             colors.toFArray(),
             tex.toFArray(),
             font.getTextureId(),
-            idi,
+            indices.toIArray(),
             bcolors.toFArray());
     }
 
     /**
-     * Consumer for setting mesh
+     * Setting mesh
      *
      * @author squid233
+     * @since 2.0.0
      */
     @FunctionalInterface
-    public interface Consumer {
+    public interface MeshSetter {
         /**
          * set mesh
          *
@@ -198,14 +195,14 @@ public class DrawableText {
          * @param tex      texture id
          * @param indices  indices
          * @param bcolors  background colors
-         * @since 1.2.0
+         * @since 2.0.0
          */
-        void accept(float[] vertices,
-                    float[] colors,
-                    float[] texCoord,
-                    int tex,
-                    int[] indices,
-                    float[] bcolors);
+        void set(float[] vertices,
+                 float[] colors,
+                 float[] texCoord,
+                 int tex,
+                 int[] indices,
+                 float[] bcolors);
     }
 
     /**
@@ -214,8 +211,7 @@ public class DrawableText {
      * @author squid233
      */
     @FunctionalInterface
-    public interface ColorFunction
-        extends BiFunction<Character, Integer, float[]> {
+    public interface ColorFunction {
         /**
          * Add return value to color list
          *
@@ -230,11 +226,5 @@ public class DrawableText {
          */
         float[] apply(char c,
                       int index);
-
-        @Override
-        default float[] apply(Character c,
-                              Integer index) {
-            return apply(c.charValue(), index.intValue());
-        }
     }
 }

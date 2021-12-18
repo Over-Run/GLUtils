@@ -30,7 +30,6 @@ import org.overrun.glutils.CompileException;
 import org.overrun.glutils.GLUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -142,10 +141,10 @@ public class MeshLoader {
      * @since 1.0.0
      */
     public static MapStr2Str def(MeshMacro... macros) {
-        MapStr2Str map = new MapStr2Str();
+        var map = new MapStr2Str();
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < macros.length; i++) {
-            MeshMacro macro = macros[i];
+            var macro = macros[i];
             map.put(macro.name, macro.value);
         }
         return map;
@@ -162,21 +161,21 @@ public class MeshLoader {
     public static MeshFile loadf(ClassLoader cl,
                                  String file,
                                  MeshMacro... macros) {
-        try (InputStream is = cl.getResourceAsStream(file);
-             Scanner sc = new Scanner(Objects.requireNonNull(is),
+        try (var is = cl.getResourceAsStream(file);
+             var sc = new Scanner(Objects.requireNonNull(is),
                  UTF_8.name())) {
-            MeshFile mf = new MeshFile();
-            Set<String> definedMacros = new HashSet<>();
-            MapStr2Str mmap = def(macros);
+            var mf = new MeshFile();
+            var definedMacros = new HashSet<String>();
+            var mmap = def(macros);
             int currLn = 0;
             while (sc.hasNextLine()) {
                 ++currLn;
-                String ln = sc.nextLine().trim();
+                var ln = sc.nextLine().trim();
                 // ignore comment
                 if (ln.startsWith("#") || ln.startsWith("//")) {
                     continue;
                 }
-                String[] arr = ln.split("\\s+");
+                var arr = ln.split("\\s+");
                 // ignore empty line
                 if (arr.length == 0) {
                     continue;
@@ -194,8 +193,8 @@ public class MeshLoader {
                             except("Invalid identifier",
                                 currLn);
                         }
-                        String[] arr2 = ln.split("\\s+", 3);
-                        String macro = arr2[1];
+                        var arr2 = ln.split("\\s+", 3);
+                        var macro = arr2[1];
                         if (!KEYWORDS.contains(macro)) {
                             definedMacros.add(macro);
                         }
@@ -210,7 +209,7 @@ public class MeshLoader {
                             except("Required 1 param but found " + (arr.length - 2),
                                 currLn);
                         }
-                        String macro = arr[1];
+                        var macro = arr[1];
                         // check whether defined
                         if (!definedMacros.contains(macro)) {
                             except("Macro " + macro + " not defined.",
@@ -231,20 +230,20 @@ public class MeshLoader {
                             except("Invalid identifier",
                                 currLn);
                         }
-                        String[] arr2 = ln.split("\\s+", 4);
-                        String macro = arr2[1];
+                        var arr2 = ln.split("\\s+", 4);
+                        var macro = arr2[1];
                         if (!KEYWORDS.contains(macro)) {
                             definedMacros.add(macro);
                         }
-                        String p2 = arr[2];
+                        var p2 = arr[2];
                         int count = 0;
                         try {
                             count = parseInt(p2);
                         } catch (NumberFormatException e) {
                             except(p2 + " isn't a integer", currLn);
                         }
-                        String p3 = arr2[3];
-                        StringBuilder result = new StringBuilder(p3);
+                        var p3 = arr2[3];
+                        var result = new StringBuilder(p3);
                         for (int i = 1; i < count; i++) {
                             result.append(" ").append(p3);
                         }
@@ -261,7 +260,7 @@ public class MeshLoader {
                         }
                         arr = replaceByMacro(arr, definedMacros, 2, mmap);
                         // set vertDim
-                        String p2 = arr[2];
+                        var p2 = arr[2];
                         try {
                             switch (arr[1]) {
                                 case OPT_VERT_DIM:
@@ -372,7 +371,7 @@ public class MeshLoader {
            Consumer<T> pre,
            Class<T> clazz,
            MeshMacro... macros) {
-        MeshFile mf = loadf(cl, file, macros);
+        var mf = loadf(cl, file, macros);
         T mesh = GLUtils.newClass(clazz);
         if (pre != null) {
             pre.accept(mesh);

@@ -38,7 +38,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.gl.GLStateManager.enableBlend;
 import static org.overrun.glutils.gl.GLStateManager.enableDepthTest;
 import static org.overrun.glutils.game.GameEngine.*;
-import static org.overrun.glutils.math.Transform.*;
+import static org.overrun.glutils.util.math.Transform.*;
 
 /**
  * @author squid233

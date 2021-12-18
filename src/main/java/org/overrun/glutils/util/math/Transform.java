@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils.math;
+package org.overrun.glutils.util.math;
 
 import org.joml.Matrix4f;
 import org.overrun.glutils.wnd.SizedObject;

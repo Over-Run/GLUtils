@@ -25,6 +25,7 @@
 
 package org.overrun.glutils.mesh;
 
+import org.overrun.glutils.gl.Vbo;
 import org.overrun.glutils.light.Material;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -37,25 +38,25 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     /**
      * vertex vbo
      */
-    protected final int vertVbo;
+    protected final Vbo vertVbo = new Vbo(GL_ARRAY_BUFFER);
     /**
      * color vbo
      */
-    protected int colorVbo;
+    protected Vbo colorVbo;
     /**
      * texture vbo
      */
-    protected int texVbo;
+    protected Vbo texVbo;
     /**
      * normal vbo
      *
      * @since 1.1.0
      */
-    protected int normalVbo;
+    protected Vbo normalVbo;
     /**
      * ibo
      */
-    protected int ibo;
+    protected Vbo ibo;
     /**
      * vertices
      */
@@ -166,13 +167,6 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     protected int vertexCount;
 
     /**
-     * construct
-     */
-    public BaseMesh() {
-        vertVbo = glGenBuffers();
-    }
-
-    /**
      * get this
      *
      * @return this
@@ -242,8 +236,8 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      */
     public T colors(float[] colors) {
         this.colors = colors;
-        if (colorVbo == 0) {
-            colorVbo = glGenBuffers();
+        if (colorVbo == null) {
+            colorVbo = new Vbo(GL_ARRAY_BUFFER);
         }
         return getThis();
     }
@@ -327,8 +321,8 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      */
     public T texCoords(float[] texCoords) {
         this.texCoords = texCoords;
-        if (texVbo == 0) {
-            texVbo = glGenBuffers();
+        if (texVbo == null) {
+            texVbo = new Vbo(GL_ARRAY_BUFFER);
         }
         return getThis();
     }
@@ -386,8 +380,8 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      */
     public T normalVert(float[] normalVert) {
         this.normalVert = normalVert;
-        if (normalVbo == 0) {
-            normalVbo = glGenBuffers();
+        if (normalVbo == null) {
+            normalVbo = new Vbo(GL_ARRAY_BUFFER);
         }
         return getThis();
     }
@@ -449,8 +443,8 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     public T indices(int[] indices) {
         this.indices = indices;
         vertexCount = indices.length;
-        if (ibo == 0) {
-            ibo = glGenBuffers();
+        if (ibo == null) {
+            ibo = new Vbo(GL_ELEMENT_ARRAY_BUFFER);
         }
         return getThis();
     }
@@ -482,7 +476,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      *
      * @return vertex vbo
      */
-    public int getVertVbo() {
+    public Vbo getVertVbo() {
         return vertVbo;
     }
 
@@ -536,7 +530,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      *
      * @return color vbo
      */
-    public int getColorVbo() {
+    public Vbo getColorVbo() {
         return colorVbo;
     }
 
@@ -590,7 +584,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      *
      * @return texture vbo
      */
-    public int getTexVbo() {
+    public Vbo getTexVbo() {
         return texVbo;
     }
 
@@ -644,7 +638,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      *
      * @return ibo
      */
-    public int getIbo() {
+    public Vbo getIbo() {
         return ibo;
     }
 
@@ -672,7 +666,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      * @return normal vbo
      * @since 1.1.0
      */
-    public int getNormalVbo() {
+    public Vbo getNormalVbo() {
         return normalVbo;
     }
 

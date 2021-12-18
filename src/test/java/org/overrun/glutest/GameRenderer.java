@@ -34,7 +34,6 @@ import org.overrun.glutils.gl.TexParam;
 import org.overrun.glutils.gl.Textures;
 import org.overrun.glutils.gui.DrawableText;
 import org.overrun.glutils.gui.FontTexture;
-import org.overrun.glutils.gui.FontTextures;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.PointLight;
 import org.overrun.glutils.mesh.Mesh3;
@@ -49,7 +48,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.overrun.glutils.LinesReader.lines;
 import static org.overrun.glutils.game.GameEngine.*;
 import static org.overrun.glutils.gl.GLStateManager.*;
-import static org.overrun.glutils.math.Transform.*;
+import static org.overrun.glutils.util.math.Transform.*;
 
 /**
  * @author squid233
@@ -76,7 +75,7 @@ public class GameRenderer {
     public static final ClassLoader cl = GameRenderer.class.getClassLoader();
     public final Matrix4f proj = new Matrix4f();
     public final Matrix4fStack modelv = new Matrix4fStack(32);
-    public final FontTexture utf8 = FontTextures.builder("Consolas-UTF_8-2")
+    public final FontTexture utf8 = FontTexture.builder("Consolas-UTF_8-2")
         .font(Font.decode("Consolas"))
         .charset(StandardCharsets.UTF_8)
         .padding(2)
@@ -104,7 +103,7 @@ public class GameRenderer {
                 .texIdx(1)
                 .normalIdx(2)
         );
-        cube.setProcessor(m -> program.setUniform("material.ambient",
+        cube.setConsumer(m -> program.setUniform("material.ambient",
             "material.diffuse",
             "material.specular",
             "material.textured",
@@ -169,14 +168,14 @@ public class GameRenderer {
                 0.05f,
                 1000.0f));
 
-        DirectionalLight currDirLight = new DirectionalLight(light);
-        Vector4f dir = new Vector4f(currDirLight.getDirection(), 0)
+        var currDirLight = new DirectionalLight(light);
+        var dir = new Vector4f(currDirLight.getDirection(), 0)
             .mul(viewMatrix);
         currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
         // Get a copy of the point light object and transform its position to view coordinates
-        PointLight currPointLight = new PointLight(pointLight);
-        Vector3f lightPos = currPointLight.getPosition();
-        Vector4f aux = new Vector4f(lightPos, 1);
+        var currPointLight = new PointLight(pointLight);
+        var lightPos = currPointLight.getPosition();
+        var aux = new Vector4f(lightPos, 1);
         aux.mul(viewMatrix);
         lightPos.x = aux.x;
         lightPos.y = aux.y;
