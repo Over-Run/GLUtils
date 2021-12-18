@@ -34,6 +34,7 @@ dependencies {
 
 ```java
 import org.overrun.glutils.*;
+import org.overrun.glutils.game.*;
 import org.overrun.glutils.gl.*;
 import org.overrun.glutils.mesh.obj.*;
 
