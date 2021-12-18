@@ -36,8 +36,8 @@ import java.util.Map;
 
 import static java.awt.RenderingHints.*;
 import static org.overrun.glutils.AWTImage.getRGB;
-import static org.overrun.glutils.gl.MipmapMode.glLinear;
-import static org.overrun.glutils.gl.MipmapMode.glNearest;
+import static org.overrun.glutils.gl.TexParam.glLinear;
+import static org.overrun.glutils.gl.TexParam.glNearest;
 
 /**
  * @author squid233

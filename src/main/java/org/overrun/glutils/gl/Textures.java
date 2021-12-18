@@ -82,14 +82,14 @@ public class Textures {
      *
      * @param loader ClassLoader of loader class.
      * @param name   The filename.
-     * @param mode   Processor mode.
+     * @param param  The texture parameters.
      * @return The texture id.
      * @throws RuntimeException When file not found.
      * @since 2.0.0
      */
     public static int loadAWT(ClassLoader loader,
                               String name,
-                              MipmapMode mode)
+                              TexParam param)
         throws RuntimeException {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
@@ -97,7 +97,7 @@ public class Textures {
         BufferedImage img = AWTImage.load(loader, name);
         int id = glGenTextures();
         pushToGL(id,
-            mode,
+            param,
             img.getWidth(),
             img.getHeight(),
             AWTImage.getRGB(img));
@@ -108,13 +108,13 @@ public class Textures {
     /**
      * Load texture from file system.
      *
-     * @param name The filename.
-     * @param mode Mipmap mode.
+     * @param name  The filename.
+     * @param param The texture parameters.
      * @return The texture id.
      * @since 2.0.0
      */
     public static int loadFS(String name,
-                             MipmapMode mode) {
+                             TexParam param) {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
         }
@@ -135,7 +135,7 @@ public class Textures {
             h = ph.get(0);
         }
         int id = glGenTextures();
-        pushToGL(id, mode, w, h, data);
+        pushToGL(id, param, w, h, data);
         stbi_image_free(data);
         ID_MAP.put(name, id);
         return id;
@@ -146,13 +146,13 @@ public class Textures {
      *
      * @param identifier The identifier of texture.
      * @param buffer     The ByteBuffer that contains pixel data.
-     * @param mode       Processor mode.
+     * @param param      The texture parameters.
      * @return The texture id.
      * @since 2.0.0
      */
     public static int load(String identifier,
                            ByteBuffer buffer,
-                           MipmapMode mode) {
+                           TexParam param) {
         if (ID_MAP.containsKey(identifier)) {
             return ID_MAP.get(identifier);
         }
@@ -173,7 +173,7 @@ public class Textures {
             h = ph.get(0);
         }
         int id = glGenTextures();
-        pushToGL(id, mode, w, h, data);
+        pushToGL(id, param, w, h, data);
         stbi_image_free(data);
         ID_MAP.put(identifier, id);
         return id;
@@ -186,7 +186,7 @@ public class Textures {
      * @param w          Texture width
      * @param h          Texture height
      * @param data       The array that contains pixel data.
-     * @param mode       Processor mode.
+     * @param param      The texture parameters.
      * @return The texture id.
      * @since 2.0.0
      */
@@ -194,27 +194,27 @@ public class Textures {
                            int w,
                            int h,
                            int[] data,
-                           MipmapMode mode) {
+                           TexParam param) {
         if (ID_MAP.containsKey(identifier)) {
             return ID_MAP.get(identifier);
         }
         int id = glGenTextures();
-        pushToGL(id, mode, w, h, data);
+        pushToGL(id, param, w, h, data);
         ID_MAP.put(identifier, id);
         return id;
     }
 
     /**
-     * @param id   identifier
-     * @param mode mode
+     * @param id    identifier
+     * @param param The texture parameters.
      * @since 2.0.0
      */
     private static void texParameter(int id,
-                                     MipmapMode mode) {
+                                     TexParam param) {
         bind2D(id);
-        if (mode != null) {
-            mode.glMinFilter(GL_TEXTURE_2D);
-            mode.glMagFilter(GL_TEXTURE_2D);
+        if (param != null) {
+            param.glMinFilter(GL_TEXTURE_2D);
+            param.glMagFilter(GL_TEXTURE_2D);
         }
     }
 
@@ -222,19 +222,19 @@ public class Textures {
     /**
      * push image data to OpenGL state manager
      *
-     * @param id   texture id
-     * @param mode mipmap mode
-     * @param w    texture width
-     * @param h    texture height
-     * @param data pixel data
+     * @param id    texture id
+     * @param param The texture parameters.
+     * @param w     texture width
+     * @param h     texture height
+     * @param data  pixel data
      * @since 2.0.0
      */
     public static void pushToGL(int id,
-                                MipmapMode mode,
+                                TexParam param,
                                 int w,
                                 int h,
                                 ByteBuffer data) {
-        texParameter(id, mode);
+        texParameter(id, param);
         glTexImage2D(GL_TEXTURE_2D,
             0,
             GL_RGBA,
@@ -262,19 +262,19 @@ public class Textures {
     /**
      * push image data to OpenGL state manager
      *
-     * @param id   texture id
-     * @param mode mipmap mode
-     * @param w    texture width
-     * @param h    texture height
-     * @param data pixel data
+     * @param id    texture id
+     * @param param The texture parameters.
+     * @param w     texture width
+     * @param h     texture height
+     * @param data  pixel data
      * @since 2.0.0
      */
     public static void pushToGL(int id,
-                                MipmapMode mode,
+                                TexParam param,
                                 int w,
                                 int h,
                                 int[] data) {
-        texParameter(id, mode);
+        texParameter(id, param);
         glTexImage2D(GL_TEXTURE_2D,
             0,
             GL_RGBA,

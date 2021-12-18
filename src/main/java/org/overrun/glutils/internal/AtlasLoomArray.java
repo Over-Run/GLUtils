@@ -27,16 +27,16 @@ package org.overrun.glutils.internal;
 
 import org.overrun.commonutils.Dimension;
 import org.overrun.glutils.AtlasLoom;
-import org.overrun.glutils.gl.MipmapMode;
+import org.overrun.glutils.gl.TexParam;
 import org.overrun.glutils.gl.Textures;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
- * @deprecated experimentation
  * @author squid233
  * @since 1.1.0
+ * @deprecated experimentation
  */
 @Deprecated
 public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
@@ -55,15 +55,15 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
      *
      * @param defaultW default width
      * @param defaultH default height
-     * @param mode mipmap mode
-     * @param images images
-     * @param dims dimensions
+     * @param param    Texture parameters
+     * @param images   images
+     * @param dims     dimensions
      * @return {@link #atlasId}
      * @since 2.0.0
      */
     public int load(int defaultW,
                     int defaultH,
-                    MipmapMode mode,
+                    TexParam param,
                     int[][] images,
                     Dimension[] dims) {
         int maxWper = defaultW, maxHper = defaultH;
@@ -85,10 +85,10 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
         int siz = (int) ceil(sqrt(images.length));
         width = height = max(siz * maxWper, siz * maxHper);
         atlasId = Textures.load(name + "-atlas",
-                width,
-                height,
-                new int[width * height],
-                mode);
+            width,
+            height,
+            new int[width * height],
+            param);
         int u0 = 0, v0 = 0;
         for (int i = 0; i < images.length; i++) {
             int[] img = images[i];
@@ -127,14 +127,14 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
                 }
             }
             glTexSubImage2D(GL_TEXTURE_2D,
-                    0,
-                    width - u0 - 1,
-                    height - v0 - 1,
-                    w,
-                    h,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
-                    pixels);
+                0,
+                width - u0 - 1,
+                height - v0 - 1,
+                w,
+                h,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                pixels);
             u0 += w;
         }
         return atlasId;
@@ -143,18 +143,18 @@ public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
     /**
      * throw {@link UnsupportedOperationException}
      *
-     * @param loader class loader
+     * @param loader   class loader
      * @param defaultW default width
      * @param defaultH default height
-     * @param mode mipmap mode
-     * @param images images
+     * @param param    Texture parameters
+     * @param images   images
      * @return an exception
      */
     @Override
     public int load(ClassLoader loader,
                     int defaultW,
                     int defaultH,
-                    MipmapMode mode,
+                    TexParam param,
                     String... images) {
         throw new UnsupportedOperationException();
     }

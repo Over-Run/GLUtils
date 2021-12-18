@@ -28,7 +28,7 @@ package org.overrun.glutils;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.overrun.glutils.StbImg.Cleaner;
-import org.overrun.glutils.gl.MipmapMode;
+import org.overrun.glutils.gl.TexParam;
 import org.overrun.glutils.gl.Textures;
 
 import static java.lang.Math.*;
@@ -56,7 +56,7 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
     public int load(ClassLoader loader,
                     int defaultW,
                     int defaultH,
-                    MipmapMode mode,
+                    TexParam param,
                     String... images) {
         for (String img : images) {
             addImg(img);
@@ -103,7 +103,7 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
             width,
             height,
             new int[width * height],
-            mode);
+            param);
         int u0 = 0, v0 = 0;
         for (var e : imageMap.entrySet()) {
             var si = e.getValue();

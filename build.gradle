@@ -50,8 +50,8 @@ jar {
     manifest {
         attributes 'Specification-Title': 'GLUtils',
                 'Specification-Vendor': 'Overrun Organization',
-                'Specification-Version': '1',
-                'Implementation-Title': 'GLUtils 1',
+                'Specification-Version': '2',
+                'Implementation-Title': 'GLUtils',
                 'Implementation-Vendor': 'Overrun Organization',
                 'Implementation-Version': archiveVersion
     }
