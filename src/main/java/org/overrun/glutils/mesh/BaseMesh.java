@@ -26,6 +26,7 @@
 package org.overrun.glutils.mesh;
 
 import org.overrun.glutils.gl.Vbo;
+import org.overrun.glutils.gl.VertexAttrib;
 import org.overrun.glutils.light.Material;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -155,6 +156,30 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      * @since 1.1.0
      */
     protected int normalStride;
+    /**
+     * Vertex array buffer attribute
+     *
+     * @since 2.0.0
+     */
+    protected VertexAttrib vertIdx;
+    /**
+     * Color array buffer attribute
+     *
+     * @since 2.0.0
+     */
+    protected VertexAttrib colorIdx;
+    /**
+     * Texture coordinate array buffer attribute
+     *
+     * @since 2.0.0
+     */
+    protected VertexAttrib texIdx;
+    /**
+     * Normal vertex array buffer attribute
+     *
+     * @since 2.0.0
+     */
+    protected VertexAttrib normalIdx;
     /**
      * material
      *

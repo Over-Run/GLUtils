@@ -27,9 +27,10 @@ package org.overrun.glutils.mesh;
 
 import org.overrun.glutils.gl.GLProgram;
 import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.gl.VertexAttrib;
 import org.overrun.glutils.light.Material;
 
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL15.*;
 
 /**
  * @author squid233
@@ -37,10 +38,6 @@ import static org.lwjgl.opengl.GL20.*;
  */
 public class Mesh extends BaseMesh<Mesh> {
     private GLProgram program;
-    private int vertIdx;
-    private int colorIdx;
-    private int texIdx;
-    private int normalIdx;
 
     /**
      * @param program program
@@ -58,7 +55,7 @@ public class Mesh extends BaseMesh<Mesh> {
      * @since 0.6.0
      */
     public Mesh vertIdx(String vertIdx) {
-        this.vertIdx = program.getAttrib(vertIdx);
+        this.vertIdx = new VertexAttrib(program.getAttrib(vertIdx));
         return this;
     }
 
@@ -68,7 +65,7 @@ public class Mesh extends BaseMesh<Mesh> {
      * @since 0.6.0
      */
     public Mesh colorIdx(String colorIdx) {
-        this.colorIdx = program.getAttrib(colorIdx);
+        this.colorIdx = new VertexAttrib(program.getAttrib(colorIdx));
         return this;
     }
 
@@ -78,7 +75,7 @@ public class Mesh extends BaseMesh<Mesh> {
      * @since 0.6.0
      */
     public Mesh texIdx(String texIdx) {
-        this.texIdx = program.getAttrib(texIdx);
+        this.texIdx = new VertexAttrib(program.getAttrib(texIdx));
         return this;
     }
 
@@ -88,7 +85,7 @@ public class Mesh extends BaseMesh<Mesh> {
      * @since 1.1.0
      */
     public Mesh normalIdx(String normalIdx) {
-        this.normalIdx = program.getAttrib(normalIdx);
+        this.normalIdx = new VertexAttrib(program.getAttrib(normalIdx));
         return this;
     }
 
@@ -190,47 +187,45 @@ public class Mesh extends BaseMesh<Mesh> {
 
     @Override
     public void render(int primitive) {
-        vertVbo.bind();
-        vertVbo.data(vertices, vertUsage);
-        glEnableVertexAttribArray(vertIdx);
-        glVertexAttribPointer(vertIdx,
-            vertDim,
-            GL_FLOAT,
-            vertNormalized,
-            vertStride,
-            0);
-        if (colorVbo != null && colorIdx >= -1) {
+        if (vertIdx != null) {
+            vertVbo.bind();
+            vertVbo.data(vertices, vertUsage);
+            vertIdx.pointer(vertDim,
+                GL_FLOAT,
+                vertNormalized,
+                vertStride,
+                0);
+            vertIdx.enable();
+        }
+        if (colorVbo != null && colorIdx != null) {
             colorVbo.bind();
             colorVbo.data(colors, colorUsage);
-            glEnableVertexAttribArray(colorIdx);
-            glVertexAttribPointer(colorIdx,
-                colorDim,
+            colorIdx.pointer(colorDim,
                 GL_FLOAT,
                 colorNormalized,
                 colorStride,
                 0);
+            colorIdx.enable();
         }
-        if (texVbo != null && texIdx >= -1) {
+        if (texVbo != null && texIdx != null) {
             texVbo.bind();
             texVbo.data(texCoords, texUsage);
-            glEnableVertexAttribArray(texIdx);
-            glVertexAttribPointer(texIdx,
-                texDim,
+            texIdx.pointer(texDim,
                 GL_FLOAT,
                 texNormalized,
                 texStride,
                 0);
+            texIdx.enable();
         }
-        if (normalVbo != null && normalIdx >= -1) {
+        if (normalVbo != null && normalIdx != null) {
             normalVbo.bind();
             normalVbo.data(normalVert, normalUsage);
-            glEnableVertexAttribArray(normalIdx);
-            glVertexAttribPointer(normalIdx,
-                normalDim,
+            normalIdx.pointer(normalDim,
                 GL_FLOAT,
                 normalNormalized,
                 normalStride,
                 0);
+            normalIdx.enable();
         }
         if (ibo != null) {
             ibo.bind();
@@ -251,17 +246,17 @@ public class Mesh extends BaseMesh<Mesh> {
 
     @Override
     public void free() {
-        if (vertIdx >= 0) {
-            glDisableVertexAttribArray(vertIdx);
+        if (vertIdx != null) {
+            vertIdx.disable();
         }
-        if (colorIdx >= 0) {
-            glDisableVertexAttribArray(colorIdx);
+        if (colorIdx != null) {
+            colorIdx.disable();
         }
-        if (texIdx >= 0) {
-            glDisableVertexAttribArray(texIdx);
+        if (texIdx != null) {
+            texIdx.disable();
         }
-        if (normalIdx >= 0) {
-            glDisableVertexAttribArray(normalIdx);
+        if (normalIdx != null) {
+            normalIdx.disable();
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         if (vertVbo.check()) {

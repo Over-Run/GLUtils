@@ -425,7 +425,7 @@ public class ObjLoader {
         var meshes = new Mesh3[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
             var aiMesh = AIMesh.create(requireNonNull(aiMeshes).get(i));
-            Mesh3 mesh = processMesh(aiMesh, materials, vertProcessor, i)
+            var mesh = processMesh(aiMesh, materials, vertProcessor, i)
                 .unbindVao();
             meshes[i] = mesh;
         }

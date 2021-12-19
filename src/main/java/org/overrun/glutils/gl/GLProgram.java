@@ -257,9 +257,10 @@ public class GLProgram {
      * @since 1.2.0
      */
     public void setUniform(String name, Vector3fc value) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            glUniform3fv(getUniform(name), value.get(stack.mallocFloat(3)));
-        }
+        glUniform3f(getUniform(name),
+            value.get(0),
+            value.get(1),
+            value.get(2));
     }
 
     /**
