@@ -247,14 +247,16 @@ public final class GLUtils {
 
     /**
      * Print error code and name.
-     * <p>Only for debugging.</p>
+     * <p>
+     * Only for debugging.
+     * </p>
      *
-     * @param i mark
+     * @param id marking id
      * @since 0.5.0
      */
-    public static void glPrintError(int i) {
+    public static void debug(int id) {
         String err = glErrorString();
-        String s = i + ": " + err;
+        String s = id + ": " + err;
         if (err.equals(NO_ERR)) {
             System.out.println(s);
         } else {

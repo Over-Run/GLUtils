@@ -26,7 +26,7 @@
 package org.overrun.glutils.mesh;
 
 import org.overrun.glutils.gl.GLProgram;
-import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.tex.Textures;
 import org.overrun.glutils.gl.VertexAttrib;
 import org.overrun.glutils.light.Material;
 

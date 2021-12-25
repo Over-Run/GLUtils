@@ -37,8 +37,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.game.GameEngine.window;
-import static org.overrun.glutils.gl.GLStateManager.enableBlend;
-import static org.overrun.glutils.gl.GLStateManager.enableTexture2D;
 
 /**
  * @author squid233
@@ -51,8 +49,8 @@ public class TextRendererTest extends Game {
     @Override
     public void create() {
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
-        enableTexture2D();
-        enableBlend();
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         unifont = FontTexture.builder("unifont")
             .font(Font.decode("Unifont"))

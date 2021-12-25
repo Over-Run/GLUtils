@@ -27,16 +27,14 @@ package org.overrun.glutest;
 
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
-import org.overrun.glutils.gl.IndexedTesselator3;
-import org.overrun.glutils.gl.TexParam;
-import org.overrun.glutils.gl.Tesselator3;
 import org.overrun.glutils.game.*;
+import org.overrun.glutils.gl.IndexedTesselator3;
+import org.overrun.glutils.gl.Tesselator3;
+import org.overrun.glutils.tex.TexParam;
 
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.gl.GLStateManager.enableBlend;
-import static org.overrun.glutils.gl.GLStateManager.enableDepthTest;
 import static org.overrun.glutils.game.GameEngine.*;
 import static org.overrun.glutils.util.math.Transform.*;
 
@@ -76,8 +74,8 @@ public class Tesselator3Test extends Game {
     @Override
     public void create() {
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
-        enableDepthTest();
-        enableBlend();
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         window.setGrabbed(true);
         it = new IndexedTesselator3(false);
@@ -103,7 +101,7 @@ public class Tesselator3Test extends Game {
         float tz = zo + (z - zo) * delta;
         rotateY(
             rotateX(
-                setPerspective(mat3d, 90, framebuffer, 0.05f, 1000.0f)
+                setPerspective(mat3d, 90, bufFrame, 0.05f, 1000.0f)
                     .translate(0, 0, -0.3f),
                 -xRot),
             yRot).translate(-tx, -ty, -tz);

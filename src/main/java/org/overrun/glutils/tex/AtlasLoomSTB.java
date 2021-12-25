@@ -23,24 +23,25 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.tex;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.overrun.glutils.StbImg.Cleaner;
-import org.overrun.glutils.gl.TexParam;
-import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.tex.StbImg.Cleaner;
+
+import java.nio.ByteBuffer;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
 import static org.overrun.glutils.GLUtils.getLogger;
-import static org.overrun.glutils.StbImg.defaultCleaner;
 
 /**
  * @author squid233
  * @since 0.4.0
  */
+@Deprecated(since = "2.0.0", forRemoval = true)
 public class AtlasLoomSTB extends AtlasLoom<StbImg> {
     /**
      * constructor
@@ -61,7 +62,7 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
         for (String img : images) {
             addImg(img);
         }
-        int maxWper = defaultW, maxHper = defaultH;
+        int maxWPer = defaultW, maxHPer = defaultH;
         try (var stack = MemoryStack.stackPush()) {
             var pw = stack.mallocInt(1);
             var ph = stack.mallocInt(1);
@@ -70,14 +71,13 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                 int w, h;
                 Cleaner cleaner;
                 var bb = stbi_load(img, pw, ph, pc, STBI_rgb_alpha);
-                boolean failed = false;
-                if (bb == null) {
-                    failed = true;
+                boolean failed = bb == null;
+                if (failed) {
                     getLogger().error("Can't load image \"" +
                         img +
                         "\": " +
                         stbi_failure_reason());
-                    bb = MemoryUtil.memAlloc(defaultW * defaultH * 4);
+                    bb = memAlloc(defaultW * defaultH * 4);
                     w = defaultW;
                     h = defaultH;
                     cleaner = MemoryUtil::memFree;
@@ -86,19 +86,19 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
                     ph.flip();
                     w = pw.get();
                     h = ph.get();
-                    cleaner = defaultCleaner();
+                    cleaner = StbImg.CLEANER;
                 }
                 imageMap.put(img, new StbImg(w, h, bb, cleaner, failed));
-                if (w > maxWper) {
-                    maxWper = w;
+                if (w > maxWPer) {
+                    maxWPer = w;
                 }
-                if (h > maxHper) {
-                    maxHper = h;
+                if (h > maxHPer) {
+                    maxHPer = h;
                 }
             }
         }
         int siz = (int) ceil(sqrt(images.length));
-        width = height = max(siz * maxWper, siz * maxHper);
+        width = height = max(siz * maxWPer, siz * maxHPer);
         atlasId = Textures.load(name + "-atlas",
             width,
             height,
@@ -109,35 +109,36 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
             var si = e.getValue();
             int w = si.getWidth();
             int h = si.getHeight();
-            int[] pixels;
+            ByteBuffer pixels;
             if (si.isFailed()) {
-                pixels = new int[w * h];
+                pixels = memAlloc(w * h);
+                var ib = pixels.asIntBuffer();
                 if (u0 + w > width) {
                     u0 = 0;
-                    v0 += maxHper;
+                    v0 += maxHPer;
                 }
                 int j = 0;
                 for (int k = 0, s = h / 2; k < s; k++) {
                     for (int l = 0, t = w / 2; l < t; l++) {
-                        pixels[j++] = 0xfff800f8;
+                        ib.put(j++, 0xfff800f8);
                     }
                     for (int l = 0, t = w / 2; l < t; l++) {
-                        pixels[j++] = 0xff000000;
+                        ib.put(j++, 0xff000000);
                     }
                 }
                 for (int k = 0, s = h / 2; k < s; k++) {
                     for (int l = 0, t = w / 2; l < t; l++) {
-                        pixels[j++] = 0xff000000;
+                        ib.put(j++, 0xff000000);
                     }
                     for (int l = 0, t = w / 2; l < t; l++) {
-                        pixels[j++] = 0xfff800f8;
+                        ib.put(j++, 0xfff800f8);
                     }
                 }
             } else {
-                pixels = si.getData().asIntBuffer().array();
+                pixels = si.getData();
                 if (u0 + w > width) {
                     u0 = 0;
-                    v0 += maxHper;
+                    v0 += maxHPer;
                 }
             }
             glTexSubImage2D(GL_TEXTURE_2D,

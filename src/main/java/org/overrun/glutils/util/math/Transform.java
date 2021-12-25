@@ -26,7 +26,7 @@
 package org.overrun.glutils.util.math;
 
 import org.joml.Matrix4f;
-import org.overrun.glutils.wnd.SizedObject;
+import org.overrun.glutils.SizedObject;
 
 import static org.joml.Math.toRadians;
 

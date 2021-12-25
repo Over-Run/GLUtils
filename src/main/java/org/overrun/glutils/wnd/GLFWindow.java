@@ -28,6 +28,7 @@ package org.overrun.glutils.wnd;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
+import org.overrun.glutils.SizedObject;
 
 import java.nio.DoubleBuffer;
 

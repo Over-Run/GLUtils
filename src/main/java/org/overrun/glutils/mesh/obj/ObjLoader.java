@@ -30,8 +30,8 @@ import org.joml.Vector4f;
 import org.lwjgl.assimp.*;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
-import org.overrun.glutils.gl.TexParam;
-import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Textures;
 import org.overrun.glutils.light.Material;
 import org.overrun.glutils.mesh.Mesh;
 import org.overrun.glutils.mesh.Mesh3;
@@ -431,5 +431,65 @@ public class ObjLoader {
         }
         aiReleaseImport(scene);
         return new ObjModel3(meshes);
+    }
+
+    /**
+     * Load object file with default flags.
+     *
+     * @param c        The Class
+     * @param filename Object filename in classpath.
+     * @return Meshes.
+     * @since 2.0.0
+     */
+    public static ObjModel2 load2(Class<?> c,
+                                  String filename) {
+        return load2(c.getClassLoader(), filename);
+    }
+
+    /**
+     * Load object file.
+     *
+     * @param c        The Class
+     * @param filename Object filename in classpath (in relative path).
+     * @param flags    Assimp flags.
+     * @return Meshes.
+     * @since 2.0.0
+     */
+    public static ObjModel2 load2(Class<?> c,
+                                  String filename,
+                                  int flags) {
+        return load2(c.getClassLoader(), filename, flags);
+    }
+
+    /**
+     * Load object file with default flags.
+     *
+     * @param c             The Class
+     * @param filename      Object filename in classpath.
+     * @param vertProcessor Set attribute index before return.
+     * @return Meshes v3.
+     * @since 2.0.0
+     */
+    public static ObjModel3 load3(Class<?> c,
+                                  String filename,
+                                  @Nullable VertProcessor vertProcessor) {
+        return load3(c.getClassLoader(), filename, vertProcessor);
+    }
+
+    /**
+     * Load object file.
+     *
+     * @param c             The Class
+     * @param filename      Object filename in classpath (in relative path).
+     * @param flags         Assimp flags.
+     * @param vertProcessor Set attribute index before return.
+     * @return Meshes v3.
+     * @since 2.0.0
+     */
+    public static ObjModel3 load3(Class<?> c,
+                                  String filename,
+                                  int flags,
+                                  @Nullable VertProcessor vertProcessor) {
+        return load3(c.getClassLoader(), filename, flags, vertProcessor);
     }
 }

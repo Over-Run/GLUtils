@@ -23,9 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
-
-import org.overrun.glutils.gl.TexParam;
+package org.overrun.glutils.tex;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +32,7 @@ import java.util.Map;
  * @author squid233
  * @since 0.3.0
  */
+@Deprecated(since = "2.0.0", forRemoval = true)
 public abstract class AtlasLoom<T> {
     /**
      * string id to images obj

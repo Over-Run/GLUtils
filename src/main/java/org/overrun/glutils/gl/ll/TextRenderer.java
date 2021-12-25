@@ -28,7 +28,7 @@ package org.overrun.glutils.gl.ll;
 import org.jetbrains.annotations.Nullable;
 import org.overrun.glutils.gui.DrawableText.ColorFunction;
 import org.overrun.glutils.gui.FontTexture;
-import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.tex.Textures;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.gui.DrawableText.DEFAULT_COLOR;

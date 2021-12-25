@@ -25,7 +25,7 @@
 
 package org.overrun.glutils.gui;
 
-import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.tex.Textures;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -35,9 +35,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static java.awt.RenderingHints.*;
-import static org.overrun.glutils.AWTImage.getRGB;
-import static org.overrun.glutils.gl.TexParam.glLinear;
-import static org.overrun.glutils.gl.TexParam.glNearest;
+import static org.overrun.glutils.tex.AWTImage.getRGB;
+import static org.overrun.glutils.tex.TexParam.glLinear;
+import static org.overrun.glutils.tex.TexParam.glNearest;
 
 /**
  * @author squid233

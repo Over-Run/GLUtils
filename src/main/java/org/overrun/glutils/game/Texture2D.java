@@ -27,9 +27,9 @@ package org.overrun.glutils.game;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.overrun.glutils.AWTImage;
-import org.overrun.glutils.gl.TexParam;
-import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.tex.AWTImage;
+import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Textures;
 
 import javax.imageio.ImageIO;
 import java.io.BufferedInputStream;
@@ -83,46 +83,24 @@ public class Texture2D {
                     }
                     width = px.get(0);
                     height = py.get(0);
-                    id = glGenTextures();
+                    id = Textures.gen();
                     Textures.bind2D(id);
-                    if (param != null) {
-                        param.glMinFilter(GL_TEXTURE_2D);
-                        param.glMagFilter(GL_TEXTURE_2D);
-                    }
-                    glTexImage2D(GL_TEXTURE_2D,
-                        0,
-                        GL_RGBA,
+                    Textures.pushToGL(param,
                         width,
                         height,
-                        0,
-                        GL_RGBA,
-                        GL_UNSIGNED_BYTE,
-                        img
-                    );
-                    Textures.genMipmap2D();
+                        img);
                     stbi_image_free(img);
                 }
             } else {
                 var img = ImageIO.read(bis);
                 width = img.getWidth();
                 height = img.getHeight();
-                id = glGenTextures();
+                id = Textures.gen();
                 Textures.bind2D(id);
-                if (param != null) {
-                    param.glMinFilter(GL_TEXTURE_2D);
-                    param.glMagFilter(GL_TEXTURE_2D);
-                }
-                glTexImage2D(GL_TEXTURE_2D,
-                    0,
-                    GL_RGBA,
+                Textures.pushToGL(param,
                     width,
                     height,
-                    0,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
-                    AWTImage.getRGB(img)
-                );
-                Textures.genMipmap2D();
+                    AWTImage.getRGB(img));
             }
 
         } catch (IOException e) {

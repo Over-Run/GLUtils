@@ -23,12 +23,11 @@
  *
  */
 
-package org.overrun.glutils.gl;
+package org.overrun.glutils.tex;
 
 import org.jetbrains.annotations.Range;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
-import org.overrun.glutils.AWTImage;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -93,14 +92,31 @@ public class Textures {
             return ID_MAP.get(name);
         }
         var img = AWTImage.load(loader, name);
-        int id = glGenTextures();
-        pushToGL(id,
-            param,
+        int id = gen();
+        bind2D(id);
+        pushToGL(param,
             img.getWidth(),
             img.getHeight(),
             AWTImage.getRGB(img));
         ID_MAP.put(name, id);
         return id;
+    }
+
+    /**
+     * Load texture from stream by AWT.
+     *
+     * @param c     Loader class.
+     * @param name  The filename.
+     * @param param The texture parameters.
+     * @return The texture id.
+     * @throws RuntimeException When file not found.
+     * @since 2.0.0
+     */
+    public static int loadAWT(Class<?> c,
+                              String name,
+                              TexParam param)
+        throws RuntimeException {
+        return loadAWT(c.getClassLoader(), name, param);
     }
 
     /**
@@ -132,8 +148,9 @@ public class Textures {
             w = pw.get(0);
             h = ph.get(0);
         }
-        int id = glGenTextures();
-        pushToGL(id, param, w, h, data);
+        int id = gen();
+        bind2D(id);
+        pushToGL(param, w, h, data);
         stbi_image_free(data);
         ID_MAP.put(name, id);
         return id;
@@ -170,8 +187,9 @@ public class Textures {
             w = pw.get(0);
             h = ph.get(0);
         }
-        int id = glGenTextures();
-        pushToGL(id, param, w, h, data);
+        int id = gen();
+        bind2D(id);
+        pushToGL(param, w, h, data);
         stbi_image_free(data);
         ID_MAP.put(identifier, id);
         return id;
@@ -196,20 +214,18 @@ public class Textures {
         if (ID_MAP.containsKey(identifier)) {
             return ID_MAP.get(identifier);
         }
-        int id = glGenTextures();
-        pushToGL(id, param, w, h, data);
+        int id = gen();
+        bind2D(id);
+        pushToGL(param, w, h, data);
         ID_MAP.put(identifier, id);
         return id;
     }
 
     /**
-     * @param id    identifier
      * @param param The texture parameters.
      * @since 2.0.0
      */
-    private static void texParameter(int id,
-                                     TexParam param) {
-        bind2D(id);
+    public static void texParameter(TexParam param) {
         if (param != null) {
             param.glMinFilter(GL_TEXTURE_2D);
             param.glMagFilter(GL_TEXTURE_2D);
@@ -220,19 +236,17 @@ public class Textures {
     /**
      * push image data to OpenGL state manager
      *
-     * @param id    texture id
      * @param param The texture parameters.
      * @param w     texture width
      * @param h     texture height
      * @param data  pixel data
      * @since 2.0.0
      */
-    public static void pushToGL(int id,
-                                TexParam param,
+    public static void pushToGL(TexParam param,
                                 int w,
                                 int h,
                                 ByteBuffer data) {
-        texParameter(id, param);
+        texParameter(param);
         glTexImage2D(GL_TEXTURE_2D,
             0,
             GL_RGBA,
@@ -247,7 +261,19 @@ public class Textures {
     }
 
     /**
-     * Generate mipmap 2D
+     * Generate a texture by OpenGL.
+     *
+     * @return The texture id.
+     */
+    public static int gen() {
+        return glGenTextures();
+    }
+
+    /**
+     * Generate mipmap 2D.
+     * <p>
+     * This method has no effect when GPU doesn't support to OpenGL 3.0.
+     * </p>
      *
      * @since 1.5.0
      */
@@ -260,19 +286,17 @@ public class Textures {
     /**
      * push image data to OpenGL state manager
      *
-     * @param id    texture id
      * @param param The texture parameters.
      * @param w     texture width
      * @param h     texture height
      * @param data  pixel data
      * @since 2.0.0
      */
-    public static void pushToGL(int id,
-                                TexParam param,
+    public static void pushToGL(TexParam param,
                                 int w,
                                 int h,
                                 int[] data) {
-        texParameter(id, param);
+        texParameter(param);
         glTexImage2D(GL_TEXTURE_2D,
             0,
             GL_RGBA,
@@ -283,6 +307,7 @@ public class Textures {
             GL_UNSIGNED_BYTE,
             data
         );
+        genMipmap2D();
     }
 
     /**

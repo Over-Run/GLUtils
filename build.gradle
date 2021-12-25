@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    api platform('org.lwjgl:lwjgl-bom:3.2.3')
+    api platform('org.lwjgl:lwjgl-bom:3.3.0')
 
     api 'org.lwjgl:lwjgl'
     api 'org.lwjgl:lwjgl-glfw'
@@ -32,7 +32,7 @@ dependencies {
     api 'org.joml:joml:1.10.3'
     api 'io.github.over-run:common-utils:0.2.0'
 
-    compileOnly 'org.jetbrains:annotations:22.0.0'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
 
     testRuntimeOnly 'org.lwjgl:lwjgl::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-glfw::natives-windows'

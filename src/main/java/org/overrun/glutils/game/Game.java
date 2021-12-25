@@ -25,7 +25,7 @@
 
 package org.overrun.glutils.game;
 
-import static org.overrun.glutils.game.GameEngine.framebuffer;
+import static org.overrun.glutils.game.GameEngine.bufFrame;
 
 /**
  * @author squid233
@@ -40,7 +40,7 @@ public class Game implements IGameLogic {
         }
         screen = s;
         if (s != null) {
-            s.resize(framebuffer.width(), framebuffer.height());
+            s.resize(bufFrame.width(), bufFrame.height());
             s.create();
         }
     }

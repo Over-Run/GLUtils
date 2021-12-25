@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.tex;
 
 import org.lwjgl.stb.STBImage;
 
@@ -58,15 +58,6 @@ public class StbImg {
     }
 
     /**
-     * get default cleaner
-     *
-     * @return {@link #CLEANER}
-     */
-    public static Cleaner defaultCleaner() {
-        return CLEANER;
-    }
-
-    /**
      * construct
      *
      * @param width   image width
@@ -85,6 +76,21 @@ public class StbImg {
         this.data = data;
         this.cleaner = cleaner;
         this.failed = failed;
+    }
+
+    /**
+     * construct
+     *
+     * @param width  image width
+     * @param height image height
+     * @param data   image data
+     * @param failed is failed
+     */
+    public StbImg(int width,
+                  int height,
+                  ByteBuffer data,
+                  boolean failed) {
+        this(width, height, data, CLEANER, failed);
     }
 
     /**
@@ -133,6 +139,8 @@ public class StbImg {
     }
 
     public void free() {
-        cleaner.free(data);
+        if (cleaner != null) {
+            cleaner.free(data);
+        }
     }
 }

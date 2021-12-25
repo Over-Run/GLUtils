@@ -37,6 +37,10 @@ public class GameEngine {
     public static GameApp app;
     public static GLFWindow window;
     public static Framebuffer framebuffer;
+    /**
+     * The short name of {@link #framebuffer}
+     */
+    public static Framebuffer bufFrame;
     public static ITimer timer;
     public static Input input;
     public static Graphics graphics;

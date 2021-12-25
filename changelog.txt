@@ -2,12 +2,14 @@ Update Versions.java on adding new versions
 
 2.0.0 [Large changing]
 Warning: This is a broken changing which many API has been changed.
+Changed: Upgrade LWJGL from 3.2 to 3.3
 News: We know CVE-2021-44228 in Log4j2. GLULogger use `System.out` default
-Added: GLULogger
+Added: `GLULogger`
 Added: gui package
+Added: `Stitcher`
 Changed: Use Java 11
-Changed: MipmapMode in Textures
-Renamed: ShaderReader to LinesReader
+Changed: `TexParam` in `Textures`
+Renamed: `ShaderReader` to `LinesReader`
 Removed: Callbacks
 
 1.6.0

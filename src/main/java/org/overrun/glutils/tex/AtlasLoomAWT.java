@@ -23,10 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
-
-import org.overrun.glutils.gl.TexParam;
-import org.overrun.glutils.gl.Textures;
+package org.overrun.glutils.tex;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -42,6 +39,7 @@ import static org.overrun.glutils.GLUtils.getLogger;
  * @author squid233
  * @since 0.4.0
  */
+@Deprecated(since = "2.0.0", forRemoval = true)
 public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
     /**
      * constructor
@@ -62,7 +60,7 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
         for (String img : images) {
             addImg(img);
         }
-        int maxWper = defaultW, maxHper = defaultH;
+        int maxWPer = defaultW, maxHPer = defaultH;
         for (String img : imageMap.keySet()) {
             BufferedImage bi;
             boolean isNull = false;
@@ -78,15 +76,15 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
             imageMap.put(img, new AWTImage(isNull, bi));
             int w = bi.getWidth();
             int h = bi.getHeight();
-            if (w > maxWper) {
-                maxWper = w;
+            if (w > maxWPer) {
+                maxWPer = w;
             }
-            if (h > maxHper) {
-                maxHper = h;
+            if (h > maxHPer) {
+                maxHPer = h;
             }
         }
         int siz = (int) ceil(sqrt(images.length));
-        width = height = max(siz * maxWper, siz * maxHper);
+        width = height = max(siz * maxWPer, siz * maxHPer);
         atlasId = Textures.load(name + "-atlas",
             width,
             height,
@@ -103,7 +101,7 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
                 pixels = new int[w * h];
                 if (u0 + w > width) {
                     u0 = 0;
-                    v0 += maxHper;
+                    v0 += maxHPer;
                 }
                 int j = 0;
                 for (int k = 0, s = h / 2; k < s; k++) {
@@ -126,7 +124,7 @@ public class AtlasLoomAWT extends AtlasLoom<AWTImage> {
                 pixels = AWTImage.getRGB(bi);
                 if (u0 + w > width) {
                     u0 = 0;
-                    v0 += maxHper;
+                    v0 += maxHPer;
                 }
             }
             glTexSubImage2D(GL_TEXTURE_2D,

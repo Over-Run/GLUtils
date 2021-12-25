@@ -23,46 +23,35 @@
  *
  */
 
-package org.overrun.glutils.gl;
+package org.overrun.glutils.util;
 
-import static org.lwjgl.opengl.GL11.*;
+import java.util.Objects;
 
 /**
- * Some methods for calling GL functions quickly.
- *
  * @author squid233
- * @since 1.5.0
+ * @since 2.0.0
  */
-public class GLStateManager {
-    public static void enableDepthTest() {
-        glEnable(GL_DEPTH_TEST);
+public class Point {
+    public int x, y;
+
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
-    public static void enableCullFace() {
-        glEnable(GL_CULL_FACE);
+    public Point() {
     }
 
-    public static void enableBlend() {
-        glEnable(GL_BLEND);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Point point = (Point) o;
+        return x == point.x && y == point.y;
     }
 
-    public static void enableTexture2D() {
-        glEnable(GL_TEXTURE_2D);
-    }
-
-    public static void disableDepthTest() {
-        glDisable(GL_DEPTH_TEST);
-    }
-
-    public static void disableCullFace() {
-        glDisable(GL_CULL_FACE);
-    }
-
-    public static void disableBlend() {
-        glDisable(GL_BLEND);
-    }
-
-    public static void disableTexture2D() {
-        glDisable(GL_TEXTURE_2D);
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

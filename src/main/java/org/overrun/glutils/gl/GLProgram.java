@@ -25,10 +25,12 @@
 
 package org.overrun.glutils.gl;
 
-import org.joml.*;
+import org.joml.Matrix4fc;
+import org.joml.Vector3fc;
+import org.joml.Vector4fc;
 import org.lwjgl.system.MemoryStack;
 import org.overrun.glutils.CompileException;
-import org.overrun.glutils.LinesReader;
+import org.overrun.glutils.FilesReader;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.Material;
 import org.overrun.glutils.light.PointLight;
@@ -39,8 +41,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static org.lwjgl.opengl.GL20.*;
-import static org.overrun.glutils.util.GLString.toJava;
 import static org.overrun.glutils.GLUtils.getLogger;
+import static org.overrun.glutils.util.GLString.toJava;
 
 /**
  * @author squid233
@@ -110,7 +112,7 @@ public class GLProgram {
      * Create a shader.
      *
      * @param src  The shader source code. May get from
-     *             {@link LinesReader#lines(ClassLoader, String) lines}.
+     *             {@link FilesReader#lines(ClassLoader, String) lines}.
      * @param type The shader type.
      */
     private int createShader(String src, ShaderType type)

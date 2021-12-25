@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils;
+package org.overrun.glutils.tex;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils.wnd;
+package org.overrun.glutils;
 
 /**
  * @author squid233

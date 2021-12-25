@@ -420,6 +420,36 @@ public class MeshLoader {
     }
 
     /**
+     * load
+     *
+     * @param c     Class
+     * @param file   filename
+     * @param macros macros
+     * @return mesh
+     */
+    public static Mesh load(Class<?> c,
+                            String file,
+                            MeshMacro... macros) {
+        return load(c.getClassLoader(), file, macros);
+    }
+
+    /**
+     * load
+     *
+     * @param c     Class
+     * @param file   filename
+     * @param pre    pre-operations
+     * @param macros macros
+     * @return mesh
+     */
+    public static Mesh3 load3(Class<?> c,
+                              String file,
+                              Consumer<Mesh3> pre,
+                              MeshMacro... macros) {
+        return load3(c.getClassLoader(), file, pre, macros);
+    }
+
+    /**
      * exception
      *
      * @param msg    message

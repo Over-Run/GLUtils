@@ -23,7 +23,7 @@
  *
  */
 
-package org.overrun.glutils.gl;
+package org.overrun.glutils.tex;
 
 import org.lwjgl.opengl.GL11;
 

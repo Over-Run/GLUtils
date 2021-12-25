@@ -25,19 +25,72 @@
 
 package org.overrun.glutils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.ByteBuffer;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
-public class LinesReader {
+public class FilesReader {
+    /**
+     * Convert a byte array to a direct ByteBuffer.
+     *
+     * @param bytes The bytes.
+     * @return The native ByteBuffer.
+     * @since 2.0.0
+     */
+    public static ByteBuffer ntoBBuffer(byte[] bytes) {
+        return memAlloc(bytes.length).put(bytes).flip();
+    }
+
+    /**
+     * Convert a byte array to a ByteBuffer.
+     *
+     * @param bytes The bytes.
+     * @return The ByteBuffer in JVM.
+     * @since 2.0.0
+     */
+    public static ByteBuffer toBBuffer(byte[] bytes) {
+        return ByteBuffer.allocate(bytes.length).put(bytes).flip();
+    }
+
+    public static byte[] getBytes(Class<?> c,
+                                  String name) {
+        return getBytes(c.getClassLoader(), name);
+    }
+
+    public static byte[] getBytes(ClassLoader cl,
+                                  String name) {
+        return getBytes(cl.getResourceAsStream(name));
+    }
+
+    public static byte[] getBytes(InputStream stream) {
+        try (var is = requireNonNull(stream);
+             var bis = new BufferedInputStream(is)) {
+            return bis.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Read lines from stream by Class.
+     *
+     * @param c    The Class.
+     * @param name The filename.
+     * @return File contents.
+     * @since 2.0.0
+     */
+    public static String lines(Class<?> c,
+                               String name) {
+        return lines(c.getClassLoader(), name);
+    }
+
     /**
      * Read lines from stream by loader.
      *

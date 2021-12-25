@@ -27,7 +27,7 @@ package org.overrun.glutils.game;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import org.overrun.glutils.gl.Textures;
+import org.overrun.glutils.tex.Textures;
 import org.overrun.glutils.timer.SystemTimer;
 import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
@@ -87,7 +87,7 @@ public class GameApp {
             input.mouseX = (int) xp;
             input.mouseY = (int) yp;
         });
-        framebuffer = new Framebuffer((hWnd, width, height) ->
+        bufFrame = framebuffer = new Framebuffer((hWnd, width, height) ->
             game.resize(width, height), window);
         timer = new SystemTimer(config.tps);
         window.makeCurr();

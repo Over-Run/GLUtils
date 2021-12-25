@@ -30,8 +30,6 @@ import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.overrun.glutils.gl.GLProgram;
-import org.overrun.glutils.gl.TexParam;
-import org.overrun.glutils.gl.Textures;
 import org.overrun.glutils.gui.DrawableText;
 import org.overrun.glutils.gui.FontTexture;
 import org.overrun.glutils.light.DirectionalLight;
@@ -40,14 +38,15 @@ import org.overrun.glutils.mesh.Mesh3;
 import org.overrun.glutils.mesh.MeshLoader;
 import org.overrun.glutils.mesh.obj.ObjLoader;
 import org.overrun.glutils.mesh.obj.ObjModel3;
+import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Textures;
 
 import java.awt.*;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL15.*;
-import static org.overrun.glutils.LinesReader.lines;
+import static org.overrun.glutils.FilesReader.lines;
 import static org.overrun.glutils.game.GameEngine.*;
-import static org.overrun.glutils.gl.GLStateManager.*;
 import static org.overrun.glutils.util.math.Transform.*;
 
 /**
@@ -72,7 +71,7 @@ public class GameRenderer {
         0.0f, 0.0f, 0.0f, 0.5f,
         0.0f, 0.0f, 0.0f, 0.5f
     };
-    public static final ClassLoader cl = GameRenderer.class.getClassLoader();
+    public static final Class<GameRenderer> clazz = GameRenderer.class;
     public final Matrix4f proj = new Matrix4f();
     public final Matrix4fStack modelv = new Matrix4fStack(32);
     public final FontTexture utf8 = FontTexture.builder("Consolas-UTF_8-2")
@@ -90,14 +89,14 @@ public class GameRenderer {
 
     public void init() {
         program = new GLProgram();
-        program.createVsh(lines(cl, "shaders/scene.vsh"));
-        program.createFsh(lines(cl, "shaders/scene.fsh"));
+        program.createVsh(lines(clazz, "shaders/scene.vsh"));
+        program.createFsh(lines(clazz, "shaders/scene.fsh"));
         program.link();
         guiProgram = new GLProgram();
-        guiProgram.createVsh(lines(cl, "shaders/gui.vsh"));
-        guiProgram.createFsh(lines(cl, "shaders/gui.fsh"));
+        guiProgram.createVsh(lines(clazz, "shaders/gui.vsh"));
+        guiProgram.createFsh(lines(clazz, "shaders/gui.fsh"));
         guiProgram.link();
-        cube = ObjLoader.load3(cl,
+        cube = ObjLoader.load3(clazz,
             "model/cube/cube.obj",
             (m, v, i) -> m.vertIdx(0)
                 .texIdx(1)
@@ -109,10 +108,10 @@ public class GameRenderer {
             "material.textured",
             "material.reflectance",
             m.getMaterial()));
-        crossing = MeshLoader.load3(cl,
+        crossing = MeshLoader.load3(clazz,
                 "crossing.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2))
-            .texture(Textures.loadAWT(cl,
+            .texture(Textures.loadAWT(clazz,
                 "crossing.png",
                 TexParam.glNearest()));
         text = new Mesh3()
@@ -139,8 +138,8 @@ public class GameRenderer {
         float xRot = player.xRot;
         float yRot = player.yRot;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        enableDepthTest();
-        enableCullFace();
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
         program.bind();
 
         modelv.pushMatrix();
@@ -164,7 +163,7 @@ public class GameRenderer {
         program.setUniformMat4("proj",
             setPerspective(proj,
                 90,
-                framebuffer,
+                bufFrame,
                 0.05f,
                 1000.0f));
 
@@ -207,11 +206,11 @@ public class GameRenderer {
             }
         }
         program.unbind();
-        disableDepthTest();
-        disableCullFace();
-        enableBlend();
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
         renderGui(player, lightAngle);
-        disableBlend();
+        glDisable(GL_BLEND);
         modelv.popMatrix();
     }
 
@@ -240,12 +239,12 @@ public class GameRenderer {
         //todo scale
         guiProgram.setUniformMat4("proj",
             modelv.setOrtho2D(0,
-                framebuffer.width(),
-                framebuffer.height(),
+                bufFrame.width(),
+                bufFrame.height(),
                 0));
         guiProgram.setUniformMat4("modelv",
-            modelv.translation(framebuffer.width() / 2f,
-                framebuffer.height() / 2f,
+            modelv.translation(bufFrame.width() / 2f,
+                bufFrame.height() / 2f,
                 0));
         crossing.render();
         guiProgram.setUniformMat4("modelv", modelv.translation(2, 2, 0));

@@ -27,6 +27,7 @@ package org.overrun.glutils.wnd;
 
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import org.lwjgl.opengl.GL11;
+import org.overrun.glutils.SizedObject;
 
 import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
 
