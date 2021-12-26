@@ -60,15 +60,15 @@ import org.jetbrains.annotations.Nullable;
  * Best results occur when the input blocks are sorted by height, or even better
  * when sorted by {@code max(width,height)}.
  * </p>
- * <h3>Inputs</h3>
+ * <h2>Inputs</h2>
  * <p>
  * {@code blocks}: array of {@link Block}
  * </p>
- * <h3>Outputs</h3>
+ * <h2>Outputs</h2>
  * <p>
  * marks each block that fits with a {@link Node}
  * </p>
- * <h3>Example</h3>
+ * <h2>Example</h2>
  * <pre><code>
  * var blocks = {
  *     new Block(100, 100),

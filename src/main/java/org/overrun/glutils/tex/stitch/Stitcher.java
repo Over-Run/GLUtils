@@ -154,32 +154,7 @@ public class Stitcher {
         aw = packer.root.w;
         ah = packer.root.h;
         aid = Textures.gen();
-        Textures.bind2D(aid);
-        Textures.texParameter(param);
-        glTexImage2D(GL_TEXTURE_2D,
-            0,
-            GL_RGBA,
-            aw,
-            ah,
-            0,
-            GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            new int[aw * ah]);
-        for (var s : slots.values()) {
-            if (s.fit != null) {
-                glTexSubImage2D(GL_TEXTURE_2D,
-                    0,
-                    s.fit.x,
-                    s.fit.y,
-                    s.w,
-                    s.h,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
-                    s.data);
-            }
-            s.freeData();
-        }
-        Textures.genMipmap2D();
+        stitchGone(aw, ah, aid, param, slots);
         return new SpriteAtlas(aw, ah, aid, slots);
     }
 
@@ -260,33 +235,41 @@ public class Stitcher {
             aw = packer.root.w;
             ah = packer.root.h;
             aid = Textures.gen();
-            Textures.bind2D(aid);
-            Textures.texParameter(param);
-            glTexImage2D(GL_TEXTURE_2D,
-                0,
-                GL_RGBA,
-                aw,
-                ah,
-                0,
-                GL_RGBA,
-                GL_UNSIGNED_BYTE,
-                new int[aw * ah]);
-            for (var s : slots.values()) {
-                if (s.fit != null) {
-                    glTexSubImage2D(GL_TEXTURE_2D,
-                        0,
-                        s.fit.x,
-                        s.fit.y,
-                        s.w,
-                        s.h,
-                        GL_RGBA,
-                        GL_UNSIGNED_BYTE,
-                        s.data);
-                }
-                s.freeData();
-            }
-            Textures.genMipmap2D();
+            stitchGone(aw, ah, aid, param, slots);
         }
         return new SpriteAtlas(aw, ah, aid, slots);
+    }
+
+    private static void stitchGone(int aw,
+                                   int ah,
+                                   int aid,
+                                   TexParam param,
+                                   LinkedHashMap<String, Slot> slots) {
+        Textures.bind2D(aid);
+        Textures.texParameter(param);
+        glTexImage2D(GL_TEXTURE_2D,
+            0,
+            GL_RGBA,
+            aw,
+            ah,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            new int[aw * ah]);
+        for (var s : slots.values()) {
+            if (s.fit != null) {
+                glTexSubImage2D(GL_TEXTURE_2D,
+                    0,
+                    s.fit.x,
+                    s.fit.y,
+                    s.w,
+                    s.h,
+                    GL_RGBA,
+                    GL_UNSIGNED_BYTE,
+                    s.data);
+            }
+            s.freeData();
+        }
+        Textures.genMipmap2D();
     }
 }

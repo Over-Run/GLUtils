@@ -23,15 +23,11 @@
  *
  */
 
-package org.overrun.glutils.tex;
-
-import java.awt.image.BufferedImage;
+package org.overrun.glutils.tex.stitch;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
-@FunctionalInterface
-public interface AwtiLoadFunc {
-    BufferedImage load(String filename);
+public interface LoadFunc {
 }

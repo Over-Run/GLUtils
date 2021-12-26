@@ -23,20 +23,15 @@
  *
  */
 
-package org.overrun.glutils.tex;
+package org.overrun.glutils.tex.stitch;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import java.awt.image.BufferedImage;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface StbiLoadFunc {
-    ByteBuffer load(String filename,
-                    IntBuffer px,
-                    IntBuffer py,
-                    IntBuffer pc,
-                    int format);
+public interface AwtiLoadFunc extends LoadFunc {
+    BufferedImage load(String filename);
 }
