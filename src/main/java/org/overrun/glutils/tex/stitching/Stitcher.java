@@ -26,9 +26,9 @@
 package org.overrun.glutils.tex.stitching;
 
 import org.lwjgl.system.MemoryStack;
+import org.overrun.commonutils.MapSorter;
 import org.overrun.glutils.tex.StbImg;
 import org.overrun.glutils.tex.TexParam;
-import org.overrun.glutils.util.MapSorter;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;

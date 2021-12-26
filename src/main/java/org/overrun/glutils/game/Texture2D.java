@@ -28,6 +28,7 @@ package org.overrun.glutils.game;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.overrun.glutils.tex.AWTImage;
+import org.overrun.glutils.tex.StbImg;
 import org.overrun.glutils.tex.TexParam;
 import org.overrun.glutils.tex.Textures;
 
@@ -76,10 +77,7 @@ public class Texture2D {
                     var pc = stack.mallocInt(1);
                     var img = stbi_load_from_memory(bb, px, py, pc, STBI_rgb_alpha);
                     if (img == null) {
-                        throw new IOException("Error loading image [" +
-                            filename +
-                            "] : " +
-                            stbi_failure_reason());
+                        StbImg.thr(filename);
                     }
                     width = px.get(0);
                     height = py.get(0);
@@ -102,7 +100,6 @@ public class Texture2D {
                     height,
                     AWTImage.getRGB(img));
             }
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

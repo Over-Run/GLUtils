@@ -7,13 +7,12 @@ plugins {
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
 
-group 'io.github.over-run'
-archivesBaseName = 'glutils'
-version = '2.0.0-SNAPSHOT'
+group projGroupId
+archivesBaseName = projArtifactId
+version = projVersion
 
 repositories {
     mavenCentral()
-    maven { url 'https://repo1.maven.org/maven2' }
     maven { url 'https://maven.aliyun.com/repository/central' }
     maven { url 'https://jitpack.io' }
     // temporary maven repositories
@@ -30,7 +29,7 @@ dependencies {
     api 'org.lwjgl:lwjgl-stb'
     api 'org.lwjgl:lwjgl-assimp'
     api 'org.joml:joml:1.10.3'
-    api 'io.github.over-run:common-utils:0.2.0'
+    api 'io.github.over-run:common-utils:0.3.0'
 
     compileOnly 'org.jetbrains:annotations:23.0.0'
 
@@ -48,10 +47,10 @@ tasks.withType(JavaCompile) {
 jar {
     from 'LICENSE'
     manifest {
-        attributes 'Specification-Title': 'GLUtils',
+        attributes 'Specification-Title': projName,
                 'Specification-Vendor': 'Overrun Organization',
                 'Specification-Version': '2',
-                'Implementation-Title': 'GLUtils',
+                'Implementation-Title': projName,
                 'Implementation-Vendor': 'Overrun Organization',
                 'Implementation-Version': archiveVersion
     }
@@ -78,19 +77,19 @@ java {
 
 publishing.publications {
     mavenJava(MavenPublication) {
-        groupId = 'io.github.over-run'
-        artifactId = 'glutils'
-        version = project.version
-        description = 'Utils for OpenGL for Java.'
+        groupId = projGroupId
+        artifactId = projArtifactId
+        version = projVersion
+        description = projDesc
         from components.java
         pom {
-            name = 'GLUtils'
-            description = 'Utils for OpenGL for Java.'
-            url = 'https://github.com/Over-Run/GLUtils'
+            name = projName
+            description = projDesc
+            url = projVcs
             licenses {
                 license {
                     name = 'The MIT License'
-                    url = 'https://raw.githubusercontent.com/Over-Run/GLUtils/1.x/LICENSE'
+                    url = 'https://raw.githubusercontent.com/Over-Run/GLUtils/2.x/LICENSE'
                 }
             }
             developers {
@@ -101,9 +100,9 @@ publishing.publications {
                 }
             }
             scm {
-                connection = 'https://github.com/Over-Run/GLUtils.git'
-                developerConnection = 'https://github.com/Over-Run/GLUtils.git'
-                url = 'https://github.com/Over-Run/GLUtils'
+                connection = "${projVcs}.git"
+                developerConnection = "${projVcs}.git"
+                url = projVcs
             }
         }
     }

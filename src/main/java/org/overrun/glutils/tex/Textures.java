@@ -179,10 +179,7 @@ public class Textures {
             var pc = stack.mallocInt(1);
             data = stbi_load_from_memory(buffer, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
-                throw new RuntimeException("Error loading image \"" +
-                    identifier +
-                    "\": " +
-                    stbi_failure_reason());
+                StbImg.thrRE(identifier);
             }
             w = pw.get(0);
             h = ph.get(0);

@@ -25,10 +25,14 @@
 
 package org.overrun.glutils.tex;
 
+import org.jetbrains.annotations.Contract;
 import org.lwjgl.stb.STBImage;
 import org.overrun.glutils.SizedObject;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import static org.lwjgl.stb.STBImage.stbi_failure_reason;
 
 /**
  * @author squid233
@@ -92,6 +96,23 @@ public class StbImg implements SizedObject {
                   ByteBuffer data,
                   boolean failed) {
         this(width, height, data, CLEANER, failed);
+    }
+
+    @Contract("_ -> fail")
+    public static void thr(String filename)
+        throws IOException {
+        throw new IOException("Error loading image [" +
+            filename +
+            "] : " +
+            stbi_failure_reason());
+    }
+
+    @Contract("_ -> fail")
+    public static void thrRE(String filename) {
+        throw new RuntimeException("Error loading image [" +
+            filename +
+            "] : " +
+            stbi_failure_reason());
     }
 
     /**

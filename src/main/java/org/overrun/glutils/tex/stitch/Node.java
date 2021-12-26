@@ -40,7 +40,7 @@ public class Node {
     public Node fit;
 
     /**
-     * Construct with the params
+     * Construct with the params using status, position, size and children
      *
      * @param used  used
      * @param x     x
@@ -67,7 +67,7 @@ public class Node {
     }
 
     /**
-     * Construct with the params
+     * Construct with the params position and size
      *
      * @param x x
      * @param y y

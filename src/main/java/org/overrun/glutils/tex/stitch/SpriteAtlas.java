@@ -23,35 +23,16 @@
  *
  */
 
-package org.overrun.glutils.util;
+package org.overrun.glutils.tex.stitch;
 
-import java.util.*;
+import org.overrun.glutils.tex.StbImg;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
-public class MapSorter {
-    public static <K, V> LinkedHashMap<K, V> sort(Map<K, V> src,
-                                                  Comparator<Map.Entry<K, V>> comparator) {
-        var list = new LinkedList<>(src.entrySet());
-        list.sort(comparator);
-        var dst = new LinkedHashMap<K, V>();
-        for (var e : list) {
-            dst.put(e.getKey(), e.getValue());
-        }
-        return dst;
-    }
-
-    public static <K, V> LinkedHashMap<K, V> sortByKey(Map<K, V> src,
-                                                       Comparator<K> comparator) {
-        return sort(src, (o1, o2) ->
-            comparator.compare(o1.getKey(), o2.getKey()));
-    }
-
-    public static <K, V> LinkedHashMap<K, V> sortByValue(Map<K, V> src,
-                                                         Comparator<V> comparator) {
-        return sort(src, (o1, o2) ->
-            comparator.compare(o1.getValue(), o2.getValue()));
+public class SpriteAtlas {
+    public static class Slot extends Node {
+        public StbImg img;
     }
 }

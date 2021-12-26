@@ -30,8 +30,8 @@ import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
 import org.overrun.glutils.gl.ll.Tesselator;
 import org.overrun.glutils.tex.TexParam;
-import org.overrun.glutils.tex.stitching.SpriteAtlas;
-import org.overrun.glutils.tex.stitching.Stitcher;
+import org.overrun.glutils.tex.stitch.SpriteAtlas;
+import org.overrun.glutils.tex.stitch.Stitcher;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.game.GameEngine.bufFrame;
