@@ -27,18 +27,20 @@ package org.overrun.glutils.tex.stitch;
 
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import org.overrun.commonutils.MapSorter;
-import org.overrun.glutils.tex.StbImg;
-import org.overrun.glutils.tex.StbiLoadFunc;
-import org.overrun.glutils.tex.TexParam;
-import org.overrun.glutils.tex.Textures;
+import org.overrun.glutils.tex.*;
+import org.overrun.glutils.tex.stitch.SpriteAtlas.Slot;
 
-import java.util.ArrayList;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.stb.STBImage.STBI_rgb_alpha;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
 import static org.overrun.glutils.FilesReader.getBytes;
 import static org.overrun.glutils.FilesReader.ntoBBuffer;
 
@@ -79,14 +81,15 @@ public class Stitcher {
             px,
             py,
             pc,
-            STBI_rgb_alpha
+            format
         ), param, filenames);
     }
 
     public static SpriteAtlas stitchAwt(ClassLoader cl,
                                         TexParam param,
                                         String... filenames) {
-        throw new UnsupportedOperationException("TODO");
+        return stitchAwt0(filename -> AWTImage.load(cl, filename),
+            param, filenames);
     }
 
     public static SpriteAtlas stitchFsStb(TexParam param,
@@ -96,27 +99,114 @@ public class Stitcher {
 
     public static SpriteAtlas stitchFsAwt(TexParam param,
                                           String... filenames) {
-        throw new UnsupportedOperationException("TODO");
+        return stitchAwt0(AWTImage::loadFs, param, filenames);
+    }
+
+    private static SpriteAtlas stitchAwt0(AwtiLoadFunc func,
+                                          TexParam param,
+                                          String... filenames) {
+        var slots = new LinkedHashMap<String, Slot>();
+        int aw, ah, aid;
+        var images = new LinkedHashMap<String, AWTImage>();
+        for (var filename : filenames) {
+            BufferedImage bi;
+            try {
+                bi = func.load(filename);
+            } catch (Exception e) {
+                bi = null;
+            }
+            var failed = bi == null;
+            if (failed) {
+                bi = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
+                bi.setRGB(0, 0, 2, 2, new int[]{
+                    0xfff800f8, 0xff000000,
+                    0xff000000, 0xfff800f8
+                }, 0, 2);
+            }
+            images.put(filename, new AWTImage(failed, bi));
+        }
+        MapSorter.sortByValue(images,
+            Comparator.comparing((AWTImage i) -> -i.getHeight())
+                .thenComparing(i -> -i.getWidth())
+        );
+        var blocks = new Block[images.size()];
+        int i = 0;
+        for (var img : images.values()) {
+            blocks[i] = new Block(img.width(), img.height());
+            ++i;
+        }
+        var packer = new GrowingPacker();
+        packer.fit(blocks);
+        i = 0;
+        for (var e : images.entrySet()) {
+            var block = blocks[i];
+            if (block.fit != null) {
+                var id = e.getKey();
+                var img = e.getValue();
+                slots.put(id, new Slot(
+                    memAlloc(img.width() * img.height() * Integer.BYTES),
+                    MemoryUtil::memFree,
+                    block,
+                    id));
+            }
+            ++i;
+        }
+        aw = packer.root.w;
+        ah = packer.root.h;
+        aid = Textures.gen();
+        Textures.bind2D(aid);
+        Textures.texParameter(param);
+        glTexImage2D(GL_TEXTURE_2D,
+            0,
+            GL_RGBA,
+            aw,
+            ah,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            new int[aw * ah]);
+        for (var s : slots.values()) {
+            if (s.fit != null) {
+                glTexSubImage2D(GL_TEXTURE_2D,
+                    0,
+                    s.fit.x,
+                    s.fit.y,
+                    s.w,
+                    s.h,
+                    GL_RGBA,
+                    GL_UNSIGNED_BYTE,
+                    s.data);
+            }
+            s.freeData();
+        }
+        Textures.genMipmap2D();
+        return new SpriteAtlas(aw, ah, aid, slots);
     }
 
     private static SpriteAtlas stitchStb0(StbiLoadFunc func,
                                           TexParam param,
                                           String... filenames) {
-        var images = new LinkedHashMap<String, StbImg>();
-        var blocks = new LinkedHashMap<String, Block>();
+        var slots = new LinkedHashMap<String, Slot>();
         int aw, ah, aid;
         try (var stack = MemoryStack.stackPush()) {
             var px = stack.mallocInt(1);
             var py = stack.mallocInt(1);
             var pc = stack.mallocInt(1);
+            var images = new LinkedHashMap<String, StbImg>();
             for (var filename : filenames) {
-                var bb = func.load(
-                    filename,
-                    px,
-                    py,
-                    pc,
-                    STBI_rgb_alpha
-                );
+                ByteBuffer bb;
+                try {
+                    bb = func.load(
+                        filename,
+                        px,
+                        py,
+                        pc,
+                        STBI_rgb_alpha
+                    );
+                } catch (Exception e) {
+                    bb = null;
+                    StbImg.thrOut(filename);
+                }
                 var failed = bb == null;
                 var cleaner = StbImg.CLEANER;
                 int w, h;
@@ -124,6 +214,13 @@ public class Stitcher {
                     cleaner = null;
                     w = 2;
                     h = 2;
+                    bb = stack.malloc(4 * Integer.BYTES);
+                    bb.asIntBuffer()
+                        .put(0xfff800f8)
+                        .put(0xff000000)
+                        .put(0xff000000)
+                        .put(0xfff800f8)
+                        .flip();
                 } else {
                     w = px.get(0);
                     h = py.get(0);
@@ -139,19 +236,24 @@ public class Stitcher {
                 Comparator.comparing((StbImg i) -> -i.height())
                     .thenComparing(i -> -i.width())
             );
-            var blockArr = new Block[images.size()];
-            var values = new ArrayList<>(images.values());
-            for (int i = 0; i < blockArr.length; i++) {
-                var s = values.get(i);
-                blockArr[i] = new Block(s.width(), s.height());
+            var blocks = new Block[images.size()];
+            int i = 0;
+            for (var img : images.values()) {
+                blocks[i] = new Block(img.width(), img.height());
+                ++i;
             }
             var packer = new GrowingPacker();
-            packer.fit(blockArr);
-            int i = 0;
-            for (var e : images.keySet()) {
-                var block = blockArr[i];
+            packer.fit(blocks);
+            i = 0;
+            for (var e : images.entrySet()) {
+                var block = blocks[i];
                 if (block.fit != null) {
-                    blocks.put(e, block);
+                    var id = e.getKey();
+                    var img = e.getValue();
+                    slots.put(id, new Slot(img.getData(),
+                        img.getCleaner(),
+                        block,
+                        id));
                 }
                 ++i;
             }
@@ -169,27 +271,22 @@ public class Stitcher {
                 GL_RGBA,
                 GL_UNSIGNED_BYTE,
                 new int[aw * ah]);
-            for (var e : images.entrySet()) {
-                var id = e.getKey();
-                var img = e.getValue();
-                var block = blocks.get(id);
-                if (block.fit != null) {
+            for (var s : slots.values()) {
+                if (s.fit != null) {
                     glTexSubImage2D(GL_TEXTURE_2D,
                         0,
-                        block.fit.x,
-                        block.fit.y,
-                        block.w,
-                        block.h,
+                        s.fit.x,
+                        s.fit.y,
+                        s.w,
+                        s.h,
                         GL_RGBA,
                         GL_UNSIGNED_BYTE,
-                        img.getData());
+                        s.data);
                 }
+                s.freeData();
             }
             Textures.genMipmap2D();
         }
-        for (var img : images.values()) {
-            img.free();
-        }
-        return new SpriteAtlas(aw, ah, aid, blocks);
+        return new SpriteAtlas(aw, ah, aid, slots);
     }
 }

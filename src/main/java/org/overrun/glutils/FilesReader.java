@@ -73,7 +73,7 @@ public class FilesReader {
         try (var is = requireNonNull(stream);
              var bis = new BufferedInputStream(is)) {
             return bis.readAllBytes();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -48,7 +48,8 @@ public class StitcherTest extends Game {
             TexParam.glNearest(),
             "stitch/grassblock.png",
             "stitch/stone.png",
-            "stitch/dirt.png");
+            "stitch/dirt.png",
+            "missingo");
         glEnable(GL_TEXTURE_2D);
     }
 
@@ -67,7 +68,6 @@ public class StitcherTest extends Game {
             .vertexUV(atlas.width(), 0, 0, 1, 0)
             .draw(GL_QUADS);
         atlas.unbind();
-        System.out.println(atlas.width());
         super.render();
     }
 

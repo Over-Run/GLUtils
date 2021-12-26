@@ -29,6 +29,7 @@ import org.overrun.glutils.SizedObject;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -77,6 +78,20 @@ public class AWTImage implements SizedObject {
     }
 
     /**
+     * load image from filesystem
+     *
+     * @param name image absolute name
+     * @return loaded image
+     */
+    public static BufferedImage loadFs(String name) {
+        try {
+            return ImageIO.read(new File(name));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * get pixels array
      *
      * @param img image
@@ -85,12 +100,12 @@ public class AWTImage implements SizedObject {
     public static int[] getBGR(BufferedImage img) {
         int w = img.getWidth();
         return img.getRGB(0,
-                0,
-                w,
-                img.getHeight(),
-                null,
-                0,
-                w);
+            0,
+            w,
+            img.getHeight(),
+            null,
+            0,
+            w);
     }
 
     /**

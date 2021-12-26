@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.stb.STBImage.stbi_failure_reason;
+import static org.overrun.glutils.GLUtils.getLogger;
 
 /**
  * @author squid233
@@ -110,6 +111,14 @@ public class StbImg implements SizedObject {
     @Contract("_ -> fail")
     public static void thrRE(String filename) {
         throw new RuntimeException("Error loading image [" +
+            filename +
+            "] : " +
+            stbi_failure_reason());
+    }
+
+    @Contract("_ -> fail")
+    public static void thrOut(String filename) {
+        getLogger().error("Error loading image [" +
             filename +
             "] : " +
             stbi_failure_reason());

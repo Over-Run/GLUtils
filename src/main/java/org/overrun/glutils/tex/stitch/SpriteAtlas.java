@@ -26,8 +26,10 @@
 package org.overrun.glutils.tex.stitch;
 
 import org.overrun.glutils.SizedObject;
+import org.overrun.glutils.tex.StbImg;
 import org.overrun.glutils.tex.Textures;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
@@ -38,16 +40,39 @@ public class SpriteAtlas implements SizedObject {
     private final int width;
     private final int height;
     private final int id;
-    private final Map<String, Block> blocks;
+    private final Map<String, Slot> slots;
 
     public SpriteAtlas(int width,
                        int height,
                        int id,
-                       Map<String, Block> blocks) {
+                       Map<String, Slot> slots) {
         this.width = width;
         this.height = height;
         this.id = id;
-        this.blocks = blocks;
+        this.slots = slots;
+    }
+
+    public static class Slot extends Block {
+        public ByteBuffer data;
+        public StbImg.Cleaner cleaner;
+        public String id;
+
+        public Slot(ByteBuffer data,
+                    StbImg.Cleaner cleaner,
+                    Block block,
+                    String id) {
+            super(block.w, block.h);
+            fit = block.fit;
+            this.data = data;
+            this.cleaner = cleaner;
+            this.id = id;
+        }
+
+        public void freeData() {
+            if (cleaner != null) {
+                cleaner.free(data);
+            }
+        }
     }
 
     public void bind() {
@@ -81,11 +106,11 @@ public class SpriteAtlas implements SizedObject {
     }
 
     public Block getSlot(String id) {
-        return blocks.get(id);
+        return slots.get(id);
     }
 
-    public Map<String, Block> getBlocks() {
-        return blocks;
+    public Map<String, Slot> getSlots() {
+        return slots;
     }
 
     @Override
