@@ -36,9 +36,8 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * @author squid233
  * @since 1.1.0
- * @deprecated experimentation
  */
-@Deprecated
+@Deprecated(since = "1.1.0", forRemoval = true)
 public class AtlasLoomArray extends AtlasLoom<AtlasLoomArray> {
     /**
      * constructor

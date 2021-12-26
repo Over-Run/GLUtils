@@ -85,7 +85,7 @@ public class Vbo {
             return true;
         }
         if (throwing) {
-            throw new RuntimeException("Check buffer");
+            throw new RuntimeException("Checking buffer");
         }
         return false;
     }

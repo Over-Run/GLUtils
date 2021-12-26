@@ -26,6 +26,7 @@
 package org.overrun.glutils.tex;
 
 import org.lwjgl.stb.STBImage;
+import org.overrun.glutils.SizedObject;
 
 import java.nio.ByteBuffer;
 
@@ -33,7 +34,7 @@ import java.nio.ByteBuffer;
  * @author squid233
  * @since 0.4.0
  */
-public class StbImg {
+public class StbImg implements SizedObject {
     /**
      * Default cleaner
      */
@@ -98,6 +99,7 @@ public class StbImg {
      *
      * @return {@link #width}
      */
+    @Override
     public int getWidth() {
         return width;
     }
@@ -107,6 +109,7 @@ public class StbImg {
      *
      * @return {@link #height}
      */
+    @Override
     public int getHeight() {
         return height;
     }

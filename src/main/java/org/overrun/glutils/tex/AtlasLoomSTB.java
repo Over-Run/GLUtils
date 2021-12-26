@@ -107,8 +107,8 @@ public class AtlasLoomSTB extends AtlasLoom<StbImg> {
         int u0 = 0, v0 = 0;
         for (var e : imageMap.entrySet()) {
             var si = e.getValue();
-            int w = si.getWidth();
-            int h = si.getHeight();
+            int w = si.width();
+            int h = si.height();
             ByteBuffer pixels;
             if (si.isFailed()) {
                 pixels = memAlloc(w * h);

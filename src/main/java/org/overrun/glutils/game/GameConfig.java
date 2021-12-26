@@ -75,6 +75,5 @@ public class GameConfig {
     /**
      * Set GLFW error callback.
      */
-    public GLFWErrorCallback errorCallback =
-        GLFWErrorCallback.createPrint();
+    public GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint();
 }

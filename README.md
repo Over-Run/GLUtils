@@ -10,7 +10,7 @@
 
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/Over-Run/GLUtils)
 ![Maven Central](https://img.shields.io/maven-central/v/io.github.over-run/glutils)
-![Sonatype Nexus (Releases)](https://img.shields.io/nexus/r/io.github.over-run/glutils?server=https%3A%2F%2Fs01.oss.sonatype.org)
+![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/io.github.over-run/glutils?server=https%3A%2F%2Fs01.oss.sonatype.org)
 
 ![Java Version](https://img.shields.io/badge/Java%20Version-11-red)
 

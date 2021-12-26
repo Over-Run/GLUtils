@@ -23,39 +23,70 @@
  *
  */
 
-package org.overrun.glutils.util;
+package org.overrun.glutils.tex.stitch;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
-public class GLULoggerImpl implements IGLULogger {
-    private static final GLULoggerImpl instance = new GLULoggerImpl();
+public class Node {
+    public boolean used;
+    public int x;
+    public int y;
+    public int w;
+    public int h;
+    public Node down;
+    public Node right;
+    public Node fit;
 
-    public static GLULoggerImpl getInstance() {
-        return instance;
+    /**
+     * Construct with the params
+     *
+     * @param used  used
+     * @param x     x
+     * @param y     y
+     * @param w     width
+     * @param h     height
+     * @param down  down node
+     * @param right right node
+     */
+    public Node(boolean used,
+                int x,
+                int y,
+                int w,
+                int h,
+                Node down,
+                Node right) {
+        this.used = used;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.down = down;
+        this.right = right;
     }
 
-    protected GLULoggerImpl() {
+    /**
+     * Construct with the params
+     *
+     * @param x x
+     * @param y y
+     * @param w width
+     * @param h height
+     */
+    public Node(int x,
+                int y,
+                int w,
+                int h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
     }
 
-    @Override
-    public void info(String msg) {
-        System.out.println(msg);
-    }
-
-    @Override
-    public void warn(String msg) {
-        System.err.println(msg);
-    }
-
-    @Override
-    public void error(String msg) {
-        System.err.println(msg);
-    }
-
-    @Override
-    public void catching(Throwable t) {
-        t.printStackTrace();
+    /**
+     * Construct without params
+     */
+    public Node() {
     }
 }

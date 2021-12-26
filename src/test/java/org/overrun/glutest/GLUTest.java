@@ -68,6 +68,7 @@ public class GLUTest extends Game {
 
     @Override
     public void create() {
+        GLUtils.printLibInfo();
         window.setCursorPos(854 / 2, 480 / 2);
         var mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         if (mode != null) {
@@ -164,7 +165,7 @@ public class GLUTest extends Game {
             cfg.glVersion = 3.2;
             cfg.coreProfile = true;
         }
-        System.out.println("Testing GLUtils " + GLUtils.VERSION);
+        System.out.println("Testing GLUtils " + GLUtils.version);
         new GameApp(new GLUTest(), cfg);
     }
 }

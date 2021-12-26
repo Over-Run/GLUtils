@@ -56,7 +56,7 @@ public class GameApp {
         app = this;
         config.errorCallback.set();
         if (!glfwInit()) {
-            throw new IllegalStateException("Can't init GLFW");
+            throw new IllegalStateException("Unable to initialize GLFW");
         }
         glfwWindowHint(GLFW_VISIBLE,
             config.hintVisible ? GLFW_TRUE : GLFW_FALSE);
@@ -67,8 +67,10 @@ public class GameApp {
             config.coreProfile
                 ? GLFW_OPENGL_CORE_PROFILE
                 : GLFW_OPENGL_ANY_PROFILE);
-        window = new GLFWindow(config.width,
-            config.height,
+        final int cw = config.width;
+        final int ch = config.height;
+        window = new GLFWindow(cw,
+            ch,
             config.title);
         input = new Input();
         window.keyCb((hWnd, key, scancode, action, mods) -> {
@@ -88,14 +90,17 @@ public class GameApp {
             input.mouseY = (int) yp;
         });
         bufFrame = framebuffer = new Framebuffer((hWnd, width, height) ->
-            game.resize(width, height), window);
+            game.resize(width, height), window)
+            .setWidth(cw)
+            .setHeight(ch);
         timer = new SystemTimer(config.tps);
         window.makeCurr();
-        GL.createCapabilities();
         glfwSwapInterval(config.vSync ? 1 : 0);
+        GL.createCapabilities();
         graphics = new Graphics();
         try {
             game.create();
+            game.resize(cw, ch);
             window.show();
             long lastTime = System.currentTimeMillis();
             int frames = 0;

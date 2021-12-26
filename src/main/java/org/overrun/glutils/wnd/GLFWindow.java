@@ -76,7 +76,7 @@ public class GLFWindow implements SizedObject {
                      final long share) {
         hWnd = glfwCreateWindow(width, height, title, monitor, share);
         if (hWnd == NULL) {
-            throw new RuntimeException("Can't create window");
+            throw new RuntimeException("Failed to create the GLFW window");
         }
         this.width = width;
         this.height = height;

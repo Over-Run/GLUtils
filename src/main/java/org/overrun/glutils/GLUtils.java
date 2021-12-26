@@ -42,8 +42,10 @@ import static org.overrun.glutils.Versions.current;
 public final class GLUtils {
     /**
      * current version
+     *
+     * @since 2.0.0
      */
-    public static final String VERSION = current();
+    public static final String version = current();
     /**
      * no error
      */
@@ -72,17 +74,28 @@ public final class GLUtils {
     private static IGLULogger logger = GLULoggerImpl.getInstance();
 
     /**
+     * Print library information and contributors
+     */
+    public static void printLibInfo() {
+        logger.info("===========================================================================");
+        logger.info("Thanks for using GLUtils " + version);
+        logger.info("\tAuthor:");
+        logger.info("\t\tsquid233");
+        logger.info("===========================================================================");
+    }
+
+    /**
      * Check current version older than {@code other}
      *
      * @param other Other version
-     * @return {@link #VERSION} &lt; {@code other}
+     * @return {@link #version} &lt; {@code other}
      * @since 0.9.0
      */
     public static boolean isOlder(String other) {
         // example: 0.9.0 < 0.10.0
         // so 0.9.0 is older than 0.10.0
         // so return true
-        int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
+        int[] curr = expand(toIArray(version.split("\\.")), 4);
         int[] oth = expand(toIArray(other.split("\\.")), 4);
         if (curr[MAJOR] < oth[MAJOR]) {
             return true;
@@ -115,14 +128,14 @@ public final class GLUtils {
      * Check current version newer than {@code other}
      *
      * @param other Other version
-     * @return {@link #VERSION} &gt; {@code other}
+     * @return {@link #version} &gt; {@code other}
      * @since 0.9.0
      */
     public static boolean isNewer(String other) {
         // example: 0.9.0 > 0.10.0
         // so 0.9.0 is older than 0.10.0
         // so return false
-        int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
+        int[] curr = expand(toIArray(version.split("\\.")), 4);
         int[] oth = expand(toIArray(other.split("\\.")), 4);
         if (curr[MAJOR] > oth[MAJOR]) {
             return true;
@@ -155,14 +168,14 @@ public final class GLUtils {
      * Check current version equals {@code other}
      *
      * @param other Other version
-     * @return {@link #VERSION} == {@code other}
+     * @return {@link #version} == {@code other}
      * @since 0.9.0
      */
     public static boolean isEqual(String other) {
         // example: 0.9.0 > 0.10.0
         // so 0.9.0 is older than 0.10.0
         // so return false
-        int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
+        int[] curr = expand(toIArray(version.split("\\.")), 4);
         int[] oth = expand(toIArray(other.split("\\.")), 4);
         return curr[MAJOR] == oth[MAJOR]
             && curr[MINOR] == oth[MINOR]
@@ -258,9 +271,9 @@ public final class GLUtils {
         String err = glErrorString();
         String s = id + ": " + err;
         if (err.equals(NO_ERR)) {
-            System.out.println(s);
+            logger.info(s);
         } else {
-            System.err.println(s);
+            logger.error(s);
         }
     }
 

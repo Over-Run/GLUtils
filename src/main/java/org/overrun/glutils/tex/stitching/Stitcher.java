@@ -28,15 +28,12 @@ package org.overrun.glutils.tex.stitching;
 import org.lwjgl.system.MemoryStack;
 import org.overrun.glutils.tex.StbImg;
 import org.overrun.glutils.tex.TexParam;
-import org.overrun.glutils.tex.Textures;
+import org.overrun.glutils.util.MapSorter;
 
-import java.nio.ByteBuffer;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 
-import static java.lang.Math.*;
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.*;
-import static org.lwjgl.system.MemoryUtil.memAlloc;
 import static org.overrun.glutils.FilesReader.getBytes;
 import static org.overrun.glutils.FilesReader.ntoBBuffer;
 import static org.overrun.glutils.GLUtils.getLogger;
@@ -53,6 +50,7 @@ import static org.overrun.glutils.GLUtils.getLogger;
  * @author squid233
  * @since 2.0.0
  */
+@Deprecated
 public class Stitcher {
     public static SpriteAtlas stitchStb(Class<?> c,
                                         TexParam param,
@@ -69,7 +67,48 @@ public class Stitcher {
     public static SpriteAtlas stitchStb(ClassLoader cl,
                                         TexParam param,
                                         String... filenames) {
-        int awidth, aheight, aid;
+        final int len = filenames.length;
+        final var images = new LinkedHashMap<String, StbImg>(len);
+        final var slots = new LinkedHashMap<String, SpriteAtlas.Slot>(len);
+        try (var stack = MemoryStack.stackPush()) {
+            var px = stack.mallocInt(1);
+            var py = stack.mallocInt(1);
+            var pc = stack.mallocInt(1);
+            for (var s : filenames) {
+                var bb = stbi_load_from_memory(ntoBBuffer(getBytes(cl, s)),
+                    px,
+                    py,
+                    pc,
+                    STBI_rgb_alpha);
+                var f = bb == null;
+                var cr = StbImg.CLEANER;
+                int w, h;
+                if (f) {
+                    getLogger().error("Can't load image \"" +
+                        s +
+                        "\": " +
+                        stbi_failure_reason());
+                    w = 2;
+                    h = 2;
+                    bb = stack.malloc(4);
+                    cr = null;
+                } else {
+                    w = px.get(0);
+                    h = py.get(0);
+                }
+                images.put(s,
+                    new StbImg(w,
+                        h,
+                        bb,
+                        cr,
+                        f)
+                );
+            }
+            MapSorter.sortByValue(images, Comparator.comparing((StbImg t) -> -t.height())
+                .thenComparing(t -> -t.width()));
+        }
+        throw new UnsupportedOperationException("TODO");
+        /*int awidth, aheight, aid;
         int maxWPer = 2, maxHPer = 2;
         int minWPer = 2, minHPer = 2;
         final int len = filenames.length;
@@ -192,7 +231,7 @@ public class Stitcher {
         for (var img : images.values()) {
             img.free();
         }
-        return new SpriteAtlas(awidth, aheight, aid, slots);
+        return new SpriteAtlas(awidth, aheight, aid, slots);*/
     }
 
     public static SpriteAtlas stitchAwt(ClassLoader cl,

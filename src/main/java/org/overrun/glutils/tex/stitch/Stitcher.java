@@ -23,18 +23,19 @@
  *
  */
 
-package org.overrun.glutils.util;
+package org.overrun.glutils.tex.stitch;
 
 /**
+ * <h2>Stitching textures</h2>
+ * <p>
+ * You may need to merge many textures into one atlas to speed up loading, so we
+ * provide a class to do this, it's {@code Stitcher}!
+ * </p><p>
+ * {@code Stitcher} will automatically delete duplicate filenames.
+ * </p>
+ *
  * @author squid233
  * @since 2.0.0
  */
-public interface IGLULogger {
-    void info(String msg);
-
-    void warn(String msg);
-
-    void error(String msg);
-
-    void catching(Throwable t);
+public class Stitcher {
 }

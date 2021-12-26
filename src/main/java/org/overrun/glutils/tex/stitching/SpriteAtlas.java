@@ -34,6 +34,7 @@ import java.util.Map;
  * @author squid233
  * @since 2.0.0
  */
+@Deprecated
 public class SpriteAtlas implements SizedObject {
     private final int width;
     private final int height;
@@ -107,15 +108,20 @@ public class SpriteAtlas implements SizedObject {
         public final int y;
         public final int width;
         public final int height;
+        public final String id;
+        public Slot splitL;
+        public Slot splitR;
 
         public Slot(int x,
                     int y,
                     int width,
-                    int height) {
+                    int height,
+                    String id) {
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
+            this.id = id;
         }
 
         @Override
