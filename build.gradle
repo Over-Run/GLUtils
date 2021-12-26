@@ -75,6 +75,17 @@ java {
     withSourcesJar()
 }
 
+javadoc {
+    options {
+        //-encoding utf-8 -charset utf-8 -windowtitle "GLUtils 1.6.0 Javadoc" -link https://docs.oracle.com/en/java/javase/11/docs/api/
+        encoding 'UTF-8'
+        charSet 'UTF-8'
+        author true
+        links 'https://docs.oracle.com/en/java/javase/11/docs/api/'
+        title "GLUtils $projVersion Javadoc"
+    }
+}
+
 publishing.publications {
     mavenJava(MavenPublication) {
         groupId = projGroupId

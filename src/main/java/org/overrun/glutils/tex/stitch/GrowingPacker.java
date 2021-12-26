@@ -35,6 +35,58 @@ import org.jetbrains.annotations.Nullable;
  * "https://github.com/jakesgordon/bin-packing/blob/master/js/packer.growing.js"
  * ><code>GrowingPacker</code></a>.
  * </p>
+ * <p>
+ * This is a binary tree based bin packing algorithm that is more complex than
+ * the simple Packer (packer.js). Instead of starting off with a fixed width and
+ * height, it starts with the width and height of the first block passed and
+ * then grows as necessary to accommodate each subsequent block. As it grows it
+ * attempts to maintain a roughly square ratio by making 'smart' choices about
+ * whether to grow right or down.
+ * </p>
+ * <p>
+ * When growing, the algorithm can only grow to the right <b>OR</b> down.
+ * Therefore, if the new block is <b>BOTH</b> wider and taller than the current
+ * target then it will be rejected. This makes it very important to initialize
+ * with a sensible starting width and height. If you are providing sorted input
+ * (largest first) then this will not be an issue.
+ * </p>
+ * <p>
+ * A potential way to solve this limitation would be to allow growth in
+ * <b>BOTH</b> directions at once, but this requires maintaining a more complex
+ * tree with 3 children (down, right and center) and that complexity can be
+ * avoided by simply choosing a sensible starting block.
+ * </p>
+ * <p>
+ * Best results occur when the input blocks are sorted by height, or even better
+ * when sorted by {@code max(width,height)}.
+ * </p>
+ * <h3>Inputs</h3>
+ * <p>
+ * {@code blocks}: array of {@link Block}
+ * </p>
+ * <h3>Outputs</h3>
+ * <p>
+ * marks each block that fits with a {@link Node}
+ * </p>
+ * <h3>Example</h3>
+ * <pre><code>
+ * var blocks = {
+ *     new Block(100, 100),
+ *     new Block(100, 100),
+ *     new Block(80, 80),
+ *     new Block(80, 80),
+ *     etc
+ *     etc
+ * };
+ *
+ * var packer = new GrowingPacker();
+ * packer.fit(blocks);
+ *
+ * for (var block : blocks) {
+ *     if (block.fit != null) {
+ *         Draw(block.fit.x, block.fit.y, block.w, block.h);
+ *     }
+ * }</code></pre>
  *
  * @author squid233
  * @since 2.0.0
@@ -42,7 +94,7 @@ import org.jetbrains.annotations.Nullable;
 public class GrowingPacker {
     public Node root;
 
-    public void fit(Node... blocks) {
+    public void fit(Block... blocks) {
         Node node;
         int len = blocks.length;
         int w, h;

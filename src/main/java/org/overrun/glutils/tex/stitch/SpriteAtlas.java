@@ -25,14 +25,76 @@
 
 package org.overrun.glutils.tex.stitch;
 
-import org.overrun.glutils.tex.StbImg;
+import org.overrun.glutils.SizedObject;
+import org.overrun.glutils.tex.Textures;
+
+import java.util.Map;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
-public class SpriteAtlas {
-    public static class Slot extends Node {
-        public StbImg img;
+public class SpriteAtlas implements SizedObject {
+    private final int width;
+    private final int height;
+    private final int id;
+    private final Map<String, Block> blocks;
+
+    public SpriteAtlas(int width,
+                       int height,
+                       int id,
+                       Map<String, Block> blocks) {
+        this.width = width;
+        this.height = height;
+        this.id = id;
+        this.blocks = blocks;
+    }
+
+    public void bind() {
+        Textures.bind2D(id);
+    }
+
+    public void unbind() {
+        Textures.unbind2D();
+    }
+
+    public float getU0(String id) {
+        return getSlot(id).fit.x / (float) width;
+    }
+
+    public float getV0(String id) {
+        return getSlot(id).fit.y / (float) height;
+    }
+
+    public float getU1(String id) {
+        var s = getSlot(id);
+        return (s.fit.x + s.w) / (float) width;
+    }
+
+    public float getV1(String id) {
+        var s = getSlot(id);
+        return (s.fit.y + s.h) / (float) height;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Block getSlot(String id) {
+        return blocks.get(id);
+    }
+
+    public Map<String, Block> getBlocks() {
+        return blocks;
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
     }
 }

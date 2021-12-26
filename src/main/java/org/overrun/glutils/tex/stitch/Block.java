@@ -29,56 +29,18 @@ package org.overrun.glutils.tex.stitch;
  * @author squid233
  * @since 2.0.0
  */
-public class Node {
-    public boolean used;
-    public int x;
-    public int y;
-    public int w;
-    public int h;
-    public Node down;
-    public Node right;
+public class Block {
+    public Node fit;
+    public int w, h;
 
     /**
-     * Construct with the params using status, position, size and children
+     * Construct with the params position
      *
-     * @param used  used
-     * @param x     x
-     * @param y     y
-     * @param w     width
-     * @param h     height
-     * @param down  down node
-     * @param right right node
-     */
-    public Node(boolean used,
-                int x,
-                int y,
-                int w,
-                int h,
-                Node down,
-                Node right) {
-        this.used = used;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.down = down;
-        this.right = right;
-    }
-
-    /**
-     * Construct with the params position and size
-     *
-     * @param x x
-     * @param y y
      * @param w width
      * @param h height
      */
-    public Node(int x,
-                int y,
-                int w,
-                int h) {
-        this.x = x;
-        this.y = y;
+    public Block(int w,
+                 int h) {
         this.w = w;
         this.h = h;
     }
@@ -86,6 +48,6 @@ public class Node {
     /**
      * Construct without params
      */
-    public Node() {
+    public Block() {
     }
 }
