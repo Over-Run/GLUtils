@@ -26,11 +26,8 @@
 package org.overrun.glutils.tex;
 
 import org.jetbrains.annotations.Contract;
-import org.lwjgl.stb.STBImage;
-import org.overrun.glutils.SizedObject;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import static org.lwjgl.stb.STBImage.stbi_failure_reason;
 import static org.overrun.glutils.GLUtils.getLogger;
@@ -39,66 +36,7 @@ import static org.overrun.glutils.GLUtils.getLogger;
  * @author squid233
  * @since 0.4.0
  */
-public class StbImg implements SizedObject {
-    /**
-     * Default cleaner
-     */
-    public static final Cleaner CLEANER = STBImage::stbi_image_free;
-    private final int width;
-    private final int height;
-    private final ByteBuffer data;
-    private final Cleaner cleaner;
-    private final boolean failed;
-
-    /**
-     * @author squid233
-     * @since 0.4.0
-     */
-    public interface Cleaner {
-        /**
-         * free memory
-         *
-         * @param data image data
-         */
-        void free(ByteBuffer data);
-    }
-
-    /**
-     * construct
-     *
-     * @param width   image width
-     * @param height  image height
-     * @param data    image data
-     * @param cleaner cleaner
-     * @param failed  is failed
-     */
-    public StbImg(int width,
-                  int height,
-                  ByteBuffer data,
-                  Cleaner cleaner,
-                  boolean failed) {
-        this.width = width;
-        this.height = height;
-        this.data = data;
-        this.cleaner = cleaner;
-        this.failed = failed;
-    }
-
-    /**
-     * construct
-     *
-     * @param width  image width
-     * @param height image height
-     * @param data   image data
-     * @param failed is failed
-     */
-    public StbImg(int width,
-                  int height,
-                  ByteBuffer data,
-                  boolean failed) {
-        this(width, height, data, CLEANER, failed);
-    }
-
+public class StbImg {
     @Contract("_ -> fail")
     public static void thr(String filename)
         throws IOException {
@@ -122,58 +60,5 @@ public class StbImg implements SizedObject {
             filename +
             "] : " +
             stbi_failure_reason());
-    }
-
-    /**
-     * get width
-     *
-     * @return {@link #width}
-     */
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    /**
-     * get height
-     *
-     * @return {@link #height}
-     */
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    /**
-     * get data
-     *
-     * @return {@link #data}
-     */
-    public ByteBuffer getData() {
-        return data;
-    }
-
-    /**
-     * get cleaner
-     *
-     * @return {@link #cleaner}
-     */
-    public Cleaner getCleaner() {
-        return cleaner;
-    }
-
-    /**
-     * is failed
-     *
-     * @return {@link #failed}
-     */
-    public boolean isFailed() {
-        return failed;
-    }
-
-    public void free() {
-        if (cleaner != null) {
-            cleaner.free(data);
-        }
     }
 }

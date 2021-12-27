@@ -25,9 +25,26 @@
 
 package org.overrun.glutils.tex.stitch;
 
+import org.overrun.glutils.tex.NativeImage;
+
 /**
  * @author squid233
  * @since 2.0.0
  */
-public interface LoadFunc {
+public class Sprite {
+    public final String id;
+    public final Block block;
+    public final NativeImage buffer;
+
+    public Sprite(String id,
+                  Block block,
+                  NativeImage buffer) {
+        this.id = id;
+        this.block = block;
+        this.buffer = buffer;
+    }
+
+    public void free() {
+        buffer.free();
+    }
 }

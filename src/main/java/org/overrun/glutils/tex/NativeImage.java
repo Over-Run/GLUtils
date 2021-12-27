@@ -23,15 +23,56 @@
  *
  */
 
-package org.overrun.glutils.tex.stitch;
+package org.overrun.glutils.tex;
 
-import java.awt.image.BufferedImage;
+import org.overrun.glutils.SizedObject;
+
+import java.nio.ByteBuffer;
+
+import static org.lwjgl.stb.STBImage.stbi_image_free;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
-@FunctionalInterface
-public interface AwtiLoadFunc {
-    BufferedImage load(String filename);
+public class NativeImage implements SizedObject {
+    public final int width;
+    public final int height;
+    public final ByteBuffer data;
+    public final boolean useStb;
+
+    public NativeImage(int width,
+                       int height,
+                       ByteBuffer data,
+                       boolean useStb) {
+        this.width = width;
+        this.height = height;
+        this.data = data;
+        this.useStb = useStb;
+    }
+
+    public NativeImage(int width,
+                       int height,
+                       ByteBuffer data) {
+        this(width, height, data, true);
+    }
+
+    public void free() {
+        if (useStb) {
+            stbi_image_free(data);
+        } else {
+            memFree(data);
+        }
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
 }

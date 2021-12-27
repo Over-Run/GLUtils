@@ -33,7 +33,7 @@ import java.nio.IntBuffer;
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface StbiLoadFunc extends LoadFunc {
+public interface StbiLoadFunc {
     ByteBuffer load(String filename,
                     IntBuffer px,
                     IntBuffer py,

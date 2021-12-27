@@ -26,10 +26,8 @@
 package org.overrun.glutils.tex.stitch;
 
 import org.overrun.glutils.SizedObject;
-import org.overrun.glutils.tex.StbImg;
 import org.overrun.glutils.tex.Textures;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
@@ -40,39 +38,16 @@ public class SpriteAtlas implements SizedObject {
     private final int width;
     private final int height;
     private final int id;
-    private final Map<String, Slot> slots;
+    private final Map<String, Sprite> sprites;
 
     public SpriteAtlas(int width,
                        int height,
                        int id,
-                       Map<String, Slot> slots) {
+                       Map<String, Sprite> sprites) {
         this.width = width;
         this.height = height;
         this.id = id;
-        this.slots = slots;
-    }
-
-    public static class Slot extends Block {
-        public ByteBuffer data;
-        public StbImg.Cleaner cleaner;
-        public String id;
-
-        public Slot(ByteBuffer data,
-                    StbImg.Cleaner cleaner,
-                    Block block,
-                    String id) {
-            super(block.w, block.h);
-            fit = block.fit;
-            this.data = data;
-            this.cleaner = cleaner;
-            this.id = id;
-        }
-
-        public void freeData() {
-            if (cleaner != null) {
-                cleaner.free(data);
-            }
-        }
+        this.sprites = sprites;
     }
 
     public void bind() {
@@ -84,33 +59,33 @@ public class SpriteAtlas implements SizedObject {
     }
 
     public float getU0(String id) {
-        return getSlot(id).fit.x / (float) width;
+        return getSprite(id).block.fit.x / (float) width;
     }
 
     public float getV0(String id) {
-        return getSlot(id).fit.y / (float) height;
+        return getSprite(id).block.fit.y / (float) height;
     }
 
     public float getU1(String id) {
-        var s = getSlot(id);
-        return (s.fit.x + s.w) / (float) width;
+        var s = getSprite(id);
+        return (s.block.fit.x + s.block.w) / (float) width;
     }
 
     public float getV1(String id) {
-        var s = getSlot(id);
-        return (s.fit.y + s.h) / (float) height;
+        var s = getSprite(id);
+        return (s.block.fit.y + s.block.h) / (float) height;
     }
 
     public int getId() {
         return id;
     }
 
-    public Block getSlot(String id) {
-        return slots.get(id);
+    public Sprite getSprite(String id) {
+        return sprites.get(id);
     }
 
-    public Map<String, Slot> getSlots() {
-        return slots;
+    public Map<String, Sprite> getSprites() {
+        return sprites;
     }
 
     @Override

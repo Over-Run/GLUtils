@@ -25,8 +25,6 @@
 
 package org.overrun.glutils.tex;
 
-import org.overrun.glutils.SizedObject;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -39,28 +37,7 @@ import java.util.Objects;
  * @author squid233
  * @since 0.4.0
  */
-public class AWTImage implements SizedObject {
-    /**
-     * is empty image
-     */
-    public final boolean isNull;
-    /**
-     * image obj
-     */
-    public final BufferedImage img;
-
-    /**
-     * construct
-     *
-     * @param isNull isNull
-     * @param img    img
-     */
-    public AWTImage(boolean isNull,
-                    BufferedImage img) {
-        this.isNull = isNull;
-        this.img = img;
-    }
-
+public class AWTImage {
     /**
      * load image from classpath
      *
@@ -143,15 +120,5 @@ public class AWTImage implements SizedObject {
             copy[i] = a << 24 | b << 16 | g << 8 | r;
         }
         return copy;
-    }
-
-    @Override
-    public int getWidth() {
-        return img.getWidth();
-    }
-
-    @Override
-    public int getHeight() {
-        return img.getHeight();
     }
 }

@@ -27,13 +27,10 @@ package org.overrun.glutils.tex.stitch;
 
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
-import org.overrun.commonutils.MapSorter;
 import org.overrun.glutils.tex.*;
-import org.overrun.glutils.tex.stitch.SpriteAtlas.Slot;
 
-import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 
@@ -43,6 +40,7 @@ import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 import static org.lwjgl.system.MemoryUtil.memAlloc;
 import static org.overrun.glutils.FilesReader.getBytes;
 import static org.overrun.glutils.FilesReader.ntoBBuffer;
+import static org.overrun.glutils.tex.AWTImage.getRGB;
 
 /**
  * <h2>Stitching textures</h2>
@@ -57,6 +55,11 @@ import static org.overrun.glutils.FilesReader.ntoBBuffer;
  * @since 2.0.0
  */
 public class Stitcher {
+    private static final int[] MISSING_TEXTURE = {
+        0xfff800f8, 0xff000000,
+        0xff000000, 0xfff800f8
+    };
+
     public static SpriteAtlas stitchStb(Class<?> c,
                                         TexParam param,
                                         String... filenames) {
@@ -105,70 +108,42 @@ public class Stitcher {
     private static SpriteAtlas stitchAwt0(AwtiLoadFunc func,
                                           TexParam param,
                                           String... filenames) {
-        var slots = new LinkedHashMap<String, Slot>();
-        int aw, ah, aid;
-        var images = new LinkedHashMap<String, AWTImage>();
-        for (var filename : filenames) {
-            BufferedImage bi;
+        var sprites = new Sprite[filenames.length];
+        for (int i = 0; i < filenames.length; ++i) {
+            var filename = filenames[i];
+            ByteBuffer bb;
+            int w, h;
+            int[] pixels;
             try {
-                bi = func.load(filename);
+                var bi = func.load(filename);
+                w = bi.getWidth();
+                h = bi.getHeight();
+                pixels = getRGB(bi);
             } catch (Exception e) {
-                bi = null;
+                e.printStackTrace();
+                w = 2;
+                h = 2;
+                pixels = MISSING_TEXTURE;
             }
-            var failed = bi == null;
-            if (failed) {
-                bi = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
-                bi.setRGB(0, 0, 2, 2, new int[]{
-                    0xfff800f8, 0xff000000,
-                    0xff000000, 0xfff800f8
-                }, 0, 2);
-            }
-            images.put(filename, new AWTImage(failed, bi));
+            bb = memAlloc(w * h * Integer.BYTES);
+            bb.asIntBuffer().put(pixels);
+            sprites[i] = new Sprite(filename,
+                new Block(w, h),
+                new NativeImage(w, h, bb, false));
         }
-        MapSorter.sortByValue(images,
-            Comparator.comparing((AWTImage i) -> -i.getHeight())
-                .thenComparing(i -> -i.getWidth())
-        );
-        var blocks = new Block[images.size()];
-        int i = 0;
-        for (var img : images.values()) {
-            blocks[i] = new Block(img.width(), img.height());
-            ++i;
-        }
-        var packer = new GrowingPacker();
-        packer.fit(blocks);
-        i = 0;
-        for (var e : images.entrySet()) {
-            var block = blocks[i];
-            if (block.fit != null) {
-                var id = e.getKey();
-                var img = e.getValue();
-                slots.put(id, new Slot(
-                    memAlloc(img.width() * img.height() * Integer.BYTES),
-                    MemoryUtil::memFree,
-                    block,
-                    id));
-            }
-            ++i;
-        }
-        aw = packer.root.w;
-        ah = packer.root.h;
-        aid = Textures.gen();
-        stitchGone(aw, ah, aid, param, slots);
-        return new SpriteAtlas(aw, ah, aid, slots);
+        return stitchBuf(sprites, param);
     }
 
     private static SpriteAtlas stitchStb0(StbiLoadFunc func,
                                           TexParam param,
                                           String... filenames) {
-        var slots = new LinkedHashMap<String, Slot>();
-        int aw, ah, aid;
+        var sprites = new Sprite[filenames.length];
         try (var stack = MemoryStack.stackPush()) {
             var px = stack.mallocInt(1);
             var py = stack.mallocInt(1);
             var pc = stack.mallocInt(1);
-            var images = new LinkedHashMap<String, StbImg>();
-            for (var filename : filenames) {
+            for (int i = 0; i < filenames.length; ++i) {
+                var filename = filenames[i];
                 ByteBuffer bb;
                 try {
                     bb = func.load(
@@ -181,70 +156,55 @@ public class Stitcher {
                 } catch (Exception e) {
                     bb = null;
                     StbImg.thrOut(filename);
+                    e.printStackTrace();
                 }
                 var failed = bb == null;
-                var cleaner = StbImg.CLEANER;
                 int w, h;
                 if (failed) {
-                    cleaner = null;
                     w = 2;
                     h = 2;
-                    bb = stack.malloc(4 * Integer.BYTES);
-                    bb.asIntBuffer()
-                        .put(0xfff800f8)
-                        .put(0xff000000)
-                        .put(0xff000000)
-                        .put(0xfff800f8)
-                        .flip();
+                    bb = memAlloc(4 * Integer.BYTES);
+                    bb.asIntBuffer().put(MISSING_TEXTURE);
                 } else {
                     w = px.get(0);
                     h = py.get(0);
                 }
-                images.put(filename,
-                    new StbImg(w,
-                        h,
-                        bb,
-                        cleaner,
-                        failed));
+                sprites[i] = new Sprite(filename,
+                    new Block(w, h),
+                    new NativeImage(w, h, bb));
             }
-            MapSorter.sortByValue(images,
-                Comparator.comparing((StbImg i) -> -i.height())
-                    .thenComparing(i -> -i.width())
-            );
-            var blocks = new Block[images.size()];
-            int i = 0;
-            for (var img : images.values()) {
-                blocks[i] = new Block(img.width(), img.height());
-                ++i;
-            }
-            var packer = new GrowingPacker();
-            packer.fit(blocks);
-            i = 0;
-            for (var e : images.entrySet()) {
-                var block = blocks[i];
-                if (block.fit != null) {
-                    var id = e.getKey();
-                    var img = e.getValue();
-                    slots.put(id, new Slot(img.getData(),
-                        img.getCleaner(),
-                        block,
-                        id));
-                }
-                ++i;
-            }
-            aw = packer.root.w;
-            ah = packer.root.h;
-            aid = Textures.gen();
-            stitchGone(aw, ah, aid, param, slots);
         }
-        return new SpriteAtlas(aw, ah, aid, slots);
+        return stitchBuf(sprites, param);
     }
 
-    private static void stitchGone(int aw,
-                                   int ah,
-                                   int aid,
-                                   TexParam param,
-                                   LinkedHashMap<String, Slot> slots) {
+    private static SpriteAtlas stitchBuf(Sprite[] sprites,
+                                         TexParam param) {
+        Arrays.sort(sprites,
+            Comparator.comparing((Sprite s) -> -s.buffer.height)
+                .thenComparing(s -> -s.buffer.width));
+        int aw, ah, aid;
+        var blocks = new Block[sprites.length];
+        for (int i = 0; i < blocks.length; i++) {
+            blocks[i] = sprites[i].block;
+        }
+        var packer = new GrowingPacker();
+        packer.fit(blocks);
+        aw = packer.root.w;
+        ah = packer.root.h;
+        aid = Textures.gen();
+        stitchTex(aw, ah, aid, param, sprites);
+        var map = new LinkedHashMap<String, Sprite>();
+        for (var sprite : sprites) {
+            map.put(sprite.id, sprite);
+        }
+        return new SpriteAtlas(aw, ah, aid, map);
+    }
+
+    private static void stitchTex(int aw,
+                                  int ah,
+                                  int aid,
+                                  TexParam param,
+                                  Sprite[] sprites) {
         Textures.bind2D(aid);
         Textures.texParameter(param);
         glTexImage2D(GL_TEXTURE_2D,
@@ -256,19 +216,20 @@ public class Stitcher {
             GL_RGBA,
             GL_UNSIGNED_BYTE,
             new int[aw * ah]);
-        for (var s : slots.values()) {
-            if (s.fit != null) {
+        for (var s : sprites) {
+            var b = s.block;
+            if (b.fit != null) {
                 glTexSubImage2D(GL_TEXTURE_2D,
                     0,
-                    s.fit.x,
-                    s.fit.y,
-                    s.w,
-                    s.h,
+                    b.fit.x,
+                    b.fit.y,
+                    b.w,
+                    b.h,
                     GL_RGBA,
                     GL_UNSIGNED_BYTE,
-                    s.data);
+                    s.buffer.data);
             }
-            s.freeData();
+            s.free();
         }
         Textures.genMipmap2D();
     }
