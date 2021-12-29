@@ -27,8 +27,7 @@ package org.overrun.glutils.game;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.overrun.glutils.tex.AWTImage;
-import org.overrun.glutils.tex.StbImg;
+import org.overrun.glutils.tex.Images;
 import org.overrun.glutils.tex.TexParam;
 import org.overrun.glutils.tex.Textures;
 
@@ -38,7 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static java.util.Objects.requireNonNull;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
 import static org.lwjgl.stb.STBImage.*;
 import static org.overrun.glutils.game.GameEngine.app;
 
@@ -77,7 +76,7 @@ public class Texture2D {
                     var pc = stack.mallocInt(1);
                     var img = stbi_load_from_memory(bb, px, py, pc, STBI_rgb_alpha);
                     if (img == null) {
-                        StbImg.thr(filename);
+                        Images.thr(filename);
                     }
                     width = px.get(0);
                     height = py.get(0);
@@ -98,7 +97,7 @@ public class Texture2D {
                 Textures.pushToGL(param,
                     width,
                     height,
-                    AWTImage.getRGB(img));
+                    Images.getRGB(img));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

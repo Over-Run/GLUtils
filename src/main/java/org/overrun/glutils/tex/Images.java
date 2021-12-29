@@ -25,6 +25,9 @@
 
 package org.overrun.glutils.tex;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -33,20 +36,46 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static org.lwjgl.stb.STBImage.stbi_failure_reason;
+import static org.overrun.glutils.GLUtils.getLogger;
+
 /**
  * @author squid233
- * @since 0.4.0
+ * @since 2.0.0
  */
-public class AWTImage {
+public class Images {
+    @Contract("_ -> fail")
+    public static void thr(String filename) throws IOException {
+        throw new IOException(strErrStbi(filename));
+    }
+
+    @Contract("_ -> fail")
+    public static void thrRE(String filename) {
+        throw new RuntimeException(strErrStbi(filename));
+    }
+
+    @Contract("_ -> fail")
+    public static void thrOut(String filename) {
+        getLogger().error(strErrStbi(filename));
+    }
+
+    @NotNull
+    public static String strErrStbi(String filename) {
+        return "Error loading image \"" +
+            filename +
+            "\": " +
+            stbi_failure_reason();
+    }
+
     /**
-     * load image from classpath
+     * load AWT image from classpath
      *
      * @param loader class loader
      * @param name   image absolute name
      * @return loaded image
      */
-    public static BufferedImage load(ClassLoader loader,
-                                     String name) {
+    public static BufferedImage loadAwt(ClassLoader loader,
+                                        String name) {
         try (InputStream is = loader.getResourceAsStream(name)) {
             return ImageIO.read(Objects.requireNonNull(is));
         } catch (IOException e) {
@@ -55,12 +84,12 @@ public class AWTImage {
     }
 
     /**
-     * load image from filesystem
+     * load AWT image from filesystem
      *
      * @param name image absolute name
      * @return loaded image
      */
-    public static BufferedImage loadFs(String name) {
+    public static BufferedImage loadFsAwt(String name) {
         try {
             return ImageIO.read(new File(name));
         } catch (IOException e) {
@@ -74,7 +103,7 @@ public class AWTImage {
      * @param img image
      * @return pixels array
      */
-    public static int[] getBGR(BufferedImage img) {
+    public static int[] getBGR(@NotNull BufferedImage img) {
         int w = img.getWidth();
         return img.getRGB(0,
             0,
@@ -110,13 +139,13 @@ public class AWTImage {
      * @return Copy of converted pixels
      * @since 1.0.0
      */
-    public static int[] toRGB(int[] pixels) {
+    public static int @NotNull [] toRGB(int[] pixels) {
         int[] copy = Arrays.copyOf(pixels, pixels.length);
         for (int i = 0; i < copy.length; ++i) {
-            int a = copy[i] >> 24 & 255;
-            int r = copy[i] >> 16 & 255;
-            int g = copy[i] >> 8 & 255;
-            int b = copy[i] & 255;
+            int a = copy[i] >> 24 & 0xff;
+            int r = copy[i] >> 16 & 0xff;
+            int g = copy[i] >> 8 & 0xff;
+            int b = copy[i] & 0xff;
             copy[i] = a << 24 | b << 16 | g << 8 | r;
         }
         return copy;

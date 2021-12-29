@@ -30,11 +30,11 @@ import org.joml.Vector4f;
 import org.lwjgl.assimp.*;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
-import org.overrun.glutils.tex.TexParam;
-import org.overrun.glutils.tex.Textures;
 import org.overrun.glutils.light.Material;
 import org.overrun.glutils.mesh.Mesh;
 import org.overrun.glutils.mesh.Mesh3;
+import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Textures;
 
 import java.io.File;
 import java.io.IOException;

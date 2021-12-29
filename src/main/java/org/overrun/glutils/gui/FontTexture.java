@@ -35,7 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static java.awt.RenderingHints.*;
-import static org.overrun.glutils.tex.AWTImage.getRGB;
+import static org.overrun.glutils.tex.Images.getRGB;
 import static org.overrun.glutils.tex.TexParam.glLinear;
 import static org.overrun.glutils.tex.TexParam.glNearest;
 

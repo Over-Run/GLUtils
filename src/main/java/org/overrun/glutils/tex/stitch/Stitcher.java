@@ -40,7 +40,7 @@ import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 import static org.lwjgl.system.MemoryUtil.memAlloc;
 import static org.overrun.glutils.FilesReader.getBytes;
 import static org.overrun.glutils.FilesReader.ntoBBuffer;
-import static org.overrun.glutils.tex.AWTImage.getRGB;
+import static org.overrun.glutils.tex.Images.getRGB;
 
 /**
  * <h2>Stitching textures</h2>
@@ -91,7 +91,7 @@ public class Stitcher {
     public static SpriteAtlas stitchAwt(ClassLoader cl,
                                         TexParam param,
                                         String... filenames) {
-        return stitchAwt0(filename -> AWTImage.load(cl, filename),
+        return stitchAwt0(filename -> Images.loadAwt(cl, filename),
             param, filenames);
     }
 
@@ -102,7 +102,7 @@ public class Stitcher {
 
     public static SpriteAtlas stitchFsAwt(TexParam param,
                                           String... filenames) {
-        return stitchAwt0(AWTImage::loadFs, param, filenames);
+        return stitchAwt0(Images::loadFsAwt, param, filenames);
     }
 
     private static SpriteAtlas stitchAwt0(AwtiLoadFunc func,
@@ -155,7 +155,7 @@ public class Stitcher {
                     );
                 } catch (Exception e) {
                     bb = null;
-                    StbImg.thrOut(filename);
+                    Images.thrOut(filename);
                     e.printStackTrace();
                 }
                 var failed = bb == null;

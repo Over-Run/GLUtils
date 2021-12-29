@@ -91,13 +91,13 @@ public class Textures {
         if (ID_MAP.containsKey(name)) {
             return ID_MAP.get(name);
         }
-        var img = AWTImage.load(loader, name);
+        var img = Images.loadAwt(loader, name);
         int id = gen();
         bind2D(id);
         pushToGL(param,
             img.getWidth(),
             img.getHeight(),
-            AWTImage.getRGB(img));
+            Images.getRGB(img));
         ID_MAP.put(name, id);
         return id;
     }
@@ -179,7 +179,7 @@ public class Textures {
             var pc = stack.mallocInt(1);
             data = stbi_load_from_memory(buffer, pw, ph, pc, STBI_rgb_alpha);
             if (data == null) {
-                StbImg.thrRE(identifier);
+                Images.thrRE(identifier);
             }
             w = pw.get(0);
             h = ph.get(0);
