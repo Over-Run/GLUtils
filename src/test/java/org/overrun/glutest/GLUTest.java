@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 package org.overrun.glutest;
 
 import org.joml.Vector3f;
+import org.lwjgl.Version;
 import org.overrun.glutils.GLUtils;
 import org.overrun.glutils.game.Game;
 import org.overrun.glutils.game.GameApp;
@@ -36,9 +37,8 @@ import org.overrun.glutils.light.PointLight;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.overrun.glutils.game.GameEngine.input;
-import static org.overrun.glutils.game.GameEngine.window;
+import static org.lwjgl.opengl.GL30.*;
+import static org.overrun.glutils.game.GameEngine.*;
 
 /**
  * @author squid233
@@ -76,9 +76,22 @@ public class GLUTest extends Game {
                 (mode.height() - window.height()) / 2);
         }
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
+        System.out.println("Backend library: LWJGL " + Version.getVersion());
+        System.out.println("Using " + glfwGetVersionString());
         System.out.println("GL Renderer: " + glGetString(GL_RENDERER));
         System.out.println("GL Vendor: " + glGetString(GL_VENDOR));
-        System.out.println("GL Extensions: " + glGetString(GL_EXTENSIONS));
+        var sb = new StringBuilder();
+        if (app.config.glVersion > 2) {
+            for (int i = 0, n = glGetInteger(GL_EXTENSIONS); i < n; i++) {
+                if (i > 0) {
+                    sb.append(" ");
+                }
+                sb.append(glGetStringi(GL_EXTENSIONS, i));
+            }
+        } else {
+            sb.append(glGetString(GL_EXTENSIONS));
+        }
+        System.out.println("GL Extensions: " + sb);
         System.out.println("GL Version: " + glGetString(GL_VERSION));
         System.out.println("GL Shading language version: " + glGetString(GL_SHADING_LANGUAGE_VERSION));
         init();

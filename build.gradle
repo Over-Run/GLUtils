@@ -96,11 +96,11 @@ publishing.publications {
         pom {
             name = projName
             description = projDesc
-            url = projVcs
+            url = "https://github.com/$projVcs"
             licenses {
                 license {
                     name = 'The MIT License'
-                    url = 'https://raw.githubusercontent.com/Over-Run/GLUtils/2.x/LICENSE'
+                    url = "https://raw.githubusercontent.com/$projVcs/$projBranch/LICENSE"
                 }
             }
             developers {
@@ -111,9 +111,9 @@ publishing.publications {
                 }
             }
             scm {
-                connection = "${projVcs}.git"
-                developerConnection = "${projVcs}.git"
-                url = projVcs
+                connection = "https://github.com/${projVcs}.git"
+                developerConnection = "https://github.com/${projVcs}.git"
+                url = "https://github.com/$projVcs"
             }
         }
     }
