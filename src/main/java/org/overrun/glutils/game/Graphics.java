@@ -33,6 +33,9 @@ import static org.overrun.glutils.game.GameEngine.app;
  * @since 1.5.0
  */
 public class Graphics {
+    /**
+     * Current frames per seconds
+     */
     protected int fps;
     /**
      * State of vertical synchronizing.
@@ -42,6 +45,11 @@ public class Graphics {
      */
     protected boolean vSync = app.config.vSync;
 
+    /**
+     * Get current frames per seconds
+     *
+     * @return {@link #fps}
+     */
     public int getFps() {
         return fps;
     }

@@ -30,12 +30,30 @@ package org.overrun.glutils.timer;
  * @since 1.5.0
  */
 public interface ITimer {
+    /**
+     * Advance the time
+     */
     void advanceTime();
 
-    float getTps();
+    /**
+     * Get timer ticks per seconds.
+     *
+     * @return The tps.
+     */
+    double getTps();
 
-    void setTps(float tps);
+    /**
+     * Set timer ticks per seconds.
+     *
+     * @param tps The tps.
+     */
+    void setTps(double tps);
 
+    /**
+     * The tick count that should tick.
+     *
+     * @return ticks
+     */
     int getTicks();
 
     /**
@@ -43,7 +61,7 @@ public interface ITimer {
      *
      * @return The delta time.
      */
-    float getDelta();
+    double getDelta();
 
     /**
      * Get current time in seconds.

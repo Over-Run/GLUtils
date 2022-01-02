@@ -35,7 +35,12 @@ public class GLFWTimer extends AbstractTimer {
     private static final double MAX_SECONDS_PER_UPDATE = 1.0;
     private double lastTime = glfwGetTime();
 
-    public GLFWTimer(float tps) {
+    /**
+     * Construct with {@link #tps}
+     *
+     * @param tps {@link #tps}
+     */
+    public GLFWTimer(double tps) {
         super(tps);
     }
 
@@ -50,8 +55,8 @@ public class GLFWTimer extends AbstractTimer {
         if (passedS > MAX_SECONDS_PER_UPDATE) {
             passedS = MAX_SECONDS_PER_UPDATE;
         }
-        fps = (float) (MAX_SECONDS_PER_UPDATE / passedS);
-        passedTime += (float) passedS * timeScale * tps;
+        fps = MAX_SECONDS_PER_UPDATE / passedS;
+        passedTime += passedS * timeScale * tps;
         ticks = (int) passedTime;
         if (ticks > MAX_TICKS_PER_UPDATE) {
             ticks = MAX_TICKS_PER_UPDATE;

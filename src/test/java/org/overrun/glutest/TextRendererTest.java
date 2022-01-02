@@ -30,6 +30,7 @@ import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
 import org.overrun.glutils.gl.ll.TextRenderer;
 import org.overrun.glutils.gui.FontTexture;
+import org.overrun.glutils.timer.SystemTimer;
 
 import java.awt.*;
 
@@ -107,7 +108,7 @@ public class TextRendererTest extends Game {
     public static void main(String[] args) {
         GameConfig config = new GameConfig();
         config.title = "TextRenderer";
-        config.tps = 100;
+        config.timer = new SystemTimer(100);
         new GameApp(new TextRendererTest(), config);
     }
 }

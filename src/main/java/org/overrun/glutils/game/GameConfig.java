@@ -26,6 +26,7 @@
 package org.overrun.glutils.game;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.overrun.glutils.timer.ITimer;
 
 /**
  * @author squid233
@@ -60,13 +61,16 @@ public class GameConfig {
      * </p>
      */
     public boolean hintVisible = false;
-    public boolean useStb = false;
     /**
-     * Option to set ticks per seconds.
+     * Option to set using stb
      */
-    public float tps = 20;
+    public boolean useStb = true;
     /**
-     * Option to enable vertical synchronize.
+     * Option to set timer.
+     */
+    public ITimer timer;
+    /**
+     * Option to enable vertical synchronizing.
      * <p>
      * <b>Note:</b> Don't confuse with {@link Graphics#vSync}
      * </p>

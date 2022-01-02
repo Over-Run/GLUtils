@@ -34,7 +34,12 @@ public class SystemTimer extends AbstractTimer {
     private static final long MAX_NS_PER_UPDATE = 1_000_000_000L;
     private long lastTime = System.nanoTime();
 
-    public SystemTimer(float tps) {
+    /**
+     * Construct with {@link #tps}
+     *
+     * @param tps {@link #tps}
+     */
+    public SystemTimer(double tps) {
         super(tps);
     }
 
@@ -49,13 +54,13 @@ public class SystemTimer extends AbstractTimer {
         if (passedNs > MAX_NS_PER_UPDATE) {
             passedNs = MAX_NS_PER_UPDATE;
         }
-        fps = (float) (MAX_NS_PER_UPDATE / passedNs);
-        passedTime += (float) passedNs * timeScale * tps / (float) NS_PER_SECOND;
+        fps = (double) MAX_NS_PER_UPDATE / passedNs;
+        passedTime += passedNs * timeScale * tps / (double) NS_PER_SECOND;
         ticks = (int) passedTime;
         if (ticks > MAX_TICKS_PER_UPDATE) {
             ticks = MAX_TICKS_PER_UPDATE;
         }
-        passedTime = passedTime - ticks;
+        passedTime -= ticks;
         delta = passedTime;
     }
 

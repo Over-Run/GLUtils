@@ -93,7 +93,7 @@ public class GameApp {
             game.resize(width, height), window)
             .setWidth(cw)
             .setHeight(ch);
-        timer = new SystemTimer(config.tps);
+        timer = config.timer != null ? config.timer : new SystemTimer(20);
         window.makeCurr();
         glfwSwapInterval(config.vSync ? 1 : 0);
         GL.createCapabilities();

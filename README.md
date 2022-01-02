@@ -39,7 +39,7 @@ import org.overrun.glutils.gl.*;
 import org.overrun.glutils.mesh.obj.*;
 
 public class Example extends Game {
-    private static ClassLoader cl = Example.class.getClassLoader();
+    private static final ClassLoader cl = Example.class.getClassLoader();
     private GLProgram prg;
     private ObjModel3 model;
 

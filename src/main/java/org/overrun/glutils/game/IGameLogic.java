@@ -45,8 +45,6 @@ public interface IGameLogic {
      * <p>
      * This method call per ticks.
      * </p>
-     *
-     * @see GameConfig#tps
      */
     default void tick() {
     }

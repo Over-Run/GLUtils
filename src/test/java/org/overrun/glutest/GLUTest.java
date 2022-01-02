@@ -77,21 +77,18 @@ public class GLUTest extends Game {
         }
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         System.out.println("Backend library: LWJGL " + Version.getVersion());
-        System.out.println("Using " + glfwGetVersionString());
+        System.out.println("Using GLFW " + glfwGetVersionString());
         System.out.println("GL Renderer: " + glGetString(GL_RENDERER));
         System.out.println("GL Vendor: " + glGetString(GL_VENDOR));
         var sb = new StringBuilder();
         if (app.config.glVersion > 2) {
-            for (int i = 0, n = glGetInteger(GL_EXTENSIONS); i < n; i++) {
-                if (i > 0) {
-                    sb.append(" ");
-                }
-                sb.append(glGetStringi(GL_EXTENSIONS, i));
+            for (int i = 0, n = glGetInteger(GL_NUM_EXTENSIONS); i < n; i++) {
+                sb.append(" ").append(glGetStringi(GL_EXTENSIONS, i));
             }
         } else {
             sb.append(glGetString(GL_EXTENSIONS));
         }
-        System.out.println("GL Extensions: " + sb);
+        System.out.println("GL Extensions:" + sb);
         System.out.println("GL Version: " + glGetString(GL_VERSION));
         System.out.println("GL Shading language version: " + glGetString(GL_SHADING_LANGUAGE_VERSION));
         init();
