@@ -82,6 +82,13 @@ public class GameApp {
                 game.keyRepeated(key, scancode, mods);
             }
         });
+        window.mouseButtonCb((hWnd, button, action, mods) -> {
+            if (action == GLFW_PRESS) {
+                game.mousePressed(button, mods);
+            } else if (action == GLFW_RELEASE) {
+                game.mouseReleased(button, mods);
+            }
+        });
         window.cursorPosCb((hWnd, xp, yp) -> {
             input.deltaMX = (int) xp - input.mouseX;
             input.deltaMY = (int) yp - input.mouseY;

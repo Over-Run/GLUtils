@@ -118,6 +118,20 @@ public class Game implements IGameLogic {
         }
     }
 
+    @Override
+    public void mousePressed(int button, int mods) {
+        if (screen != null) {
+            screen.mousePressed(button, mods);
+        }
+    }
+
+    @Override
+    public void mouseReleased(int button, int mods) {
+        if (screen != null) {
+            screen.mouseReleased(button, mods);
+        }
+    }
+
     /**
      * Freeing.
      * <p>

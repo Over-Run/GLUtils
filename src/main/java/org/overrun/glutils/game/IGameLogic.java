@@ -111,5 +111,30 @@ public interface IGameLogic {
                              final int mods) {
     }
 
+    /**
+     * Called on mouse button pressed.
+     *
+     * @param button The button.
+     * @param mods   The modifiers.
+     * @since 2.0.0
+     */
+    default void mousePressed(final int button,
+                              final int mods) {
+    }
+
+    /**
+     * Called on mouse button released.
+     *
+     * @param button The button.
+     * @param mods   The modifiers.
+     * @since 2.0.0
+     */
+    default void mouseReleased(final int button,
+                               final int mods) {
+    }
+
+    /**
+     * Free all resource
+     */
     void free();
 }
