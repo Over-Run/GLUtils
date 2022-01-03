@@ -26,6 +26,7 @@
 package org.overrun.glutils.game;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.overrun.glutils.game.GameEngine.window;
 
 /**
@@ -35,8 +36,48 @@ import static org.overrun.glutils.game.GameEngine.window;
 public class Input {
     protected int mouseX, mouseY, deltaMX, deltaMY;
 
+    /**
+     * Is key pressed
+     *
+     * @param key The key
+     * @return key pressed
+     * @since 2.0.0
+     */
     public boolean keyPressed(final int key) {
         return window.key(key) == GLFW_PRESS;
+    }
+
+    /**
+     * Is key released
+     *
+     * @param key The key
+     * @return key released
+     * @since 2.0.0
+     */
+    public boolean keyReleased(final int key) {
+        return window.key(key) == GLFW_RELEASE;
+    }
+
+    /**
+     * Is mouse button pressed
+     *
+     * @param button The mouse button
+     * @return mouse button pressed
+     * @since 2.0.0
+     */
+    public boolean mousePressed(final int button) {
+        return window.mouse(button) == GLFW_PRESS;
+    }
+
+    /**
+     * Is mouse button released
+     *
+     * @param button The mouse button
+     * @return mouse button released
+     * @since 2.0.0
+     */
+    public boolean mouseReleased(final int button) {
+        return window.mouse(button) == GLFW_RELEASE;
     }
 
     public int getMouseX() {
