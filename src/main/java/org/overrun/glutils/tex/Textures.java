@@ -27,6 +27,7 @@ package org.overrun.glutils.tex;
 
 import org.jetbrains.annotations.Range;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
@@ -36,6 +37,7 @@ import java.util.Map;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.overrun.glutils.gl.ll.GLU.gluBuild2DMipmaps;
 
 /**
  * @author squid233
@@ -244,17 +246,28 @@ public class Textures {
                                 int h,
                                 ByteBuffer data) {
         texParameter(param);
-        glTexImage2D(GL_TEXTURE_2D,
-            0,
-            GL_RGBA,
-            w,
-            h,
-            0,
-            GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            data
-        );
-        genMipmap2D();
+        if (hasGenMipmap()) {
+            glTexImage2D(GL_TEXTURE_2D,
+                0,
+                GL_RGBA,
+                w,
+                h,
+                0,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                data
+            );
+            genMipmap2D();
+        } else {
+            gluBuild2DMipmaps(GL_TEXTURE_2D,
+                GL_RGBA,
+                w,
+                h,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                data
+            );
+        }
     }
 
     /**
@@ -267,6 +280,16 @@ public class Textures {
     }
 
     /**
+     * Check if {@link GLCapabilities#glGenerateMipmap} is not null.
+     *
+     * @return true or false
+     * @since 2.0.0
+     */
+    public static boolean hasGenMipmap() {
+        return GL.getCapabilities().glGenerateMipmap != NULL;
+    }
+
+    /**
      * Generate mipmap 2D.
      * <p>
      * This method has no effect when GPU doesn't support to OpenGL 3.0.
@@ -275,7 +298,7 @@ public class Textures {
      * @since 1.5.0
      */
     public static void genMipmap2D() {
-        if (GL.getCapabilities().glGenerateMipmap != NULL) {
+        if (hasGenMipmap()) {
             glGenerateMipmap(GL_TEXTURE_2D);
         }
     }

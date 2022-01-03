@@ -152,7 +152,7 @@ public class GameRenderer {
                 xo = player.xo,
                 yo = player.yo,
                 zo = player.zo;
-            float delta = timer.getDelta();
+            float delta = (float) timer.getDelta();
             float tx = xo + (x - xo) * delta;
             float ty = yo + (y - yo) * delta;
             float tz = zo + (z - zo) * delta;

@@ -49,7 +49,7 @@ public final class GLUtils {
     /**
      * no error
      */
-    public static final String NO_ERR = "GL_NO_ERROR (0)";
+    public static final String NO_ERR = "No error (0)";
     /**
      * The version major index
      */
@@ -229,33 +229,45 @@ public final class GLUtils {
     }
 
     /**
-     * glGetError to string
+     * Translate a GL error code to a String describing the error
      *
-     * @return error name
-     * @since 0.5.0
+     * @param err The error code
+     * @return The string
+     * @since 2.0.0
      */
-    public static String glErrorString() {
-        int err = glGetError();
+    public static String glErrorString(int err) {
         switch (err) {
             case GL_NO_ERROR:
                 return NO_ERR;
             case GL_INVALID_ENUM:
-                return "GL_INVALID_ENUM (1280)";
+                return "Invalid enum (1280)";
             case GL_INVALID_VALUE:
-                return "GL_INVALID_VALUE (1281)";
+                return "Invalid value (1281)";
             case GL_INVALID_OPERATION:
-                return "GL_INVALID_OPERATION (1282)";
+                return "Invalid operation (1282)";
             case GL_INVALID_FRAMEBUFFER_OPERATION:
-                return "GL_INVALID_FRAMEBUFFER_OPERATION (1286)";
+                return "Invalid framebuffer operation (1286)";
             case GL_OUT_OF_MEMORY:
-                return "GL_OUT_OF_MEMORY (1285)";
+                return "Out of memory (1285)";
             case GL_STACK_UNDERFLOW:
-                return "GL_STACK_UNDERFLOW (1284)";
+                return "Stack underflow (1284)";
             case GL_STACK_OVERFLOW:
-                return "GL_STACK_OVERFLOW (1283)";
+                return "Stack overflow (1283)";
             default:
-                return "GL_UNKNOWN_ERROR";
+                return "Unknown error";
         }
+    }
+
+    /**
+     * glGetError to string
+     *
+     * @return error name
+     * @see #glErrorString(int)
+     * @since 0.5.0
+     */
+    public static String glErrorString() {
+        int err = glGetError();
+        return glErrorString(err);
     }
 
     /**
