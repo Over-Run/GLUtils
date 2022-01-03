@@ -30,6 +30,8 @@ import org.overrun.glutils.tex.Textures;
 
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+
 /**
  * @author squid233
  * @since 2.0.0
@@ -96,5 +98,9 @@ public class SpriteAtlas implements SizedObject {
     @Override
     public int getHeight() {
         return height;
+    }
+
+    public void free() {
+        glDeleteTextures(id);
     }
 }
