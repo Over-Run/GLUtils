@@ -41,7 +41,6 @@ public class Input {
      *
      * @param key The key
      * @return key pressed
-     * @since 2.0.0
      */
     public boolean keyPressed(final int key) {
         return window.key(key) == GLFW_PRESS;
