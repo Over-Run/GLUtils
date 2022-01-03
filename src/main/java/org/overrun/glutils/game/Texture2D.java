@@ -52,6 +52,20 @@ public class Texture2D {
     private final int height;
     private final int id;
 
+    /**
+     * Load texture.
+     *
+     * @param c        The Class
+     * @param filename The file name
+     * @param param    The texture parameters
+     * @since 2.0.0
+     */
+    public Texture2D(final Class<?> c,
+                     final String filename,
+                     final TexParam param) {
+        this(c.getClassLoader(), filename, param);
+    }
+
     public Texture2D(final ClassLoader l,
                      final String filename,
                      final TexParam param) {
