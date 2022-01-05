@@ -85,7 +85,8 @@ public class Game implements IGameLogic {
     }
 
     @Override
-    public void cursorPosCb(int x, int y) {
+    public void cursorPosCb(final int x,
+                            final int y) {
         if (screen != null) {
             screen.cursorPosCb(x, y);
         }
@@ -119,16 +120,33 @@ public class Game implements IGameLogic {
     }
 
     @Override
-    public void mousePressed(int button, int mods) {
+    public void mousePressed(final int button,
+                             final int mods) {
         if (screen != null) {
             screen.mousePressed(button, mods);
         }
     }
 
     @Override
-    public void mouseReleased(int button, int mods) {
+    public void mouseReleased(final int button,
+                              final int mods) {
         if (screen != null) {
             screen.mouseReleased(button, mods);
+        }
+    }
+
+    @Override
+    public void mouseWheel(final double xo,
+                           final double yo) {
+        if (screen != null) {
+            screen.mouseWheel(xo, yo);
+        }
+    }
+
+    @Override
+    public void inputChar(final int codepoint) {
+        if (screen != null) {
+            screen.inputChar(codepoint);
         }
     }
 

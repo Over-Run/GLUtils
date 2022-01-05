@@ -96,6 +96,8 @@ public class GameApp {
             input.mouseX = (int) xp;
             input.mouseY = (int) yp;
         });
+        window.scrollCb((hWnd, xo, yo) -> game.mouseWheel(xo, yo));
+        window.charCb((hWnd, codepoint) -> game.inputChar(codepoint));
         bufFrame = framebuffer = new Framebuffer((hWnd, width, height) ->
             game.resize(width, height), window)
             .setWidth(cw)

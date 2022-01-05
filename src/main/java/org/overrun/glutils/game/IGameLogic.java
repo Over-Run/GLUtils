@@ -134,6 +134,26 @@ public interface IGameLogic {
     }
 
     /**
+     * Called on mouse wheeled.
+     *
+     * @param xo X offset
+     * @param yo Y offset
+     * @since 2.0.0
+     */
+    default void mouseWheel(final double xo,
+                            final double yo) {
+    }
+
+    /**
+     * Called on char inputted.
+     *
+     * @param codepoint Codepoint
+     * @since 2.0.0
+     */
+    default void inputChar(final int codepoint) {
+    }
+
+    /**
      * Free all resource
      */
     void free();
