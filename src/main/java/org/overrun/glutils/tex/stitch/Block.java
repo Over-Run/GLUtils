@@ -34,6 +34,21 @@ public class Block {
     public int w, h;
 
     /**
+     * Construct with the params fit node and position
+     *
+     * @param fit Fit node
+     * @param w   width
+     * @param h   height
+     */
+    public Block(Node fit,
+                 int w,
+                 int h) {
+        this.fit = fit;
+        this.w = w;
+        this.h = h;
+    }
+
+    /**
      * Construct with the params position
      *
      * @param w width
@@ -43,6 +58,13 @@ public class Block {
                  int h) {
         this.w = w;
         this.h = h;
+    }
+
+    public static Block of(int x,
+                           int y,
+                           int w,
+                           int h) {
+        return new Block(new Node(x, y, w, h), w, h);
     }
 
     /**

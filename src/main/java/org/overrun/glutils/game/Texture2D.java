@@ -27,6 +27,7 @@ package org.overrun.glutils.game;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.overrun.glutils.SizedObject;
 import org.overrun.glutils.tex.Images;
 import org.overrun.glutils.tex.TexParam;
 import org.overrun.glutils.tex.Textures;
@@ -47,7 +48,7 @@ import static org.overrun.glutils.game.GameEngine.app;
  * @author squid233
  * @since 1.5.0
  */
-public class Texture2D {
+public class Texture2D implements SizedObject {
     private final int width;
     private final int height;
     private final int id;
@@ -66,6 +67,13 @@ public class Texture2D {
         this(c.getClassLoader(), filename, param);
     }
 
+    /**
+     * Load texture by ClassLoader.
+     *
+     * @param l        The ClassLoader
+     * @param filename The file name
+     * @param param    The texture parameters
+     */
     public Texture2D(final ClassLoader l,
                      final String filename,
                      final TexParam param) {
@@ -126,10 +134,12 @@ public class Texture2D {
         Textures.unbind2D();
     }
 
+    @Override
     public int getWidth() {
         return width;
     }
 
+    @Override
     public int getHeight() {
         return height;
     }

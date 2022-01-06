@@ -40,16 +40,22 @@ public class SpriteAtlas implements SizedObject {
     private final int width;
     private final int height;
     private final int id;
-    private final Map<String, Sprite> sprites;
+    protected Map<String, Sprite> sprites;
 
     public SpriteAtlas(int width,
                        int height,
                        int id,
                        Map<String, Sprite> sprites) {
+        this(width, height, id);
+        this.sprites = sprites;
+    }
+
+    public SpriteAtlas(int width,
+                       int height,
+                       int id) {
         this.width = width;
         this.height = height;
         this.id = id;
-        this.sprites = sprites;
     }
 
     public void bind() {
