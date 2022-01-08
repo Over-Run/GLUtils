@@ -60,21 +60,21 @@ public class Stitcher {
         0xff000000, 0xfff800f8
     };
 
-    public static SpriteAtlas stitchStb(Class<?> c,
-                                        TexParam param,
-                                        String... filenames) {
+    public static StrSpriteAtlas stitchStb(Class<?> c,
+                                           TexParam param,
+                                           String... filenames) {
         return stitchStb(c.getClassLoader(), param, filenames);
     }
 
-    public static SpriteAtlas stitchAwt(Class<?> c,
-                                        TexParam param,
-                                        String... filenames) {
+    public static StrSpriteAtlas stitchAwt(Class<?> c,
+                                           TexParam param,
+                                           String... filenames) {
         return stitchAwt(c.getClassLoader(), param, filenames);
     }
 
-    public static SpriteAtlas stitchStb(ClassLoader cl,
-                                        TexParam param,
-                                        String... filenames) {
+    public static StrSpriteAtlas stitchStb(ClassLoader cl,
+                                           TexParam param,
+                                           String... filenames) {
         return stitchStb0((filename,
                            px,
                            py,
@@ -88,26 +88,26 @@ public class Stitcher {
         ), param, filenames);
     }
 
-    public static SpriteAtlas stitchAwt(ClassLoader cl,
-                                        TexParam param,
-                                        String... filenames) {
+    public static StrSpriteAtlas stitchAwt(ClassLoader cl,
+                                           TexParam param,
+                                           String... filenames) {
         return stitchAwt0(filename -> Images.loadAwt(cl, filename),
             param, filenames);
     }
 
-    public static SpriteAtlas stitchFsStb(TexParam param,
-                                          String... filenames) {
+    public static StrSpriteAtlas stitchFsStb(TexParam param,
+                                             String... filenames) {
         return stitchStb0(STBImage::stbi_load, param, filenames);
     }
 
-    public static SpriteAtlas stitchFsAwt(TexParam param,
-                                          String... filenames) {
+    public static StrSpriteAtlas stitchFsAwt(TexParam param,
+                                             String... filenames) {
         return stitchAwt0(Images::loadFsAwt, param, filenames);
     }
 
-    private static SpriteAtlas stitchAwt0(AwtiLoadFunc func,
-                                          TexParam param,
-                                          String... filenames) {
+    private static StrSpriteAtlas stitchAwt0(AwtiLoadFunc func,
+                                             TexParam param,
+                                             String... filenames) {
         var sprites = new Sprite[filenames.length];
         for (int i = 0; i < filenames.length; ++i) {
             var filename = filenames[i];
@@ -134,9 +134,9 @@ public class Stitcher {
         return stitchBuf(sprites, param);
     }
 
-    private static SpriteAtlas stitchStb0(StbiLoadFunc func,
-                                          TexParam param,
-                                          String... filenames) {
+    private static StrSpriteAtlas stitchStb0(StbiLoadFunc func,
+                                             TexParam param,
+                                             String... filenames) {
         var sprites = new Sprite[filenames.length];
         try (var stack = MemoryStack.stackPush()) {
             var px = stack.mallocInt(1);
@@ -177,8 +177,8 @@ public class Stitcher {
         return stitchBuf(sprites, param);
     }
 
-    private static SpriteAtlas stitchBuf(Sprite[] sprites,
-                                         TexParam param) {
+    private static StrSpriteAtlas stitchBuf(Sprite[] sprites,
+                                            TexParam param) {
         Arrays.sort(sprites,
             Comparator.comparing((Sprite s) -> -s.buffer.height)
                 .thenComparing(s -> -s.buffer.width));
@@ -197,7 +197,7 @@ public class Stitcher {
         for (var sprite : sprites) {
             map.put(sprite.id, sprite);
         }
-        return new SpriteAtlas(aw, ah, aid, map);
+        return new StrSpriteAtlas(aw, ah, aid, map);
     }
 
     private static void stitchTex(int aw,

@@ -36,16 +36,16 @@ import static org.lwjgl.opengl.GL11.glDeleteTextures;
  * @author squid233
  * @since 2.0.0
  */
-public class SpriteAtlas implements SizedObject {
+public class SpriteAtlas<T> implements SizedObject {
     private final int width;
     private final int height;
     private final int id;
-    protected Map<?, Sprite> sprites;
+    protected Map<T, Sprite> sprites;
 
     public SpriteAtlas(int width,
                        int height,
                        int id,
-                       Map<?, Sprite> sprites) {
+                       Map<T, Sprite> sprites) {
         this(width, height, id);
         this.sprites = sprites;
     }
@@ -66,20 +66,20 @@ public class SpriteAtlas implements SizedObject {
         Textures.unbind2D();
     }
 
-    public float getU0(Object id) {
+    public float getU0(T id) {
         return getSprite(id).block.fit.x / (float) width;
     }
 
-    public float getV0(Object id) {
+    public float getV0(T id) {
         return getSprite(id).block.fit.y / (float) height;
     }
 
-    public float getU1(Object id) {
+    public float getU1(T id) {
         var s = getSprite(id);
         return (s.block.fit.x + s.block.w) / (float) width;
     }
 
-    public float getV1(Object id) {
+    public float getV1(T id) {
         var s = getSprite(id);
         return (s.block.fit.y + s.block.h) / (float) height;
     }
@@ -88,11 +88,11 @@ public class SpriteAtlas implements SizedObject {
         return id;
     }
 
-    public Sprite getSprite(Object id) {
+    public Sprite getSprite(T id) {
         return sprites.get(id);
     }
 
-    public Map<?, Sprite> getSprites() {
+    public Map<T, Sprite> getSprites() {
         return sprites;
     }
 
