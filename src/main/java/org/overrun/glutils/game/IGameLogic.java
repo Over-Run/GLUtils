@@ -66,6 +66,12 @@ public interface IGameLogic {
     }
 
     /**
+     * Called on setting {@link Graphics#fps fps}.
+     */
+    default void passedFrame() {
+    }
+
+    /**
      * Called on cursor pos callback.
      *
      * @param x New pos x.

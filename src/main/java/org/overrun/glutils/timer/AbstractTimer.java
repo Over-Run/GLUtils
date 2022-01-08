@@ -37,7 +37,7 @@ public abstract class AbstractTimer implements ITimer {
     /**
      * Timer ticks per seconds.
      */
-    public double tps;
+    public final double tps;
     /**
      * The tick count that should tick.
      */
@@ -47,11 +47,11 @@ public abstract class AbstractTimer implements ITimer {
      */
     public double delta;
     /**
-     * Timer speed scale
+     * The timer speed scale
      */
     public double timeScale = 1.0;
     /**
-     * Frame times per seconds
+     * Frames per seconds
      */
     public double fps = 0.0;
     /**
@@ -69,13 +69,13 @@ public abstract class AbstractTimer implements ITimer {
     }
 
     @Override
-    public double getTps() {
-        return tps;
+    public double getTimeScale() {
+        return timeScale;
     }
 
     @Override
-    public void setTps(double tps) {
-        this.tps = tps;
+    public void setTimeScale(double timeScale) {
+        this.timeScale = timeScale;
     }
 
     @Override

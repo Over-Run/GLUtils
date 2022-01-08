@@ -36,18 +36,18 @@ public interface ITimer {
     void advanceTime();
 
     /**
-     * Get timer ticks per seconds.
+     * Get timer speed scale.
      *
-     * @return The tps.
+     * @return The timer speed scale.
      */
-    double getTps();
+    double getTimeScale();
 
     /**
-     * Set timer ticks per seconds.
+     * Set timer speed scale.
      *
-     * @param tps The tps.
+     * @param timeScale The timer speed scale.
      */
-    void setTps(double tps);
+    void setTimeScale(double timeScale);
 
     /**
      * The tick count that should tick.

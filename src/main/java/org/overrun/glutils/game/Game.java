@@ -85,6 +85,13 @@ public class Game implements IGameLogic {
     }
 
     @Override
+    public void passedFrame() {
+        if (screen != null) {
+            screen.passedFrame();
+        }
+    }
+
+    @Override
     public void cursorPosCb(final int x,
                             final int y) {
         if (screen != null) {

@@ -125,6 +125,7 @@ public class GameApp {
                 ++frames;
                 while (System.currentTimeMillis() >= lastTime + 1000) {
                     graphics.fps = frames;
+                    game.passedFrame();
                     lastTime += 1000;
                     frames = 0;
                 }
