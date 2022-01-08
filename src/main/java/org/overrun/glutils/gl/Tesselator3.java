@@ -46,6 +46,8 @@ public class Tesselator3 implements ITesselator {
     private final GLProgram program = new GLProgram();
     private final Vao vao = new Vao();
     private final Vbo vbo = new Vbo(GL_ARRAY_BUFFER);
+    private final Vbo ebo = new Vbo(GL_ELEMENT_ARRAY_BUFFER);
+    private int[] indices;
     private final float[] array = new float[MEMORY_USE];
     private final FloatBuffer buffer = memAllocFloat(MEMORY_USE);
     private final VertexAttrib vertex = new VertexAttrib(0);
@@ -58,10 +60,15 @@ public class Tesselator3 implements ITesselator {
     protected int pos;
     private boolean hasColor;
     private boolean hasTexture;
+    private static int primitive;
     private Matrix4fc mvp;
 
     public Tesselator3(boolean fixed) {
         this.fixed = fixed;
+        vbo.bind();
+        vbo.unbind();
+        ebo.bind();
+        ebo.unbind();
         program.createVsh("#version 330\n" +
             "layout(location = 0) in vec3 vertex;\n" +
             "layout(location = 1) in vec4 color;\n" +
@@ -96,10 +103,12 @@ public class Tesselator3 implements ITesselator {
         buffer.clear();
         vertices = 0;
         pos = 0;
+        indices = null;
     }
 
     @Override
-    public Tesselator3 init() {
+    public Tesselator3 init(int newPrimitive) {
+        primitive = newPrimitive;
         clear();
         hasColor = false;
         hasTexture = false;
@@ -123,8 +132,7 @@ public class Tesselator3 implements ITesselator {
     public Tesselator3 color(final float r,
                              final float g,
                              final float b) {
-        ITesselator.super.color(r, g, b);
-        return this;
+        return color(r, g, b, 1);
     }
 
     @Override
@@ -166,6 +174,11 @@ public class Tesselator3 implements ITesselator {
         return this;
     }
 
+    public Tesselator3 indices(final int... indices) {
+        this.indices = indices;
+        return this;
+    }
+
     protected void setupVbo() {
         int stride = 3;
         if (hasColor) {
@@ -200,10 +213,17 @@ public class Tesselator3 implements ITesselator {
             texCoord.enable();
         }
         vbo.unbind();
+        if (indices != null) {
+            ebo.bind();
+            ebo.data(indices, fixed ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW);
+        }
     }
 
     protected void render(int primitive) {
-        glDrawArrays(primitive, 0, vertices);
+        if (indices != null)
+            glDrawElements(primitive, indices.length, GL_UNSIGNED_INT, 0);
+        else
+            glDrawArrays(primitive, 0, vertices);
     }
 
     public void setMatrix(final Matrix4fc mvp) {
@@ -212,20 +232,8 @@ public class Tesselator3 implements ITesselator {
 
     @Override
     public Tesselator3 draw() {
-        return draw(GL_TRIANGLES);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.6.0
-     */
-    @Override
-    public Tesselator3 draw(int primitive) {
         if (!fixed || !rendered) {
-            buffer.clear();
-            buffer.put(array, 0, pos);
-            buffer.flip();
+            buffer.clear().put(array, 0, pos).flip();
             vao.bind();
             setupVbo();
             vao.unbind();
@@ -249,11 +257,11 @@ public class Tesselator3 implements ITesselator {
         return this;
     }
 
-    @Override
     public void free() {
         memFree(buffer);
         program.free();
         vbo.free();
         vao.free();
+        ebo.free();
     }
 }

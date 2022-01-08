@@ -33,17 +33,38 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
  * @author squid233
  * @since 1.5.0
  */
-public class Vao {
+public class Vao implements GLState {
     private final int id = glGenVertexArrays();
 
+    /**
+     * Bind arrays.
+     */
+    @Override
     public void bind() {
         glBindVertexArray(id);
     }
 
+    /**
+     * Unbind arrays.
+     */
+    @Override
     public void unbind() {
         glBindVertexArray(0);
     }
 
+    /**
+     * Get id for direct operations.
+     *
+     * @return The id of this vertex array object.
+     * @since 2.0.0
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Delete the vertex array object.
+     */
     public void free() {
         glDeleteBuffers(id);
     }

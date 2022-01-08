@@ -28,7 +28,6 @@ package org.overrun.glutest;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.overrun.glutils.game.*;
-import org.overrun.glutils.gl.IndexedTesselator3;
 import org.overrun.glutils.gl.Tesselator3;
 import org.overrun.glutils.tex.TexParam;
 
@@ -48,7 +47,7 @@ public class Tesselator3Test extends Game {
         xd = 0, yd = 0, zd = 0;
     private final Matrix4fStack mat3d = new Matrix4fStack(32);
     private final Matrix4f mat2d = new Matrix4f();
-    private IndexedTesselator3 it;
+    private Tesselator3 it;
     private Tesselator3 t;
     private Texture2D sth;
 
@@ -60,7 +59,7 @@ public class Tesselator3Test extends Game {
         @Override
         public void render() {
             it.setMatrix(mat2d);
-            it.init()
+            it.init(GL_TRIANGLES)
                 .color(0, 0, 0, 0.5f).vertex(0, 0, 0)
                 .color(0, 0, 0, 0.5f).vertex(0, height, 0)
                 .color(0, 0, 0, 0.5f).vertex(width, height, 0)
@@ -78,7 +77,7 @@ public class Tesselator3Test extends Game {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         window.setGrabbed(true);
-        it = new IndexedTesselator3(false);
+        it = new Tesselator3(false);
         t = new Tesselator3(true)
             .vertexUV(0, 0, 0, 0, 0)
             .vertexUV(0, 17, 0, 0, 1)
@@ -86,11 +85,9 @@ public class Tesselator3Test extends Game {
             .vertexUV(17, 17, 0, 1, 1)
             .vertexUV(17, 0, 0, 1, 0)
             .vertexUV(0, 0, 0, 0, 0);
-        sth = new Texture2D(ClassLoader.getSystemClassLoader(),
+        sth = new Texture2D(Tesselator3Test.class,
             "tstest.png",
-            new TexParam()
-                .minFilter(GL_NEAREST)
-                .magFilter(GL_NEAREST));
+            TexParam.glNearest());
     }
 
     @Override
@@ -111,7 +108,7 @@ public class Tesselator3Test extends Game {
         float c0 = abs(sin);
         float c1 = 1 - c0;
         it.setMatrix(mat3d.scaleLocal((c0 * 0.95f + 1f) / 2f));
-        it.init()
+        it.init(GL_TRIANGLES)
             .color(c0, c1, c0).vertex(0, 1, 0)
             .color(c0, c0, c0).vertex(0, 0, 0)
             .color(c1, c0, c0).vertex(1, 0, 0)

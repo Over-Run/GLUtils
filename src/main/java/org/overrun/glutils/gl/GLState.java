@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 Overrun Organization
+ * Copyright (c) 2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,20 @@
  *
  */
 
-package org.overrun.glutils.util;
-
-import java.util.Objects;
+package org.overrun.glutils.gl;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
-public class Point {
-    public int x, y;
+public interface GLState {
+    /**
+     * Bind state
+     */
+    void bind();
 
-    public Point(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public Point() {
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Point point = (Point) o;
-        return x == point.x && y == point.y;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
-    }
+    /**
+     * Unbind state
+     */
+    void unbind();
 }

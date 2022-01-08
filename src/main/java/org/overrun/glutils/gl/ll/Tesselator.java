@@ -30,8 +30,7 @@ import org.overrun.glutils.ITesselator;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryUtil.memAllocFloat;
-import static org.lwjgl.system.MemoryUtil.memFree;
+import static org.lwjgl.system.MemoryUtil.*;
 
 /**
  * {@link ITesselator Tesselator} for OpenGL in immediate mode
@@ -40,16 +39,21 @@ import static org.lwjgl.system.MemoryUtil.memFree;
  * @since 1.6.0
  */
 public class Tesselator implements ITesselator {
-    public static final int VERTEX_COUNT = 60000;
-    public static final int MEMORY_USE = (2 + 3 + 3) * VERTEX_COUNT;
+    private static int vertexCount = 0x80000;
+    private static int memoryUse = (2 + 3 + 3) * vertexCount;
+    private static final int[] VERTICES = {
+        1, 2, 1, 1, 3, 1, 1, 4, 1, 1
+    };
     private static final Tesselator INSTANCE = new Tesselator();
-    private final float[] array = new float[MEMORY_USE];
-    private final FloatBuffer buffer = memAllocFloat(MEMORY_USE);
-    private float r, g, b, u, v;
-    private int vertices;
-    private int pos;
-    private boolean hasColor;
-    private boolean hasTexture;
+    private static float[] array = new float[memoryUse];
+    private static FloatBuffer buffer = memAllocFloat(memoryUse);
+    private static float r, g, b, u, v;
+    private static int vertices;
+    private static int len = 3;
+    private static int pos;
+    private static boolean hasColor;
+    private static boolean hasTexture;
+    private static int primitive;
 
     private Tesselator() {
     }
@@ -58,40 +62,55 @@ public class Tesselator implements ITesselator {
         return INSTANCE;
     }
 
-    private void clear() {
+    /**
+     * Set the vertex count
+     *
+     * @param count The new vertex count
+     * @since 2.0.0
+     */
+    public static void setVertexCount(int count) {
+        vertexCount = count;
+        memoryUse = (2 + 3 + 3) * count;
+        array = new float[memoryUse];
+        buffer = memRealloc(buffer, memoryUse);
+    }
+
+    private static void clear() {
         buffer.clear();
         vertices = 0;
         pos = 0;
+        len = 3;
     }
 
     @Override
-    public Tesselator init() {
+    public Tesselator init(int newPrimitive) {
         clear();
+        primitive = newPrimitive;
         hasColor = false;
         hasTexture = false;
         return this;
     }
 
     @Override
-    public Tesselator color(float r, float g, float b, float a) {
-        hasColor = true;
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        return this;
-    }
-
-    @Override
     public Tesselator color(float r, float g, float b) {
-        ITesselator.super.color(r, g, b);
+        if (!hasColor) {
+            len += 3;
+        }
+        hasColor = true;
+        Tesselator.r = r;
+        Tesselator.g = g;
+        Tesselator.b = b;
         return this;
     }
 
     @Override
     public Tesselator tex(float u, float v) {
+        if (!hasTexture) {
+            len += 2;
+        }
         hasTexture = true;
-        this.u = u;
-        this.v = v;
+        Tesselator.u = u;
+        Tesselator.v = v;
         return this;
     }
 
@@ -121,19 +140,17 @@ public class Tesselator implements ITesselator {
         array[pos++] = y;
         array[pos++] = z;
         ++vertices;
+        // Vertex count per primitive
+        var vc = VERTICES[primitive];
+        if ((vertices % vc == 0) && (pos >= (vertexCount - len * vc))) {
+            draw();
+        }
         return this;
     }
 
     @Override
     public Tesselator draw() {
-        return draw(GL_TRIANGLES);
-    }
-
-    @Override
-    public Tesselator draw(int primitive) {
-        buffer.clear();
-        buffer.put(array, 0, pos);
-        buffer.flip();
+        buffer.clear().put(array, 0, pos).flip();
 
         int mode = GL_V3F;
         if (hasColor) {
@@ -166,10 +183,5 @@ public class Tesselator implements ITesselator {
 
         clear();
         return this;
-    }
-
-    @Override
-    public void free() {
-        memFree(buffer);
     }
 }

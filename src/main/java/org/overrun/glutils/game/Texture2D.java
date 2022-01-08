@@ -27,6 +27,7 @@ package org.overrun.glutils.game;
 
 import org.lwjgl.system.MemoryStack;
 import org.overrun.glutils.SizedObject;
+import org.overrun.glutils.gl.GLState;
 import org.overrun.glutils.tex.Images;
 import org.overrun.glutils.tex.TexParam;
 import org.overrun.glutils.tex.Textures;
@@ -34,7 +35,6 @@ import org.overrun.glutils.tex.Textures;
 import javax.imageio.ImageIO;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static java.util.Objects.requireNonNull;
 import static org.lwjgl.opengl.GL11.glDeleteTextures;
@@ -49,7 +49,7 @@ import static org.overrun.glutils.game.GameEngine.app;
  * @author squid233
  * @since 1.5.0
  */
-public class Texture2D implements SizedObject {
+public class Texture2D implements SizedObject, GLState {
     private final int width;
     private final int height;
     private final int id;
@@ -82,15 +82,7 @@ public class Texture2D implements SizedObject {
             l.getResourceAsStream(filename)
         ); var bis = new BufferedInputStream(is)) {
             if (app != null && app.config.useStb) {
-                var bytes = new ArrayList<Byte>();
-                int read;
-                while ((read = bis.read()) != -1) {
-                    bytes.add((byte) read);
-                }
-                var arr = new byte[bytes.size()];
-                for (int i = 0; i < arr.length; i++) {
-                    arr[i] = bytes.get(i);
-                }
+                var arr = bis.readAllBytes();
                 var bb = memAlloc(arr.length).put(arr).flip();
                 try (var stack = MemoryStack.stackPush()) {
                     var px = stack.mallocInt(1);
@@ -127,10 +119,12 @@ public class Texture2D implements SizedObject {
         }
     }
 
+    @Override
     public void bind() {
         Textures.bind2D(id);
     }
 
+    @Override
     public void unbind() {
         Textures.unbind2D();
     }

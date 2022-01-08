@@ -35,7 +35,7 @@ import static org.lwjgl.opengl.GL15.*;
  * @author squid233
  * @since 1.4.0
  */
-public class Vbo {
+public class Vbo implements GLState {
     private final int target;
     private final int id = glGenBuffers();
 
@@ -103,6 +103,7 @@ public class Vbo {
     /**
      * Bind buffer.
      */
+    @Override
     public void bind() {
         glBindBuffer(target, id);
     }
@@ -112,6 +113,7 @@ public class Vbo {
      *
      * @since 1.5.0
      */
+    @Override
     public void unbind() {
         glBindBuffer(target, 0);
     }
@@ -193,7 +195,7 @@ public class Vbo {
     }
 
     /**
-     * Free vertex buffer object.
+     * Delete the vertex buffer object.
      *
      * @since 1.5.0
      */

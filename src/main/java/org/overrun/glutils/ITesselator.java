@@ -30,18 +30,25 @@ package org.overrun.glutils;
  * @since 1.5.0
  */
 public interface ITesselator {
-    ITesselator init();
-
-    ITesselator color(final float r,
-                      final float g,
-                      final float b,
-                      final float a);
+    /**
+     * Initialize the tesselator with the primitive.
+     *
+     * @param primitive The primitive
+     * @return this
+     * @since 2.0.0
+     */
+    ITesselator init(int primitive);
 
     default ITesselator color(final float r,
                               final float g,
-                              final float b) {
-        return color(r, g, b, 1);
+                              final float b,
+                              final float a) {
+        return color(r, g, b);
     }
+
+    ITesselator color(final float r,
+                      final float g,
+                      final float b);
 
     ITesselator tex(final float u,
                     final float v);
@@ -58,18 +65,13 @@ public interface ITesselator {
                        final float y,
                        final float z);
 
+    /**
+     * Draw elements.
+     *
+     * @return this
+     */
     ITesselator draw();
 
-    /**
-     * Draw elements as specified primitive.
-     *
-     * @param primitive The primitive.
-     * @return this
-     * @since 1.6.0
-     */
-    default ITesselator draw(int primitive) {
-        return this;
+    default void free() {
     }
-
-    void free();
 }

@@ -62,11 +62,11 @@ public class StitcherTest extends Game {
         glClear(GL_COLOR_BUFFER_BIT);
         var t = Tesselator.getInstance();
         atlas.bind();
-        t.vertexUV(0, 0, 0, 0, 0)
+        t.init(GL_QUADS)
+            .vertexUV(0, 0, 0, 0, 0)
             .vertexUV(0, atlas.height(), 0, 0, 1)
             .vertexUV(atlas.width(), atlas.height(), 0, 1, 1)
-            .vertexUV(atlas.width(), 0, 0, 1, 0)
-            .draw(GL_QUADS);
+            .vertexUV(atlas.width(), 0, 0, 1, 0);
         atlas.unbind();
         super.render();
     }

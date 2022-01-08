@@ -12,6 +12,7 @@ Changed: `TexParam` in `Textures`
 Renamed: `ShaderReader` to `LinesReader`
 Removed: Callbacks
 Removed: AtlasLoom
+Removed: `IndexedTesselator3`
 
 1.6.0
 Added: `Tesselator`

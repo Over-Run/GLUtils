@@ -40,11 +40,11 @@ public class Tesselator1Test extends Game {
     public void render() {
         glClear(GL_COLOR_BUFFER_BIT);
         Tesselator t = Tesselator.getInstance();
-        t.init()
+        t.init(GL_TRIANGLES)
             .color(1, 0, 0).vertex(0, 0.5f, 0)
             .color(0, 1, 0).vertex(-0.5f, -0.5f, 0)
             .color(0, 0, 1).vertex(0.5f, -0.5f, 0)
-            .draw(GL_TRIANGLES);
+            .draw();
         super.render();
     }
 

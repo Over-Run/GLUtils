@@ -31,7 +31,7 @@ import static org.lwjgl.opengl.GL20.*;
  * @author squid233
  * @since 1.5.0
  */
-public class VertexAttrib {
+public class VertexAttrib implements GLState {
     public final int index;
 
     public VertexAttrib(final int index) {
@@ -57,5 +57,15 @@ public class VertexAttrib {
             normalized,
             stride,
             pointer);
+    }
+
+    @Override
+    public void bind() {
+        enable();
+    }
+
+    @Override
+    public void unbind() {
+        disable();
     }
 }
