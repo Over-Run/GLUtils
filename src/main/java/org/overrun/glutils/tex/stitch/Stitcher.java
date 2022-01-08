@@ -195,7 +195,7 @@ public class Stitcher {
         stitchTex(aw, ah, aid, param, sprites);
         var map = new LinkedHashMap<String, Sprite>();
         for (var sprite : sprites) {
-            map.put(sprite.id, sprite);
+            map.put((String) sprite.id, sprite);
         }
         return new StrSpriteAtlas(aw, ah, aid, map);
     }

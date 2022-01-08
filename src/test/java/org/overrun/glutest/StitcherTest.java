@@ -30,8 +30,8 @@ import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
 import org.overrun.glutils.gl.ll.Tesselator;
 import org.overrun.glutils.tex.TexParam;
-import org.overrun.glutils.tex.stitch.SpriteAtlas;
 import org.overrun.glutils.tex.stitch.Stitcher;
+import org.overrun.glutils.tex.stitch.StrSpriteAtlas;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.game.GameEngine.bufFrame;
@@ -40,7 +40,7 @@ import static org.overrun.glutils.game.GameEngine.bufFrame;
  * @author squid233
  */
 public class StitcherTest extends Game {
-    private SpriteAtlas atlas;
+    private StrSpriteAtlas atlas;
 
     @Override
     public void create() {

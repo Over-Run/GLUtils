@@ -32,11 +32,11 @@ import org.overrun.glutils.tex.NativeImage;
  * @since 2.0.0
  */
 public class Sprite {
-    public final String id;
+    public final Object id;
     public final Block block;
     public final NativeImage buffer;
 
-    public Sprite(String id,
+    public Sprite(Object id,
                   Block block,
                   NativeImage buffer) {
         this.id = id;

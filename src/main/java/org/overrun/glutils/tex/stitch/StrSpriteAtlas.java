@@ -31,7 +31,7 @@ import java.util.Map;
  * @author squid233
  * @since 2.0.0
  */
-public class StrSpriteAtlas extends SpriteAtlas<String>{
+public class StrSpriteAtlas extends SpriteAtlas<String> {
     public StrSpriteAtlas(int width,
                           int height,
                           int id,
