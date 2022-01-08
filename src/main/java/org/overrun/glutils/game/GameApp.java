@@ -33,6 +33,7 @@ import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.overrun.glutils.GLUtils.getLogger;
 import static org.overrun.glutils.game.GameEngine.*;
 
 /**
@@ -130,7 +131,10 @@ public class GameApp {
                     frames = 0;
                 }
             }
-        } finally {
+        } catch (Throwable t) {
+            getLogger().catching(t);
+        }
+        finally {
             Textures.free();
             game.free();
             window.free();

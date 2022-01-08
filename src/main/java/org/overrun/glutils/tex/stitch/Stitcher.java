@@ -27,7 +27,10 @@ package org.overrun.glutils.tex.stitch;
 
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
-import org.overrun.glutils.tex.*;
+import org.overrun.glutils.tex.Images;
+import org.overrun.glutils.tex.NativeImage;
+import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Textures;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -40,6 +43,7 @@ import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 import static org.lwjgl.system.MemoryUtil.memAlloc;
 import static org.overrun.glutils.FilesReader.getBytes;
 import static org.overrun.glutils.FilesReader.ntoBBuffer;
+import static org.overrun.glutils.GLUtils.getLogger;
 import static org.overrun.glutils.tex.Images.getRGB;
 
 /**
@@ -120,7 +124,7 @@ public class Stitcher {
                 h = bi.getHeight();
                 pixels = getRGB(bi);
             } catch (Exception e) {
-                e.printStackTrace();
+                getLogger().catching(e);
                 w = 2;
                 h = 2;
                 pixels = MISSING_TEXTURE;
@@ -156,7 +160,7 @@ public class Stitcher {
                 } catch (Exception e) {
                     bb = null;
                     Images.thrOut(filename);
-                    e.printStackTrace();
+                    getLogger().catching(e);
                 }
                 var failed = bb == null;
                 int w, h;
