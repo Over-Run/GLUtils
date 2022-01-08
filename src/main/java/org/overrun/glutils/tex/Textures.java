@@ -96,7 +96,7 @@ public class Textures {
         var img = Images.loadAwt(loader, name);
         int id = gen();
         bind2D(id);
-        pushToGL(param,
+        pushToGL2D(param,
             img.getWidth(),
             img.getHeight(),
             Images.getRGB(img));
@@ -152,7 +152,7 @@ public class Textures {
         }
         int id = gen();
         bind2D(id);
-        pushToGL(param, w, h, data);
+        pushToGL2D(param, w, h, data);
         stbi_image_free(data);
         ID_MAP.put(name, id);
         return id;
@@ -188,7 +188,7 @@ public class Textures {
         }
         int id = gen();
         bind2D(id);
-        pushToGL(param, w, h, data);
+        pushToGL2D(param, w, h, data);
         stbi_image_free(data);
         ID_MAP.put(identifier, id);
         return id;
@@ -215,7 +215,7 @@ public class Textures {
         }
         int id = gen();
         bind2D(id);
-        pushToGL(param, w, h, data);
+        pushToGL2D(param, w, h, data);
         ID_MAP.put(identifier, id);
         return id;
     }
@@ -224,7 +224,7 @@ public class Textures {
      * @param param The texture parameters.
      * @since 2.0.0
      */
-    public static void texParameter(TexParam param) {
+    public static void texParameter2D(TexParam param) {
         if (param != null) {
             param.glMinFilter(GL_TEXTURE_2D);
             param.glMagFilter(GL_TEXTURE_2D);
@@ -241,11 +241,11 @@ public class Textures {
      * @param data  pixel data
      * @since 2.0.0
      */
-    public static void pushToGL(TexParam param,
-                                int w,
-                                int h,
-                                ByteBuffer data) {
-        texParameter(param);
+    public static void pushToGL2D(TexParam param,
+                                  int w,
+                                  int h,
+                                  ByteBuffer data) {
+        texParameter2D(param);
         if (hasGenMipmap()) {
             glTexImage2D(GL_TEXTURE_2D,
                 0,
@@ -290,6 +290,30 @@ public class Textures {
     }
 
     /**
+     * Generate mipmap cube map.
+     * <p>
+     * This method has no effect when GPU doesn't support to OpenGL 3.0.
+     * </p>
+     *
+     * @since 2.0.0
+     */
+    public static void genMipmapCubeMap() {
+        genMipmap(GL_TEXTURE_CUBE_MAP);
+    }
+
+    /**
+     * Generate mipmap 3D.
+     * <p>
+     * This method has no effect when GPU doesn't support to OpenGL 3.0.
+     * </p>
+     *
+     * @since 2.0.0
+     */
+    public static void genMipmap3D() {
+        genMipmap(GL_TEXTURE_3D);
+    }
+
+    /**
      * Generate mipmap 2D.
      * <p>
      * This method has no effect when GPU doesn't support to OpenGL 3.0.
@@ -298,8 +322,21 @@ public class Textures {
      * @since 1.5.0
      */
     public static void genMipmap2D() {
+        genMipmap(GL_TEXTURE_2D);
+    }
+
+    /**
+     * Generate mipmap.
+     * <p>
+     * This method has no effect when GPU doesn't support to OpenGL 3.0.
+     * </p>
+     *
+     * @param target The target
+     * @since 2.0.0
+     */
+    public static void genMipmap(int target) {
         if (hasGenMipmap()) {
-            glGenerateMipmap(GL_TEXTURE_2D);
+            glGenerateMipmap(target);
         }
     }
 
@@ -312,11 +349,11 @@ public class Textures {
      * @param data  pixel data
      * @since 2.0.0
      */
-    public static void pushToGL(TexParam param,
-                                int w,
-                                int h,
-                                int[] data) {
-        texParameter(param);
+    public static void pushToGL2D(TexParam param,
+                                  int w,
+                                  int h,
+                                  int[] data) {
+        texParameter2D(param);
         glTexImage2D(GL_TEXTURE_2D,
             0,
             GL_RGBA,

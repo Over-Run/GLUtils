@@ -210,7 +210,7 @@ public class Stitcher {
                                   TexParam param,
                                   Sprite[] sprites) {
         Textures.bind2D(aid);
-        Textures.texParameter(param);
+        Textures.texParameter2D(param);
         glTexImage2D(GL_TEXTURE_2D,
             0,
             GL_RGBA,

@@ -25,20 +25,28 @@
 
 package org.overrun.glutils.tex;
 
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.*;
 
 /**
  * @author squid233
  * @since 1.5.0
  */
 public class TexParam {
-    public int minFilter;
-    public int magFilter;
+    /**
+     * Filter
+     */
+    public int minFilter, magFilter;
+    /**
+     * Wrap
+     *
+     * @since 2.0.0
+     */
+    public int wrapS, wrapT, wrapR;
 
     /**
-     * Construct a TexParam by param {@link GL11#GL_NEAREST NEAREST}.
+     * Construct a TexParam by param {@link GL12#GL_NEAREST NEAREST}.
      *
      * @return The mipmap mode.
      */
@@ -48,7 +56,7 @@ public class TexParam {
     }
 
     /**
-     * Construct a TexParam by param {@link GL11#GL_LINEAR LINEAR}.
+     * Construct a TexParam by param {@link GL12#GL_LINEAR LINEAR}.
      *
      * @return The mipmap mode.
      */
@@ -58,8 +66,8 @@ public class TexParam {
     }
 
     /**
-     * Call {@link GL11#glTexParameteri TexParameteri} to set
-     * {@link GL11#GL_TEXTURE_MIN_FILTER MIN_FILTER}.
+     * Call {@link GL12#glTexParameteri TexParameteri} to set
+     * {@link GL12#GL_TEXTURE_MIN_FILTER MIN_FILTER}.
      *
      * @param target The texture target.
      * @since 2.0.0
@@ -71,8 +79,8 @@ public class TexParam {
     }
 
     /**
-     * Call {@link GL11#glTexParameteri TexParameteri} to set
-     * {@link GL11#GL_TEXTURE_MAG_FILTER MAG_FILTER}.
+     * Call {@link GL12#glTexParameteri TexParameteri} to set
+     * {@link GL12#GL_TEXTURE_MAG_FILTER MAG_FILTER}.
      *
      * @param target The texture target.
      * @since 2.0.0
@@ -80,6 +88,45 @@ public class TexParam {
     public void glMagFilter(int target) {
         if (magFilter != 0) {
             glTexParameteri(target, GL_TEXTURE_MAG_FILTER, magFilter);
+        }
+    }
+
+    /**
+     * Call {@link GL12#glTexParameteri TexParameteri} to set
+     * {@link GL12#GL_TEXTURE_WRAP_S WRAP_S}.
+     *
+     * @param target The texture target.
+     * @since 2.0.0
+     */
+    public void glWrapS(int target) {
+        if (magFilter != 0) {
+            glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapS);
+        }
+    }
+
+    /**
+     * Call {@link GL12#glTexParameteri TexParameteri} to set
+     * {@link GL12#GL_TEXTURE_WRAP_T WRAP_T}.
+     *
+     * @param target The texture target.
+     * @since 2.0.0
+     */
+    public void glWrapT(int target) {
+        if (magFilter != 0) {
+            glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapT);
+        }
+    }
+
+    /**
+     * Call {@link GL12#glTexParameteri TexParameteri} to set
+     * {@link GL12#GL_TEXTURE_WRAP_R WRAP_R}.
+     *
+     * @param target The texture target.
+     * @since 2.0.0
+     */
+    public void glWrapR(int target) {
+        if (magFilter != 0) {
+            glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapR);
         }
     }
 
@@ -102,6 +149,42 @@ public class TexParam {
      */
     public TexParam magFilter(int magFilter) {
         this.magFilter = magFilter;
+        return this;
+    }
+
+    /**
+     * Set {@link #wrapS}.
+     *
+     * @param wrapS wrapS to set
+     * @return this
+     * @since 2.0.0
+     */
+    public TexParam wrapS(int wrapS) {
+        this.wrapS = wrapS;
+        return this;
+    }
+
+    /**
+     * Set {@link #wrapT}.
+     *
+     * @param wrapT wrapT to set
+     * @return this
+     * @since 2.0.0
+     */
+    public TexParam wrapT(int wrapT) {
+        this.wrapT = wrapT;
+        return this;
+    }
+
+    /**
+     * Set {@link #wrapR}.
+     *
+     * @param wrapR wrapR to set
+     * @return this
+     * @since 2.0.0
+     */
+    public TexParam wrapR(int wrapR) {
+        this.wrapR = wrapR;
         return this;
     }
 }

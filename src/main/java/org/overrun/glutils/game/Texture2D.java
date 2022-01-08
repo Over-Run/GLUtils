@@ -26,7 +26,6 @@
 package org.overrun.glutils.game;
 
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 import org.overrun.glutils.SizedObject;
 import org.overrun.glutils.tex.Images;
 import org.overrun.glutils.tex.TexParam;
@@ -40,6 +39,8 @@ import java.util.ArrayList;
 import static java.util.Objects.requireNonNull;
 import static org.lwjgl.opengl.GL11.glDeleteTextures;
 import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
+import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.overrun.glutils.game.GameEngine.app;
 
 /**
@@ -90,8 +91,7 @@ public class Texture2D implements SizedObject {
                 for (int i = 0; i < arr.length; i++) {
                     arr[i] = bytes.get(i);
                 }
-                var bb = MemoryUtil.memAlloc(arr.length).put(arr);
-                bb.flip();
+                var bb = memAlloc(arr.length).put(arr).flip();
                 try (var stack = MemoryStack.stackPush()) {
                     var px = stack.mallocInt(1);
                     var py = stack.mallocInt(1);
@@ -104,19 +104,20 @@ public class Texture2D implements SizedObject {
                     height = py.get(0);
                     id = Textures.gen();
                     Textures.bind2D(id);
-                    Textures.pushToGL(param,
+                    Textures.pushToGL2D(param,
                         width,
                         height,
                         img);
                     stbi_image_free(img);
                 }
+                memFree(bb);
             } else {
                 var img = ImageIO.read(bis);
                 width = img.getWidth();
                 height = img.getHeight();
                 id = Textures.gen();
                 Textures.bind2D(id);
-                Textures.pushToGL(param,
+                Textures.pushToGL2D(param,
                     width,
                     height,
                     Images.getRGB(img));
