@@ -31,35 +31,37 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
+import static org.joml.FrustumIntersection.*;
+
 /**
  * @author squid233
  * @since 1.2.0
  */
 public enum Direction {
     /**
-     * Vector to up
-     */
-    UP(0, 1, 0, 1, 0),
-    /**
-     * Vector to down
-     */
-    DOWN(1, 0, 0, -1, 0),
-    /**
-     * Vector to north
-     */
-    NORTH(2, 3, 0, 0, -1),
-    /**
-     * Vector to south
-     */
-    SOUTH(3, 2, 0, 0, 1),
-    /**
      * Vector to west
      */
-    WEST(4, 5, -1, 0, 0),
+    WEST(PLANE_NX, PLANE_PX, -1, 0, 0),
     /**
      * Vector to east
      */
-    EAST(5, 4, 1, 0, 0);
+    EAST(PLANE_PX, PLANE_NX, 1, 0, 0),
+    /**
+     * Vector to down
+     */
+    DOWN(PLANE_NY, PLANE_PY, 0, -1, 0),
+    /**
+     * Vector to up
+     */
+    UP(PLANE_PY, PLANE_NY, 0, 1, 0),
+    /**
+     * Vector to north
+     */
+    NORTH(PLANE_NZ, PLANE_PZ, 0, 0, -1),
+    /**
+     * Vector to south
+     */
+    SOUTH(PLANE_PZ, PLANE_NZ, 0, 0, 1);
 
     private static final Vector3i[] CACHE_VECTOR = new Vector3i[6];
     private final int id;
