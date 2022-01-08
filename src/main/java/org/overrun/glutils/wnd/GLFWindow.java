@@ -272,13 +272,28 @@ public class GLFWindow implements SizedObject {
     /**
      * set grabbed
      *
-     * @param grabbed grabbed
+     * @param grabbed        grabbed
+     * @param rawMouseMotion Use raw mouse motion
      * @since 1.5.0
      */
-    public void setGrabbed(final boolean grabbed) {
+    public void setGrabbed(final boolean grabbed,
+                           final boolean rawMouseMotion) {
         this.grabbed = grabbed;
         setInputMode(GLFW_CURSOR,
             grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+        if (rawMouseMotion && glfwRawMouseMotionSupported()) {
+            setInputMode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        }
+    }
+
+    /**
+     * set grabbed
+     *
+     * @param grabbed grabbed
+     * @since 2.0.0
+     */
+    public void setGrabbed(final boolean grabbed) {
+        setGrabbed(grabbed, true);
     }
 
     /**

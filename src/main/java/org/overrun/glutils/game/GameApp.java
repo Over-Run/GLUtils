@@ -91,11 +91,13 @@ public class GameApp {
             }
         });
         window.cursorPosCb((hWnd, xp, yp) -> {
-            input.deltaMX = (int) xp - input.mouseX;
-            input.deltaMY = (int) yp - input.mouseY;
-            game.cursorPosCb(input.mouseX, input.mouseY);
-            input.mouseX = (int) xp;
-            input.mouseY = (int) yp;
+            var nxp = (int) xp;
+            var nyp = (int) yp;
+            input.deltaMX = nxp - input.mouseX;
+            input.deltaMY = nyp - input.mouseY;
+            game.cursorPosCb(nxp, nyp);
+            input.mouseX = nxp;
+            input.mouseY = nyp;
         });
         window.scrollCb((hWnd, xo, yo) -> game.mouseWheel(xo, yo));
         window.charCb((hWnd, codepoint) -> game.inputChar(codepoint));
@@ -133,8 +135,7 @@ public class GameApp {
             }
         } catch (Throwable t) {
             getLogger().catching(t);
-        }
-        finally {
+        } finally {
             Textures.free();
             game.free();
             window.free();
