@@ -39,6 +39,7 @@ public interface ITimer {
      * Get timer speed scale.
      *
      * @return The timer speed scale.
+     * @since 2.0.0
      */
     double getTimeScale();
 
@@ -46,6 +47,7 @@ public interface ITimer {
      * Set timer speed scale.
      *
      * @param timeScale The timer speed scale.
+     * @since 2.0.0
      */
     void setTimeScale(double timeScale);
 
