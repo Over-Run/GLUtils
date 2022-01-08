@@ -40,12 +40,12 @@ public class SpriteAtlas implements SizedObject {
     private final int width;
     private final int height;
     private final int id;
-    protected Map<String, Sprite> sprites;
+    protected Map<?, Sprite> sprites;
 
     public SpriteAtlas(int width,
                        int height,
                        int id,
-                       Map<String, Sprite> sprites) {
+                       Map<?, Sprite> sprites) {
         this(width, height, id);
         this.sprites = sprites;
     }
@@ -66,20 +66,20 @@ public class SpriteAtlas implements SizedObject {
         Textures.unbind2D();
     }
 
-    public float getU0(String id) {
+    public float getU0(Object id) {
         return getSprite(id).block.fit.x / (float) width;
     }
 
-    public float getV0(String id) {
+    public float getV0(Object id) {
         return getSprite(id).block.fit.y / (float) height;
     }
 
-    public float getU1(String id) {
+    public float getU1(Object id) {
         var s = getSprite(id);
         return (s.block.fit.x + s.block.w) / (float) width;
     }
 
-    public float getV1(String id) {
+    public float getV1(Object id) {
         var s = getSprite(id);
         return (s.block.fit.y + s.block.h) / (float) height;
     }
@@ -88,11 +88,11 @@ public class SpriteAtlas implements SizedObject {
         return id;
     }
 
-    public Sprite getSprite(String id) {
+    public Sprite getSprite(Object id) {
         return sprites.get(id);
     }
 
-    public Map<String, Sprite> getSprites() {
+    public Map<?, Sprite> getSprites() {
         return sprites;
     }
 
