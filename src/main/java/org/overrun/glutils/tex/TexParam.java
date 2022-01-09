@@ -99,7 +99,7 @@ public class TexParam {
      * @since 2.0.0
      */
     public void glWrapS(int target) {
-        if (magFilter != 0) {
+        if (wrapS != 0) {
             glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapS);
         }
     }
@@ -112,7 +112,7 @@ public class TexParam {
      * @since 2.0.0
      */
     public void glWrapT(int target) {
-        if (magFilter != 0) {
+        if (wrapT != 0) {
             glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapT);
         }
     }
@@ -125,7 +125,7 @@ public class TexParam {
      * @since 2.0.0
      */
     public void glWrapR(int target) {
-        if (magFilter != 0) {
+        if (wrapS != 0) {
             glTexParameteri(target, GL_TEXTURE_WRAP_R, wrapR);
         }
     }

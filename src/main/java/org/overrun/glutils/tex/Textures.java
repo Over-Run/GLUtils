@@ -228,6 +228,9 @@ public class Textures {
         if (param != null) {
             param.glMinFilter(GL_TEXTURE_2D);
             param.glMagFilter(GL_TEXTURE_2D);
+            param.glWrapS(GL_TEXTURE_2D);
+            param.glWrapT(GL_TEXTURE_2D);
+            param.glWrapR(GL_TEXTURE_2D);
         }
     }
 
