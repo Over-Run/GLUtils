@@ -63,7 +63,6 @@ public enum Direction {
      */
     SOUTH(PLANE_PZ, PLANE_NZ, 0, 0, 1);
 
-    private static final Vector3i[] CACHE_VECTOR = new Vector3i[6];
     private final int id;
     private final int oppositeId;
     private final int axisX;
@@ -99,7 +98,7 @@ public enum Direction {
     }
 
     /**
-     * Get direction by id
+     * Get direction by id or facing
      *
      * @param id direction id
      * @return a direction
@@ -167,12 +166,9 @@ public enum Direction {
      *
      * @return Vector3i contains vec xyz
      */
-    @Contract(" -> new")
+    @Contract(value = " -> new", pure = true)
     @NotNull
     public Vector3i toVector() {
-        if (CACHE_VECTOR[id] == null) {
-            CACHE_VECTOR[id] = new Vector3i(axisX, axisY, axisZ);
-        }
-        return new Vector3i(CACHE_VECTOR[id]);
+        return new Vector3i(axisX, axisY, axisZ);
     }
 }

@@ -32,6 +32,7 @@ import org.overrun.glutils.timer.SystemTimer;
 import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
 
+import static java.lang.Math.floor;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.overrun.glutils.GLUtils.getLogger;
 import static org.overrun.glutils.game.GameEngine.*;
@@ -91,8 +92,8 @@ public class GameApp {
             }
         });
         window.cursorPosCb((hWnd, xp, yp) -> {
-            var nxp = (int) xp;
-            var nyp = (int) yp;
+            var nxp = (int) floor(xp);
+            var nyp = (int) floor(yp);
             input.deltaMX = nxp - input.mouseX;
             input.deltaMY = nyp - input.mouseY;
             game.cursorPosCb(nxp, nyp);

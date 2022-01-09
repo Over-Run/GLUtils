@@ -48,7 +48,7 @@ import static org.overrun.glutils.util.GLString.toJava;
  * @author squid233
  * @since 0.1.0
  */
-public class GLProgram {
+public class GLProgram implements GLState {
     private static final float[] MATRIX4F_BUF = new float[16];
 
     /**
@@ -171,6 +171,7 @@ public class GLProgram {
     /**
      * use program
      */
+    @Override
     public void bind() {
         glUseProgram(id);
     }
@@ -178,6 +179,7 @@ public class GLProgram {
     /**
      * don't use program
      */
+    @Override
     public void unbind() {
         glUseProgram(0);
     }
