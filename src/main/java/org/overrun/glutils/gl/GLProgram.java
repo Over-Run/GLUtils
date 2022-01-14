@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL43.*;
 import static org.overrun.glutils.GLUtils.getLogger;
 import static org.overrun.glutils.util.GLString.toJava;
 
@@ -58,7 +58,7 @@ public class GLProgram implements GLState {
     /**
      * shader id
      */
-    private int vshId, fshId, gshId;
+    private int vshId, fshId, gshId, cshId;
     /**
      * uniform locations
      */
@@ -87,7 +87,7 @@ public class GLProgram implements GLState {
      * @param src source code
      */
     public void createVsh(final String src) {
-        vshId = createShader(src, ShaderType.VERTEX_SHADER);
+        vshId = createShader(src, GL_VERTEX_SHADER);
     }
 
     /**
@@ -96,7 +96,7 @@ public class GLProgram implements GLState {
      * @param src source code
      */
     public void createFsh(final String src) {
-        fshId = createShader(src, ShaderType.FRAGMENT_SHADER);
+        fshId = createShader(src, GL_FRAGMENT_SHADER);
     }
 
     /**
@@ -105,22 +105,33 @@ public class GLProgram implements GLState {
      * @param src source code
      */
     public void createGsh(String src) {
-        gshId = createShader(src, ShaderType.GEOMETRY_SHADER);
+        gshId = createShader(src, GL_GEOMETRY_SHADER);
+    }
+
+    /**
+     * Create compute shader
+     *
+     * @param src source code
+     * @since 2.0.0
+     */
+    public void createCsh(String src) {
+        cshId = createShader(src, GL_COMPUTE_SHADER);
     }
 
     /**
      * Create a shader.
      *
      * @param src  The shader source code. May get from
-     *             {@link FilesReader#lines(ClassLoader, String) lines}.
+     *             {@link FilesReader#lines(Object, String) lines}.
      * @param type The shader type.
+     * @since 2.0.0
      */
-    private int createShader(String src, ShaderType type)
+    private int createShader(String src, int type)
         throws RuntimeException {
-        int shader = glCreateShader(type.getType());
+        int shader = glCreateShader(type);
         if (shader == 0) {
             throw new RuntimeException(
-                "An error occurred creating the " +
+                "An error occurred creating the shader" +
                     type +
                     " object."
             );
@@ -161,6 +172,11 @@ public class GLProgram implements GLState {
             glDetachShader(id, gshId);
             glDeleteShader(gshId);
             gshId = 0;
+        }
+        if (cshId != 0) {
+            glDetachShader(id, cshId);
+            glDeleteShader(cshId);
+            cshId = 0;
         }
         glValidateProgram(id);
         if (glGetProgrami(id, GL_VALIDATE_STATUS) == GL_FALSE) {

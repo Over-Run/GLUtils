@@ -89,14 +89,14 @@ public class GameRenderer {
 
     public void init() {
         program = new GLProgram();
-        program.createVsh(lines(clazz, "shaders/scene.vsh"));
-        program.createFsh(lines(clazz, "shaders/scene.fsh"));
+        program.createVsh(lines(this, "shaders/scene.vsh"));
+        program.createFsh(lines(this, "shaders/scene.fsh"));
         program.link();
         guiProgram = new GLProgram();
-        guiProgram.createVsh(lines(clazz, "shaders/gui.vsh"));
-        guiProgram.createFsh(lines(clazz, "shaders/gui.fsh"));
+        guiProgram.createVsh(lines(this, "shaders/gui.vsh"));
+        guiProgram.createFsh(lines(this, "shaders/gui.fsh"));
         guiProgram.link();
-        cube = ObjLoader.load3(clazz,
+        cube = ObjLoader.load3(this,
             "model/cube/cube.obj",
             (m, v, i) -> m.vertIdx(0)
                 .texIdx(1)
@@ -111,9 +111,10 @@ public class GameRenderer {
         crossing = MeshLoader.load3(clazz,
                 "crossing.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2))
-            .texture(Textures.loadAWT(clazz,
+            .texture(Textures.load2D(this,
                 "crossing.png",
-                TexParam.glNearest()));
+                TexParam.glNearest(),
+                true));
         text = new Mesh3()
             .vertUsage(GL_DYNAMIC_DRAW)
             .vertIdx(0)
@@ -129,7 +130,8 @@ public class GameRenderer {
             .unbindVao();
     }
 
-    public void render(Player player,
+    public void render(float delta,
+                       Player player,
                        Vector3f ambientLight,
                        PointLight pointLight,
                        DirectionalLight light,
@@ -152,7 +154,6 @@ public class GameRenderer {
                 xo = player.xo,
                 yo = player.yo,
                 zo = player.zo;
-            float delta = (float) timer.getDelta();
             float tx = xo + (x - xo) * delta;
             float ty = yo + (y - yo) * delta;
             float tz = zo + (z - zo) * delta;
@@ -236,18 +237,21 @@ public class GameRenderer {
         guiProgram.bind();
         guiProgram.setUniform("texSampler", 0);
         guiProgram.setUniform("textured", true);
-        //todo scale
+        int scrWidth = bufFrame.width() * 240 / bufFrame.height();
+        int scrHeight = 240;
         guiProgram.setUniformMat4("proj",
-            modelv.setOrtho2D(0,
-                bufFrame.width(),
-                bufFrame.height(),
+            proj.setOrtho2D(0,
+                scrWidth,
+                scrHeight,
                 0));
         guiProgram.setUniformMat4("modelv",
-            modelv.translation(bufFrame.width() / 2f,
-                bufFrame.height() / 2f,
+            modelv.translation(scrWidth / 2f,
+                scrHeight / 2f,
                 0));
         crossing.render();
-        guiProgram.setUniformMat4("modelv", modelv.translation(2, 2, 0));
+        guiProgram.setUniformMat4("modelv",
+            modelv.translation(2, 2, 0)
+                .scale(0.5f, 0.5f, 1));
         int fps = graphics.getFps();
         String fpsSt = "FPS: " + fps;
         String st = fpsSt + "\nLight angle: " + lightAngle;

@@ -30,7 +30,8 @@ import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
 import org.overrun.glutils.gl.ll.TextRenderer;
 import org.overrun.glutils.gui.FontTexture;
-import org.overrun.glutils.timer.SystemTimer;
+import org.overrun.glutils.timer.TimerID;
+import org.overrun.glutils.timer.TimerMgrImpl;
 
 import java.awt.*;
 
@@ -71,8 +72,8 @@ public class TextRendererTest extends Game {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tick(TimerID timerID) {
+        super.tick(timerID);
         if (window.getKey(GLFW_KEY_W) == GLFW_PRESS) {
             --cy;
         }
@@ -108,7 +109,7 @@ public class TextRendererTest extends Game {
     public static void main(String[] args) {
         GameConfig config = new GameConfig();
         config.title = "TextRenderer";
-        config.timer = new SystemTimer(100);
+        config.timerMgr = new TimerMgrImpl(100);
         new GameApp(new TextRendererTest(), config);
     }
 }

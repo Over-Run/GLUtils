@@ -25,7 +25,7 @@
 
 package org.overrun.glutils.game;
 
-import org.overrun.glutils.timer.ITimer;
+import org.overrun.glutils.timer.ITimerMgr;
 import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
 
@@ -41,7 +41,7 @@ public class GameEngine {
      * The short name of {@link #framebuffer}
      */
     public static Framebuffer bufFrame;
-    public static ITimer timer;
+    public static ITimerMgr timerMgr;
     public static Input input;
     public static Graphics graphics;
 }

@@ -69,6 +69,11 @@ public abstract class AbstractTimer implements ITimer {
     }
 
     @Override
+    public double getTps() {
+        return tps;
+    }
+
+    @Override
     public double getTimeScale() {
         return timeScale;
     }

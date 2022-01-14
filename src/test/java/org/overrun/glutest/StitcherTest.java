@@ -44,7 +44,7 @@ public class StitcherTest extends Game {
 
     @Override
     public void create() {
-        atlas = Stitcher.stitchStb(StitcherTest.class,
+        atlas = Stitcher.stitch(this,
             TexParam.glNearest(),
             "stitch/grassblock.png",
             "stitch/stone.png",
@@ -66,7 +66,8 @@ public class StitcherTest extends Game {
             .vertexUV(0, 0, 0, 0, 0)
             .vertexUV(0, atlas.height(), 0, 0, 1)
             .vertexUV(atlas.width(), atlas.height(), 0, 1, 1)
-            .vertexUV(atlas.width(), 0, 0, 1, 0);
+            .vertexUV(atlas.width(), 0, 0, 1, 0)
+            .draw();
         atlas.unbind();
         super.render();
     }

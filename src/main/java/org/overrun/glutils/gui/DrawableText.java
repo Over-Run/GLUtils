@@ -28,6 +28,9 @@ package org.overrun.glutils.gui;
 import org.jetbrains.annotations.Nullable;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
+import org.overrun.glutils.game.Texture2D;
+
+import java.util.Scanner;
 
 /**
  * vertex dimensions are 3
@@ -93,7 +96,6 @@ public class DrawableText {
         var tex = new FloatArray();
         var indices = new IntArray();
         var bcolors = new FloatArray();
-        var ca = text.toCharArray();
         float startY = 0;
         int i = 0;
         int numChar = 0;
@@ -105,75 +107,69 @@ public class DrawableText {
         int i1 = 1;
         int i2 = 2;
         int i3 = 3;
-        for (char c : ca) {
-            if (c == '\r') {
-                // TODO: 2021/8/31 test
-                int next = i + 1;
-                if (ca.length > next && ca[next] == '\n') {
-                    i++;
-                }
-                startY += gh;
-                numChar = 0;
-                continue;
-            } else if (c == '\n') {
-                startY += gh;
-                numChar = 0;
-                continue;
-            }
-            var glyph = font.getGlyph(c);
-            int gw = glyph.getWidth();
-            int gsx = glyph.getStartX();
-            int gsy = glyph.getStartY();
-            float startX = gw * numChar;
-            float endX = startX + gw;
-            float endY = startY + gh;
-            float texStartX = (float) gsx / (float) ftw;
-            float texStartY = (float) gsy / (float) fth;
-            float texEndX = ((float) gsx + (float) gw) / (float) ftw;
-            float texEndY = ((float) gsy + (float) gh) / (float) fth;
-            if (bgColor != null) {
-                bcolors.addAll(bgColor.apply(c, i));
-            }
-
-            // foreground
-            // left top
-            vertices.addAll(startX, startY, 0);
-            tex.addAll(texStartX, texStartY);
-            indices.add(i0);
-            // left bottom
-            vertices.addAll(startX, endY, 0);
-            tex.addAll(texStartX, texEndY);
-            indices.add(i1);
-            // right bottom
-            vertices.addAll(endX, endY, 0);
-            tex.addAll(texEndX, texEndY);
-            indices.add(i2);
-            // right top
-            vertices.addAll(endX, startY, 0);
-            tex.addAll(texEndX, texStartY);
-            if (fgColor != null) {
-                colors.addAll(fgColor.apply(c, i));
-            } else {
-                for (int j = 0; j < 4; j++) {
-                    for (int k = 0; k < colorDim; k++) {
-                        colors.add(1);
+        try (var sc = new Scanner(text)){
+            while (sc.hasNextLine()) {
+                var t = sc.nextLine();
+                var ca = t.toCharArray();
+                for (char c : ca) {
+                    var glyph = font.getGlyph(c);
+                    int gw = glyph.getWidth();
+                    int gsx = glyph.getStartX();
+                    int gsy = glyph.getStartY();
+                    float startX = gw * numChar;
+                    float endX = startX + gw;
+                    float endY = startY + gh;
+                    float texStartX = (float) gsx / (float) ftw;
+                    float texStartY = (float) gsy / (float) fth;
+                    float texEndX = ((float) gsx + (float) gw) / (float) ftw;
+                    float texEndY = ((float) gsy + (float) gh) / (float) fth;
+                    if (bgColor != null) {
+                        bcolors.addAll(bgColor.apply(c, i));
                     }
+
+                    // foreground
+                    // left top
+                    vertices.addAll(startX, startY, 0);
+                    tex.addAll(texStartX, texStartY);
+                    indices.add(i0);
+                    // left bottom
+                    vertices.addAll(startX, endY, 0);
+                    tex.addAll(texStartX, texEndY);
+                    indices.add(i1);
+                    // right bottom
+                    vertices.addAll(endX, endY, 0);
+                    tex.addAll(texEndX, texEndY);
+                    indices.add(i2);
+                    // right top
+                    vertices.addAll(endX, startY, 0);
+                    tex.addAll(texEndX, texStartY);
+                    if (fgColor != null) {
+                        colors.addAll(fgColor.apply(c, i));
+                    } else {
+                        for (int j = 0; j < 4; j++) {
+                            for (int k = 0; k < colorDim; k++) {
+                                colors.add(1);
+                            }
+                        }
+                    }
+                    indices.add(i3);
+                    indices.add(i0);
+                    indices.add(i2);
+                    ++i;
+                    ++numChar;
+                    i0 += 4;
+                    i1 += 4;
+                    i2 += 4;
+                    i3 += 4;
                 }
+                startY += gh;
+                numChar = 0;
             }
-            indices.add(i3);
-            indices.add(i0);
-            indices.add(i2);
-            ++i;
-            ++numChar;
-            i0 += 4;
-            i1 += 4;
-            i2 += 4;
-            i3 += 4;
         }
         setter.set(vertices.toFArray(),
             colors.toFArray(),
             tex.toFArray(),
-            font.getTextureId(),
+            font.getTexture(),
             indices.toIArray(),
             bcolors.toFArray());
     }
@@ -200,7 +196,7 @@ public class DrawableText {
         void set(float[] vertices,
                  float[] colors,
                  float[] texCoord,
-                 int tex,
+                 Texture2D tex,
                  int[] indices,
                  float[] bcolors);
     }

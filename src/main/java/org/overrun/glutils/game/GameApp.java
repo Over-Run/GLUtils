@@ -27,12 +27,12 @@ package org.overrun.glutils.game;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import org.overrun.glutils.tex.Textures;
-import org.overrun.glutils.timer.SystemTimer;
+import org.overrun.glutils.timer.TimerMgrImpl;
 import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
 
 import static java.lang.Math.floor;
+import static java.util.Objects.requireNonNullElse;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.overrun.glutils.GLUtils.getLogger;
 import static org.overrun.glutils.game.GameEngine.*;
@@ -106,7 +106,7 @@ public class GameApp {
             game.resize(width, height), window)
             .setWidth(cw)
             .setHeight(ch);
-        timer = config.timer != null ? config.timer : new SystemTimer(20);
+        timerMgr = requireNonNullElse(config.timerMgr, new TimerMgrImpl());
         window.makeCurr();
         glfwSwapInterval(config.vSync ? 1 : 0);
         GL.createCapabilities();
@@ -118,9 +118,15 @@ public class GameApp {
             long lastTime = System.currentTimeMillis();
             int frames = 0;
             while (!window.shouldClose()) {
-                timer.advanceTime();
-                for (int i = 0; i < timer.getTicks(); i++) {
-                    game.tick();
+                for (int i = 0;
+                     i < timerMgr.getIDCount();
+                     i++) {
+                    var timerID = timerMgr.getID(i);
+                    var timer = timerID.get();
+                    timer.advanceTime();
+                    for (int j = 0; j < timer.getTicks(); j++) {
+                        game.tick(timerID);
+                    }
                 }
                 game.render();
                 window.swapBuffers();
@@ -137,7 +143,6 @@ public class GameApp {
         } catch (Throwable t) {
             getLogger().catching(t);
         } finally {
-            Textures.free();
             game.free();
             window.free();
             glfwTerminate();

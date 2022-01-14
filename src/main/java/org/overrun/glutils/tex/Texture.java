@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 Overrun Organization
+ * Copyright (c) 2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,76 +23,62 @@
  *
  */
 
-package org.overrun.glutils.tex.stitch;
+package org.overrun.glutils.tex;
 
 import org.overrun.glutils.SizedObject;
+import org.overrun.glutils.gl.GLState;
 
-import java.util.Map;
-
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
-public class SpriteAtlas<T> implements SizedObject {
-    private final int width;
-    private final int height;
-    private final int id;
-    protected Map<T, Sprite> sprites;
+public class Texture implements SizedObject, GLState {
+    /**
+     * The target
+     */
+    protected final int target;
+    /**
+     * The size width
+     */
+    protected final int width;
+    /**
+     * The size height
+     */
+    protected final int height;
+    /**
+     * The texture id
+     */
+    protected final int id;
 
-    public SpriteAtlas(int width,
-                       int height,
-                       int id,
-                       Map<T, Sprite> sprites) {
-        this(width, height, id);
-        this.sprites = sprites;
-    }
-
-    public SpriteAtlas(int width,
-                       int height,
-                       int id) {
+    /**
+     * Construct
+     *
+     * @param target The target
+     * @param width  The size width
+     * @param height The size height
+     * @param id     The texture id
+     */
+    public Texture(int target,
+                   int width,
+                   int height,
+                   int id) {
+        this.target = target;
         this.width = width;
         this.height = height;
         this.id = id;
     }
 
+    @Override
     public void bind() {
-        glBindTexture(GL_TEXTURE_2D, id);
+        glBindTexture(target, id);
     }
 
+    @Override
     public void unbind() {
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    public float getU0(T id) {
-        return getSprite(id).block.fit.x / (float) width;
-    }
-
-    public float getV0(T id) {
-        return getSprite(id).block.fit.y / (float) height;
-    }
-
-    public float getU1(T id) {
-        var s = getSprite(id);
-        return (s.block.fit.x + s.block.w) / (float) width;
-    }
-
-    public float getV1(T id) {
-        var s = getSprite(id);
-        return (s.block.fit.y + s.block.h) / (float) height;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public Sprite getSprite(T id) {
-        return sprites.get(id);
-    }
-
-    public Map<T, Sprite> getSprites() {
-        return sprites;
+        glBindTexture(target, 0);
     }
 
     @Override
@@ -105,6 +91,18 @@ public class SpriteAtlas<T> implements SizedObject {
         return height;
     }
 
+    /**
+     * Get texture id
+     *
+     * @return {@link #id}
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Delete texture
+     */
     public void free() {
         glDeleteTextures(id);
     }

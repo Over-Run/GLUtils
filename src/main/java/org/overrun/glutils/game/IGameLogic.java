@@ -25,6 +25,8 @@
 
 package org.overrun.glutils.game;
 
+import org.overrun.glutils.timer.TimerID;
+
 /**
  * @author squid233
  * @since 1.5.0
@@ -45,8 +47,11 @@ public interface IGameLogic {
      * <p>
      * This method call per ticks.
      * </p>
+     *
+     * @param timerID The timer ID.
+     * @since 2.0.0
      */
-    default void tick() {
+    default void tick(TimerID timerID) {
     }
 
     /**

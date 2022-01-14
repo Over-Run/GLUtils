@@ -65,6 +65,14 @@ public class TexParam {
         return mode.minFilter(GL_LINEAR).magFilter(GL_LINEAR);
     }
 
+    public void glSet(int target) {
+        glMinFilter(target);
+        glMagFilter(target);
+        glWrapS(target);
+        glWrapT(target);
+        glWrapR(target);
+    }
+
     /**
      * Call {@link GL12#glTexParameteri TexParameteri} to set
      * {@link GL12#GL_TEXTURE_MIN_FILTER MIN_FILTER}.

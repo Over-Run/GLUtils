@@ -25,6 +25,8 @@
 
 package org.overrun.glutils.tex.stitch;
 
+import java.util.StringJoiner;
+
 /**
  * @author squid233
  * @since 2.0.0
@@ -71,5 +73,14 @@ public class Block {
      * Construct without params
      */
     public Block() {
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Block.class.getSimpleName() + "[", "]")
+            .add("fit=" + fit)
+            .add("w=" + w)
+            .add("h=" + h)
+            .toString();
     }
 }

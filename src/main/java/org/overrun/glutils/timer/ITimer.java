@@ -36,6 +36,13 @@ public interface ITimer {
     void advanceTime();
 
     /**
+     * Get timer ticks per seconds.
+     *
+     * @return The tps.
+     */
+    double getTps();
+
+    /**
      * Get timer speed scale.
      *
      * @return The timer speed scale.

@@ -1,9 +1,9 @@
 set colors 4
 
-v -9 -9 0
-v -9 9 0
-v 9 9 0
-v 9 -9 0
+v -4 -4 0
+v -4 5 0
+v 5 5 0
+v 5 -4 0
 
 repeat c 16 1
 vc c

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 Overrun Organization
+ * Copyright (c) 2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,26 +25,24 @@
 
 package org.overrun.glutils.tex.stitch;
 
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
-import org.overrun.glutils.tex.Images;
+import org.jetbrains.annotations.Nullable;
 import org.overrun.glutils.tex.NativeImage;
 import org.overrun.glutils.tex.TexParam;
-import org.overrun.glutils.tex.Textures;
 
+import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.stb.STBImage.STBI_rgb_alpha;
-import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
+import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.memAlloc;
-import static org.overrun.glutils.FilesReader.getBytes;
-import static org.overrun.glutils.FilesReader.ntoBBuffer;
+import static org.lwjgl.system.MemoryUtil.memFree;
+import static org.overrun.glutils.FilesReader.*;
 import static org.overrun.glutils.GLUtils.getLogger;
-import static org.overrun.glutils.tex.Images.getRGB;
+import static org.overrun.glutils.tex.Images.*;
+import static org.overrun.glutils.tex.Textures.genMipmap;
 
 /**
  * <h2>Stitching textures</h2>
@@ -64,162 +62,152 @@ public class Stitcher {
         0xff000000, 0xfff800f8
     };
 
-    public static StrSpriteAtlas stitchStb(Class<?> c,
-                                           TexParam param,
-                                           String... filenames) {
-        return stitchStb(c.getClassLoader(), param, filenames);
+    public static StrSpriteAtlas stitch(
+        Object o,
+        TexParam param,
+        boolean useStb,
+        String... filenames
+    ) {
+        return stitchBuf(getClassLoader(o),
+            param,
+            useStb,
+            filenames);
     }
 
-    public static StrSpriteAtlas stitchAwt(Class<?> c,
-                                           TexParam param,
-                                           String... filenames) {
-        return stitchAwt(c.getClassLoader(), param, filenames);
+    public static StrSpriteAtlas stitch(
+        Object o,
+        TexParam param,
+        String... filenames
+    ) {
+        return stitch(o, param, true, filenames);
     }
 
-    public static StrSpriteAtlas stitchStb(ClassLoader cl,
-                                           TexParam param,
-                                           String... filenames) {
-        return stitchStb0((filename,
-                           px,
-                           py,
-                           pc,
-                           format) -> stbi_load_from_memory(
-            ntoBBuffer(getBytes(cl, filename)),
-            px,
-            py,
-            pc,
-            format
-        ), param, filenames);
+    public static StrSpriteAtlas stitchFs(
+        TexParam param,
+        boolean useStb,
+        String... filenames
+    ) {
+        return stitchBuf(null, param, useStb, filenames);
     }
 
-    public static StrSpriteAtlas stitchAwt(ClassLoader cl,
-                                           TexParam param,
-                                           String... filenames) {
-        return stitchAwt0(filename -> Images.loadAwt(cl, filename),
-            param, filenames);
+    public static StrSpriteAtlas stitchFs(
+        TexParam param,
+        String... filenames
+    ) {
+        return stitchFs(param, true, filenames);
     }
 
-    public static StrSpriteAtlas stitchFsStb(TexParam param,
-                                             String... filenames) {
-        return stitchStb0(STBImage::stbi_load, param, filenames);
-    }
-
-    public static StrSpriteAtlas stitchFsAwt(TexParam param,
-                                             String... filenames) {
-        return stitchAwt0(Images::loadFsAwt, param, filenames);
-    }
-
-    private static StrSpriteAtlas stitchAwt0(AwtiLoadFunc func,
-                                             TexParam param,
-                                             String... filenames) {
+    private static StrSpriteAtlas stitchBuf(
+        @Nullable Object o,
+        TexParam param,
+        boolean useStb,
+        String... filenames
+    ) {
         var sprites = new Sprite[filenames.length];
-        for (int i = 0; i < filenames.length; ++i) {
-            var filename = filenames[i];
-            ByteBuffer bb;
-            int w, h;
-            int[] pixels;
-            try {
-                var bi = func.load(filename);
-                w = bi.getWidth();
-                h = bi.getHeight();
-                pixels = getRGB(bi);
-            } catch (Exception e) {
-                getLogger().catching(e);
-                w = 2;
-                h = 2;
-                pixels = MISSING_TEXTURE;
+        if (useStb) {
+            try (var stack = stackPush()) {
+                var px = stack.mallocInt(1);
+                var py = stack.mallocInt(1);
+                var pc = stack.mallocInt(1);
+                for (int i = 0; i < filenames.length; ++i) {
+                    var filename = filenames[i];
+                    ByteBuffer bb;
+                    try {
+                        if (o != null) {
+                            var nb = ntoBBuffer(getBytes(o, filename));
+                            bb = stbi_load_from_memory(
+                                nb,
+                                px,
+                                py,
+                                pc,
+                                STBI_rgb_alpha
+                            );
+                            memFree(nb);
+                        } else {
+                            bb = stbi_load(
+                                filename,
+                                px,
+                                py,
+                                pc,
+                                STBI_rgb_alpha
+                            );
+                        }
+                    } catch (Exception e) {
+                        bb = null;
+                        thrOut(filename);
+                        getLogger().catching(e);
+                    }
+                    int w, h;
+                    if (bb == null) {
+                        w = 2;
+                        h = 2;
+                        bb = memAlloc(4 * Integer.BYTES);
+                        bb.asIntBuffer().put(MISSING_TEXTURE);
+                    } else {
+                        w = px.get(0);
+                        h = py.get(0);
+                    }
+                    sprites[i] = new Sprite(filename,
+                        new Block(w, h),
+                        new NativeImage(w, h, bb));
+                }
             }
-            bb = memAlloc(w * h * Integer.BYTES);
-            bb.asIntBuffer().put(pixels);
-            sprites[i] = new Sprite(filename,
-                new Block(w, h),
-                new NativeImage(w, h, bb, false));
-        }
-        return stitchBuf(sprites, param);
-    }
-
-    private static StrSpriteAtlas stitchStb0(StbiLoadFunc func,
-                                             TexParam param,
-                                             String... filenames) {
-        var sprites = new Sprite[filenames.length];
-        try (var stack = MemoryStack.stackPush()) {
-            var px = stack.mallocInt(1);
-            var py = stack.mallocInt(1);
-            var pc = stack.mallocInt(1);
+        } else {
             for (int i = 0; i < filenames.length; ++i) {
                 var filename = filenames[i];
                 ByteBuffer bb;
-                try {
-                    bb = func.load(
-                        filename,
-                        px,
-                        py,
-                        pc,
-                        STBI_rgb_alpha
-                    );
-                } catch (Exception e) {
-                    bb = null;
-                    Images.thrOut(filename);
-                    getLogger().catching(e);
-                }
-                var failed = bb == null;
                 int w, h;
-                if (failed) {
+                int[] pixels;
+                try {
+                    BufferedImage bi;
+                    if (o != null) {
+                        bi = loadAwt(o, filename);
+                    } else {
+                        bi = loadFsAwt(filename);
+                    }
+                    w = bi.getWidth();
+                    h = bi.getHeight();
+                    pixels = getRGB(bi);
+                } catch (Exception e) {
+                    getLogger().error("Error loading image \"" +
+                        filename +
+                        "\"");
+                    getLogger().catching(e);
                     w = 2;
                     h = 2;
-                    bb = memAlloc(4 * Integer.BYTES);
-                    bb.asIntBuffer().put(MISSING_TEXTURE);
-                } else {
-                    w = px.get(0);
-                    h = py.get(0);
+                    pixels = MISSING_TEXTURE;
                 }
+                bb = memAlloc(w * h * Integer.BYTES);
+                bb.asIntBuffer().put(pixels);
                 sprites[i] = new Sprite(filename,
                     new Block(w, h),
-                    new NativeImage(w, h, bb));
+                    new NativeImage(w, h, bb, false));
             }
         }
-        return stitchBuf(sprites, param);
-    }
 
-    private static StrSpriteAtlas stitchBuf(Sprite[] sprites,
-                                            TexParam param) {
-        Arrays.sort(sprites,
-            Comparator.comparing((Sprite s) -> -s.buffer.height)
-                .thenComparing(s -> -s.buffer.width));
-        int aw, ah, aid;
+        Arrays.sort(sprites, null);
+
         var blocks = new Block[sprites.length];
         for (int i = 0; i < blocks.length; i++) {
             blocks[i] = sprites[i].block;
         }
         var packer = new GrowingPacker();
         packer.fit(blocks);
-        aw = packer.root.w;
-        ah = packer.root.h;
-        aid = Textures.gen();
-        stitchTex(aw, ah, aid, param, sprites);
-        var map = new LinkedHashMap<String, Sprite>();
-        for (var sprite : sprites) {
-            map.put((String) sprite.id, sprite);
-        }
-        return new StrSpriteAtlas(aw, ah, aid, map);
-    }
+        int w = packer.root.w;
+        int h = packer.root.h;
 
-    private static void stitchTex(int aw,
-                                  int ah,
-                                  int aid,
-                                  TexParam param,
-                                  Sprite[] sprites) {
-        Textures.bind2D(aid);
-        Textures.texParameter2D(param);
+        int id = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, id);
+        param.glSet(GL_TEXTURE_2D);
         glTexImage2D(GL_TEXTURE_2D,
             0,
             GL_RGBA,
-            aw,
-            ah,
+            w,
+            h,
             0,
             GL_RGBA,
             GL_UNSIGNED_BYTE,
-            new int[aw * ah]);
+            new int[w * h]);
         for (var s : sprites) {
             var b = s.block;
             if (b.fit != null) {
@@ -235,6 +223,12 @@ public class Stitcher {
             }
             s.free();
         }
-        Textures.genMipmap2D();
+        genMipmap(GL_TEXTURE_2D);
+
+        var map = new LinkedHashMap<String, Sprite>();
+        for (var sprite : sprites) {
+            map.put((String) sprite.id, sprite);
+        }
+        return new StrSpriteAtlas(w, h, id, map);
     }
 }

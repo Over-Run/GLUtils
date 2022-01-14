@@ -32,7 +32,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetTime;
  * @since 1.5.0
  */
 public class GLFWTimer extends AbstractTimer {
-    private static final double MAX_SECONDS_PER_UPDATE = 1.0;
+    public static final double MAX_SECONDS_PER_UPDATE = 1.0;
     private double lastTime = glfwGetTime();
 
     /**

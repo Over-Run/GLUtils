@@ -28,13 +28,14 @@ package org.overrun.glutest;
 import org.overrun.glutils.game.Game;
 import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
+import org.overrun.glutils.timer.TimerID;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.overrun.glutils.game.GameEngine.input;
-import static org.overrun.glutils.light.Direction.*;
 import static org.overrun.glutils.gl.ll.Drawer.drawCircle;
 import static org.overrun.glutils.gl.ll.Drawer.drawRect;
+import static org.overrun.glutils.light.Direction.*;
 
 /**
  * @author squid233
@@ -89,7 +90,7 @@ public class DrawerTest extends Game {
     }
 
     @Override
-    public void tick() {
+    public void tick(TimerID timerID) {
         if (input.keyPressed(GLFW_KEY_W)) {
             --xr;
         }
@@ -126,7 +127,7 @@ public class DrawerTest extends Game {
         if (input.keyPressed(GLFW_KEY_DOWN)) {
             ++z;
         }
-        super.tick();
+        super.tick(timerID);
     }
 
     @Override

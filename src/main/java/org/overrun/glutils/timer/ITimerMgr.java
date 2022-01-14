@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 Overrun Organization
+ * Copyright (c) 2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,25 @@
  *
  */
 
-package org.overrun.glutils.tex.stitch;
-
-import java.awt.image.BufferedImage;
+package org.overrun.glutils.timer;
 
 /**
  * @author squid233
  * @since 2.0.0
  */
-@FunctionalInterface
-public interface AwtiLoadFunc {
-    BufferedImage load(String filename);
+public interface ITimerMgr {
+    /**
+     * Get the timer ID by the index.
+     *
+     * @param index The index in iterator.
+     * @return The timer ID.
+     */
+    TimerID getID(int index);
+
+    /**
+     * Get the timer count.
+     *
+     * @return The count.
+     */
+    int getIDCount();
 }

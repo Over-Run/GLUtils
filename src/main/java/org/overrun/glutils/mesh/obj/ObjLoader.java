@@ -30,6 +30,7 @@ import org.joml.Vector4f;
 import org.lwjgl.assimp.*;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
+import org.overrun.glutils.game.Texture2D;
 import org.overrun.glutils.light.Material;
 import org.overrun.glutils.mesh.Mesh;
 import org.overrun.glutils.mesh.Mesh3;
@@ -48,6 +49,7 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 import static org.lwjgl.assimp.Assimp.*;
+import static org.overrun.glutils.FilesReader.getClassLoader;
 
 /**
  * @author squid233
@@ -82,9 +84,10 @@ public class ObjLoader {
                      int meshIndex);
     }
 
-    private static AIScene load(ClassLoader cl,
+    private static AIScene load(Object o,
                                 String filename,
                                 int flags) {
+        var cl = getClassLoader(o);
         var fn = filename.replaceAll("\\\\", "/");
         var parentPath = fn.substring(0, fn.lastIndexOf('/') + 1);
         var f = new File(TMP + "/" + parentPath);
@@ -94,7 +97,7 @@ public class ObjLoader {
             while (resources.hasMoreElements()) {
                 var url = resources.nextElement();
                 var protocol = url.getProtocol();
-                if (protocol.equals("jar")) {
+                if ("jar".equals(protocol)) {
                     // TODO: 2021/8/31 0031 test
                     var conn = (JarURLConnection) url.openConnection();
                     var jar = conn.getJarFile();
@@ -106,7 +109,7 @@ public class ObjLoader {
                             copyToFS(cl, name);
                         }
                     }
-                } else if (protocol.equals("file")) {
+                } else if ("file".equals(protocol)) {
                     var resource = requireNonNull(cl.getResource(parentPath));
                     var files = new File(resource.getPath()).list();
                     if (files != null) {
@@ -146,10 +149,14 @@ public class ObjLoader {
                 deleteTmpFiles(f1);
             }
         }
-        file.delete();
+        try {
+            Files.deleteIfExists(file.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private static List<Material> createMaterials(ClassLoader cl,
+    private static List<Material> createMaterials(Object o,
                                                   AIScene scene,
                                                   String filename) {
         int numMaterials = scene.mNumMaterials();
@@ -157,12 +164,12 @@ public class ObjLoader {
         var materials = new ArrayList<Material>();
         for (int i = 0; i < numMaterials; i++) {
             var aiMaterial = AIMaterial.create(requireNonNull(aiMaterials).get(i));
-            processMaterial(cl, aiMaterial, materials, filename);
+            processMaterial(o, aiMaterial, materials, filename);
         }
         return materials;
     }
 
-    private static void processMaterial(ClassLoader cl,
+    private static void processMaterial(Object o,
                                         AIMaterial aiMaterial,
                                         List<Material> materials,
                                         String filename) {
@@ -179,11 +186,12 @@ public class ObjLoader {
             null,
             null);
         var texPath = path.dataString();
-        int texture = 0;
+        Texture2D texture = null;
         if (!texPath.isEmpty()) {
-            texture = Textures.loadAWT(cl,
+            texture = Textures.load2D(o,
                 filename + "/../" + texPath,
-                TexParam.glNearest());
+                TexParam.glNearest(),
+                true);
         }
         path.close();
 
@@ -357,28 +365,28 @@ public class ObjLoader {
     /**
      * Load object file with default flags.
      *
-     * @param cl       Class loader
+     * @param o        The object Class or ClassLoader.
      * @param filename Object filename in classpath.
      * @return Meshes.
      */
-    public static ObjModel2 load2(ClassLoader cl,
+    public static ObjModel2 load2(Object o,
                                   String filename) {
-        return load2(cl, filename, DEFAULT_FLAGS);
+        return load2(o, filename, DEFAULT_FLAGS);
     }
 
     /**
      * Load object file.
      *
-     * @param cl       Class loader
+     * @param o        The object Class or ClassLoader.
      * @param filename Object filename in classpath (in relative path).
      * @param flags    Assimp flags.
      * @return Meshes.
      */
-    public static ObjModel2 load2(ClassLoader cl,
+    public static ObjModel2 load2(Object o,
                                   String filename,
                                   int flags) {
-        var scene = load(cl, filename, flags);
-        var materials = createMaterials(cl, scene, filename);
+        var scene = load(o, filename, flags);
+        var materials = createMaterials(o, scene, filename);
         int numMeshes = scene.mNumMeshes();
         var aiMeshes = scene.mMeshes();
         var meshes = new Mesh[numMeshes];
@@ -394,32 +402,32 @@ public class ObjLoader {
     /**
      * Load object file with default flags.
      *
-     * @param cl            Class loader
+     * @param o             The object Class or ClassLoader.
      * @param filename      Object filename in classpath.
      * @param vertProcessor Set attribute index before return.
      * @return Meshes v3.
      */
-    public static ObjModel3 load3(ClassLoader cl,
+    public static ObjModel3 load3(Object o,
                                   String filename,
                                   @Nullable VertProcessor vertProcessor) {
-        return load3(cl, filename, DEFAULT_FLAGS, vertProcessor);
+        return load3(o, filename, DEFAULT_FLAGS, vertProcessor);
     }
 
     /**
      * Load object file.
      *
-     * @param cl            Class loader
+     * @param o             The object Class or ClassLoader.
      * @param filename      Object filename in classpath (in relative path).
      * @param flags         Assimp flags.
      * @param vertProcessor Set attribute index before return.
      * @return Meshes v3.
      */
-    public static ObjModel3 load3(ClassLoader cl,
+    public static ObjModel3 load3(Object o,
                                   String filename,
                                   int flags,
                                   @Nullable VertProcessor vertProcessor) {
-        var scene = load(cl, filename, flags);
-        var materials = createMaterials(cl, scene, filename);
+        var scene = load(o, filename, flags);
+        var materials = createMaterials(o, scene, filename);
         int numMeshes = scene.mNumMeshes();
         var aiMeshes = scene.mMeshes();
         var meshes = new Mesh3[numMeshes];
@@ -431,65 +439,5 @@ public class ObjLoader {
         }
         aiReleaseImport(scene);
         return new ObjModel3(meshes);
-    }
-
-    /**
-     * Load object file with default flags.
-     *
-     * @param c        The Class
-     * @param filename Object filename in classpath.
-     * @return Meshes.
-     * @since 2.0.0
-     */
-    public static ObjModel2 load2(Class<?> c,
-                                  String filename) {
-        return load2(c.getClassLoader(), filename);
-    }
-
-    /**
-     * Load object file.
-     *
-     * @param c        The Class
-     * @param filename Object filename in classpath (in relative path).
-     * @param flags    Assimp flags.
-     * @return Meshes.
-     * @since 2.0.0
-     */
-    public static ObjModel2 load2(Class<?> c,
-                                  String filename,
-                                  int flags) {
-        return load2(c.getClassLoader(), filename, flags);
-    }
-
-    /**
-     * Load object file with default flags.
-     *
-     * @param c             The Class
-     * @param filename      Object filename in classpath.
-     * @param vertProcessor Set attribute index before return.
-     * @return Meshes v3.
-     * @since 2.0.0
-     */
-    public static ObjModel3 load3(Class<?> c,
-                                  String filename,
-                                  @Nullable VertProcessor vertProcessor) {
-        return load3(c.getClassLoader(), filename, vertProcessor);
-    }
-
-    /**
-     * Load object file.
-     *
-     * @param c             The Class
-     * @param filename      Object filename in classpath (in relative path).
-     * @param flags         Assimp flags.
-     * @param vertProcessor Set attribute index before return.
-     * @return Meshes v3.
-     * @since 2.0.0
-     */
-    public static ObjModel3 load3(Class<?> c,
-                                  String filename,
-                                  int flags,
-                                  @Nullable VertProcessor vertProcessor) {
-        return load3(c.getClassLoader(), filename, flags, vertProcessor);
     }
 }

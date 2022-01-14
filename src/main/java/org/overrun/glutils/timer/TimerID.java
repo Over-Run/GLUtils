@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021-2022 Overrun Organization
+ * Copyright (c) 2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,57 +23,21 @@
  *
  */
 
-package org.overrun.glutils.gl;
+package org.overrun.glutils.timer;
 
-import static org.lwjgl.opengl.GL32.*;
+import java.util.function.Supplier;
 
 /**
  * @author squid233
- * @since 0.1.0
+ * @since 2.0.0
  */
-public enum ShaderType {
+@FunctionalInterface
+public interface TimerID extends Supplier<ITimer> {
     /**
-     * fragmentShader
-     */
-    FRAGMENT_SHADER(GL_FRAGMENT_SHADER),
-    /**
-     * vertexShader
-     */
-    VERTEX_SHADER(GL_VERTEX_SHADER),
-    /**
-     * geometryShader
-     */
-    GEOMETRY_SHADER(GL_GEOMETRY_SHADER);
-
-    /**
-     * GL type constant
-     */
-    private final int type;
-
-    ShaderType(int type) {
-        this.type = type;
-    }
-
-    /**
-     * get gl constant
+     * Get the timer.
      *
-     * @return gl constant
+     * @return The timer.
      */
-    public int getType() {
-        return type;
-    }
-
-    /**
-     * get name
-     *
-     * @return name
-     */
-    public String getName() {
-        return name().toLowerCase().replace("_", " ");
-    }
-
     @Override
-    public String toString() {
-        return getName();
-    }
+    ITimer get();
 }

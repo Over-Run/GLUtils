@@ -25,6 +25,8 @@
 
 package org.overrun.glutils.game;
 
+import org.overrun.glutils.timer.TimerID;
+
 import static org.overrun.glutils.game.GameEngine.bufFrame;
 
 /**
@@ -63,9 +65,9 @@ public class Game implements IGameLogic {
     }
 
     @Override
-    public void tick() {
+    public void tick(TimerID timerID) {
         if (screen != null) {
-            screen.tick();
+            screen.tick(timerID);
         }
     }
 

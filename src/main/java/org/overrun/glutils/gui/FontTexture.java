@@ -25,16 +25,21 @@
 
 package org.overrun.glutils.gui;
 
+import org.overrun.glutils.game.Texture2D;
 import org.overrun.glutils.tex.Textures;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static java.awt.RenderingHints.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
+import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.overrun.glutils.tex.Images.getRGB;
 import static org.overrun.glutils.tex.TexParam.glLinear;
 import static org.overrun.glutils.tex.TexParam.glNearest;
@@ -50,7 +55,7 @@ public class FontTexture {
     private final Charset charset;
     private final Map<Character, Glyph> charMap = new LinkedHashMap<>();
     private final int padding;
-    private int textureId;
+    private Texture2D texture;
     private int width;
     private int height;
     private int glyphHeight;
@@ -286,11 +291,25 @@ public class FontTexture {
             startX += glyph.getWidth() + padding;
         }
         g.dispose();
-        textureId = Textures.load(font.toString() + charset + padding,
+        int id = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, id);
+        ByteBuffer bb = null;
+        try {
+            var rgb = getRGB(bi);
+            bb = memAlloc(rgb.length * Integer.BYTES);
+            bb.asIntBuffer().put(rgb).flip();
+            Textures.pushToGL2D(antialias ? glLinear() : glNearest(),
+                width,
+                height,
+                bb);
+        } finally {
+            memFree(bb);
+        }
+        texture = new Texture2D(
             width,
             height,
-            getRGB(bi),
-            antialias ? glLinear() : glNearest());
+            id
+        );
     }
 
     /**
@@ -372,12 +391,12 @@ public class FontTexture {
     }
 
     /**
-     * get texture id
+     * get texture
      *
-     * @return texture id
+     * @return texture
      */
-    public int getTextureId() {
-        return textureId;
+    public Texture2D getTexture() {
+        return texture;
     }
 
     /**

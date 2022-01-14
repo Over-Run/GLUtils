@@ -33,6 +33,8 @@ import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.PointLight;
+import org.overrun.glutils.tex.Textures;
+import org.overrun.glutils.timer.TimerID;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Math.*;
@@ -91,13 +93,15 @@ public class GLUTest extends Game {
         System.out.println("GL Extensions:" + sb);
         System.out.println("GL Version: " + glGetString(GL_VERSION));
         System.out.println("GL Shading language version: " + glGetString(GL_SHADING_LANGUAGE_VERSION));
+        System.out.println("GL Texture Max Size: " + Textures.getMaxSize());
         init();
         window.setGrabbed(true);
     }
 
     @Override
     public void render() {
-        renderer.render(player,
+        renderer.render((float) GLUTestTimers.PLAYER.get().getDelta(),
+            player,
             ambientLight,
             pointLight,
             directionalLight,
@@ -106,29 +110,34 @@ public class GLUTest extends Game {
     }
 
     @Override
-    public void tick() {
-        player.tick();
-        // Update directional light direction, intensity and color
-        lightAngle += 1f;
-        if (lightAngle > 90f) {
-            directionalLight.setIntensity(0);
-            if (lightAngle >= 360) {
-                lightAngle = -90;
-            }
-        } else if (lightAngle <= -80 || lightAngle >= 80) {
-            float factor = 1 - (abs(lightAngle) - 80) / 10.0f;
-            directionalLight.setIntensity(factor);
-            directionalLight.getColor().y = max(factor, 0.9f);
-            directionalLight.getColor().z = max(factor, 0.5f);
-        } else {
-            directionalLight.setIntensity(1);
-            directionalLight.getColor().x = 1;
-            directionalLight.getColor().y = 1;
-            directionalLight.getColor().z = 1;
+    public void tick(TimerID timerID) {
+        switch ((GLUTestTimers) timerID) {
+            case PLAYER:
+                player.tick();
+                break;
+            case LIGHTING:
+                // Update directional light direction, intensity and color
+                lightAngle += 1f;
+                if (lightAngle > 90f) {
+                    directionalLight.setIntensity(0);
+                    if (lightAngle >= 360) {
+                        lightAngle = -90;
+                    }
+                } else if (lightAngle <= -80 || lightAngle >= 80) {
+                    float factor = 1 - (abs(lightAngle) - 80) / 10.0f;
+                    directionalLight.setIntensity(factor);
+                    directionalLight.getColor().y = max(factor, 0.9f);
+                    directionalLight.getColor().z = max(factor, 0.5f);
+                } else {
+                    directionalLight.setIntensity(1);
+                    directionalLight.getColor().x = 1;
+                    directionalLight.getColor().y = 1;
+                    directionalLight.getColor().z = 1;
+                }
+                double angRad = toRadians(lightAngle);
+                directionalLight.getDirection().x = (float) sin(angRad);
+                directionalLight.getDirection().y = (float) cos(angRad);
         }
-        double angRad = toRadians(lightAngle);
-        directionalLight.getDirection().x = (float) sin(angRad);
-        directionalLight.getDirection().y = (float) cos(angRad);
     }
 
     @Override
@@ -149,6 +158,8 @@ public class GLUTest extends Game {
         }
         if (key == GLFW_KEY_GRAVE_ACCENT) {
             window.setGrabbed(!window.isGrabbed());
+            GLUTestTimers.PLAYER.get()
+                .setTimeScale(window.isGrabbed() ? 1 : 0);
         }
         super.keyPressed(key, scancode, mods);
     }
@@ -171,6 +182,7 @@ public class GLUTest extends Game {
         cfg.width = 854;
         cfg.height = 480;
         cfg.title = "Testing texture, lighting and HUD";
+        cfg.timerMgr = GLUTestTimers.INSTANCE;
         if (coreProfile) {
             cfg.glVersion = 3.2;
             cfg.coreProfile = true;

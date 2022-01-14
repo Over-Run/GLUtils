@@ -30,6 +30,8 @@ import org.joml.Matrix4fStack;
 import org.overrun.glutils.game.*;
 import org.overrun.glutils.gl.Tesselator3;
 import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Textures;
+import org.overrun.glutils.timer.TimerID;
 
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -85,13 +87,15 @@ public class Tesselator3Test extends Game {
             .vertexUV(17, 17, 0, 1, 1)
             .vertexUV(17, 0, 0, 1, 0)
             .vertexUV(0, 0, 0, 0, 0);
-        sth = new Texture2D(Tesselator3Test.class,
+        sth = Textures.load2D(this,
             "tstest.png",
-            TexParam.glNearest());
+            TexParam.glNearest(),
+            true);
     }
 
     @Override
     public void render() {
+        var timer = timerMgr.getID(0).get();
         float delta = (float) timer.getDelta();
         float tx = xo + (x - xo) * delta;
         float ty = yo + (y - yo) * delta;
@@ -144,8 +148,8 @@ public class Tesselator3Test extends Game {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tick(TimerID timerID) {
+        super.tick(timerID);
         xo = x;
         yo = y;
         zo = z;

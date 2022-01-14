@@ -25,6 +25,7 @@
 
 package org.overrun.glutils.mesh;
 
+import org.overrun.glutils.gl.GLState;
 import org.overrun.glutils.gl.Vbo;
 import org.overrun.glutils.gl.VertexAttrib;
 import org.overrun.glutils.light.Material;
@@ -312,12 +313,12 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
     }
 
     /**
-     * set texture id
+     * set texture
      *
-     * @param texture texture id
+     * @param texture texture
      * @return this
      */
-    public T texture(int texture) {
+    public T texture(GLState texture) {
         if (material == null) {
             material = new Material(texture, 1);
         } else {
@@ -750,7 +751,7 @@ public abstract class BaseMesh<T extends IMesh> implements IMesh {
      *
      * @return texture id
      */
-    public int getTexture() {
+    public GLState getTexture() {
         return material.getTexture();
     }
 

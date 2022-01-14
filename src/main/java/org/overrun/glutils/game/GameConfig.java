@@ -26,7 +26,7 @@
 package org.overrun.glutils.game;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.overrun.glutils.timer.ITimer;
+import org.overrun.glutils.timer.ITimerMgr;
 
 /**
  * @author squid233
@@ -66,9 +66,9 @@ public class GameConfig {
      */
     public boolean useStb = true;
     /**
-     * Option to set timer.
+     * Option to set timer manager.
      */
-    public ITimer timer;
+    public ITimerMgr timerMgr;
     /**
      * Option to enable vertical synchronizing.
      * <p>

@@ -25,9 +25,12 @@
 
 package org.overrun.glutils;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 
+import static java.lang.ClassLoader.getSystemClassLoader;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static org.lwjgl.system.MemoryUtil.memAlloc;
@@ -59,14 +62,9 @@ public class FilesReader {
         return ByteBuffer.allocate(bytes.length).put(bytes).flip();
     }
 
-    public static byte[] getBytes(Class<?> c,
+    public static byte[] getBytes(Object o,
                                   String name) {
-        return getBytes(c.getClassLoader(), name);
-    }
-
-    public static byte[] getBytes(ClassLoader cl,
-                                  String name) {
-        return getBytes(cl.getResourceAsStream(name));
+        return getBytes(getInputStream(o, name));
     }
 
     public static byte[] getBytes(InputStream stream) {
@@ -79,29 +77,60 @@ public class FilesReader {
     }
 
     /**
-     * Read lines from stream by Class.
+     * Get input stream of resource in jar
      *
-     * @param c    The Class.
+     * @param o    The object Class or ClassLoader
+     * @param name The resource name
+     * @return The input stream
+     * @since 2.0.0
+     */
+    @Nullable
+    public static InputStream getInputStream(Object o,
+                                             String name) {
+        return getClassLoader(o).getResourceAsStream(name);
+    }
+
+    /**
+     * Get the ClassLoader of the Object.
+     * <p>
+     * Input:<br>
+     * An object. May be null, ClassLoader, Class, primitive types.
+     * <hr>
+     * Output:<br>
+     * The ClassLoader. If the param {@code o} provided null or a primitive
+     * type, the method returns {@link ClassLoader#getSystemClassLoader() the
+     * system ClassLoader}.
+     * </p>
+     *
+     * @param o The object.
+     * @return The ClassLoader.
+     * @since 2.0.0
+     */
+    public static ClassLoader getClassLoader(@Nullable Object o) {
+        if (o == null) {
+            return getSystemClassLoader();
+        }
+        if (o instanceof ClassLoader) {
+            return (ClassLoader) o;
+        }
+        if (o instanceof Class) {
+            return ((Class<?>) o).getClassLoader();
+        }
+        var cl = o.getClass().getClassLoader();
+        return cl != null ? cl : getSystemClassLoader();
+    }
+
+    /**
+     * Read lines from stream by Object.
+     *
+     * @param o    The object Class or ClassLoader.
      * @param name The filename.
      * @return File contents.
      * @since 2.0.0
      */
-    public static String lines(Class<?> c,
+    public static String lines(Object o,
                                String name) {
-        return lines(c.getClassLoader(), name);
-    }
-
-    /**
-     * Read lines from stream by loader.
-     *
-     * @param loader The ClassLoader.
-     * @param name   The filename.
-     * @return File contents.
-     * @since 0.1.0
-     */
-    public static String lines(ClassLoader loader,
-                               String name) {
-        return lines(loader.getResourceAsStream(name));
+        return lines(getInputStream(o, name));
     }
 
     /**

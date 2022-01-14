@@ -32,11 +32,11 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
 import static org.lwjgl.stb.STBImage.stbi_failure_reason;
+import static org.overrun.glutils.FilesReader.getInputStream;
 import static org.overrun.glutils.GLUtils.getLogger;
 
 /**
@@ -70,14 +70,14 @@ public class Images {
     /**
      * load AWT image from classpath
      *
-     * @param loader class loader
+     * @param o The Class or ClassLoader
      * @param name   image absolute name
      * @return loaded image
      */
-    public static BufferedImage loadAwt(ClassLoader loader,
+    public static BufferedImage loadAwt(Object o,
                                         String name) {
-        try (InputStream is = loader.getResourceAsStream(name)) {
-            return ImageIO.read(Objects.requireNonNull(is));
+        try (var is = getInputStream(o, name)) {
+            return ImageIO.read(requireNonNull(is));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -25,23 +25,9 @@
 
 package org.overrun.glutils.game;
 
-import org.lwjgl.system.MemoryStack;
-import org.overrun.glutils.SizedObject;
-import org.overrun.glutils.gl.GLState;
-import org.overrun.glutils.tex.Images;
-import org.overrun.glutils.tex.TexParam;
-import org.overrun.glutils.tex.Textures;
+import org.overrun.glutils.tex.Texture;
 
-import javax.imageio.ImageIO;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-
-import static java.util.Objects.requireNonNull;
-import static org.lwjgl.opengl.GL11.glDeleteTextures;
-import static org.lwjgl.stb.STBImage.*;
-import static org.lwjgl.system.MemoryUtil.memAlloc;
-import static org.lwjgl.system.MemoryUtil.memFree;
-import static org.overrun.glutils.game.GameEngine.app;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 
 /**
  * Managed texture object
@@ -49,101 +35,10 @@ import static org.overrun.glutils.game.GameEngine.app;
  * @author squid233
  * @since 1.5.0
  */
-public class Texture2D implements SizedObject, GLState {
-    private final int width;
-    private final int height;
-    private final int id;
-
-    /**
-     * Load texture.
-     *
-     * @param c        The Class
-     * @param filename The file name
-     * @param param    The texture parameters
-     * @since 2.0.0
-     */
-    public Texture2D(final Class<?> c,
-                     final String filename,
-                     final TexParam param) {
-        this(c.getClassLoader(), filename, param);
-    }
-
-    /**
-     * Load texture by ClassLoader.
-     *
-     * @param l        The ClassLoader
-     * @param filename The file name
-     * @param param    The texture parameters
-     */
-    public Texture2D(final ClassLoader l,
-                     final String filename,
-                     final TexParam param) {
-        try (var is = requireNonNull(
-            l.getResourceAsStream(filename)
-        ); var bis = new BufferedInputStream(is)) {
-            if (app != null && app.config.useStb) {
-                var arr = bis.readAllBytes();
-                var bb = memAlloc(arr.length).put(arr).flip();
-                try (var stack = MemoryStack.stackPush()) {
-                    var px = stack.mallocInt(1);
-                    var py = stack.mallocInt(1);
-                    var pc = stack.mallocInt(1);
-                    var img = stbi_load_from_memory(bb, px, py, pc, STBI_rgb_alpha);
-                    if (img == null) {
-                        Images.thr(filename);
-                    }
-                    width = px.get(0);
-                    height = py.get(0);
-                    id = Textures.gen();
-                    Textures.bind2D(id);
-                    Textures.pushToGL2D(param,
-                        width,
-                        height,
-                        img);
-                    stbi_image_free(img);
-                }
-                memFree(bb);
-            } else {
-                var img = ImageIO.read(bis);
-                width = img.getWidth();
-                height = img.getHeight();
-                id = Textures.gen();
-                Textures.bind2D(id);
-                Textures.pushToGL2D(param,
-                    width,
-                    height,
-                    Images.getRGB(img));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void bind() {
-        Textures.bind2D(id);
-    }
-
-    @Override
-    public void unbind() {
-        Textures.unbind2D();
-    }
-
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void free() {
-        glDeleteTextures(id);
+public class Texture2D extends Texture {
+    public Texture2D(int width,
+                     int height,
+                     int id) {
+        super(GL_TEXTURE_2D, width, height, id);
     }
 }

@@ -25,46 +25,29 @@
 
 package org.overrun.glutils.tex;
 
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
-import org.lwjgl.system.MemoryStack;
+import org.overrun.glutils.game.Texture2D;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.*;
+import static org.overrun.glutils.FilesReader.*;
 import static org.overrun.glutils.gl.ll.GLU.gluBuild2DMipmaps;
+import static org.overrun.glutils.tex.Images.loadAwt;
+import static org.overrun.glutils.tex.Images.loadFsAwt;
 
 /**
  * @author squid233
  * @since 0.1.0
  */
 public class Textures {
-    private static final Map<String, Integer> ID_MAP = new HashMap<>();
     private static int maxSize;
-
-    /**
-     * Bind texture for 2D
-     *
-     * @param id Texture ID.
-     * @since 1.5.0
-     */
-    public static void bind2D(int id) {
-        glBindTexture(GL_TEXTURE_2D, id);
-    }
-
-    /**
-     * Unbind texture for 2D
-     *
-     * @since 1.5.0
-     */
-    public static void unbind2D() {
-        bind2D(0);
-    }
 
     /**
      * Active texture
@@ -77,163 +60,95 @@ public class Textures {
     }
 
     /**
-     * Load texture from stream by AWT.
+     * Load texture from jar.
      *
-     * @param loader ClassLoader of loader class.
-     * @param name   The filename.
+     * @param o      The object Class or ClassLoader.
+     * @param name   The file name.
      * @param param  The texture parameters.
-     * @return The texture id.
-     * @throws RuntimeException When file not found.
-     * @since 2.0.0
+     * @param useStb Use STB to load
+     * @return The texture object
      */
-    public static int loadAWT(ClassLoader loader,
-                              String name,
-                              TexParam param)
-        throws RuntimeException {
-        if (ID_MAP.containsKey(name)) {
-            return ID_MAP.get(name);
-        }
-        var img = Images.loadAwt(loader, name);
-        int id = gen();
-        bind2D(id);
-        pushToGL2D(param,
-            img.getWidth(),
-            img.getHeight(),
-            Images.getRGB(img));
-        ID_MAP.put(name, id);
-        return id;
+    public static Texture2D load2D(
+        Object o,
+        String name,
+        TexParam param,
+        boolean useStb
+    ) {
+        return load2DBuf(getClassLoader(o),
+            name,
+            param,
+            useStb);
     }
 
-    /**
-     * Load texture from stream by AWT.
-     *
-     * @param c     Loader class.
-     * @param name  The filename.
-     * @param param The texture parameters.
-     * @return The texture id.
-     * @throws RuntimeException When file not found.
-     * @since 2.0.0
-     */
-    public static int loadAWT(Class<?> c,
-                              String name,
-                              TexParam param)
-        throws RuntimeException {
-        return loadAWT(c.getClassLoader(), name, param);
+    public static Texture2D loadFs2D(
+        String name,
+        TexParam param,
+        boolean useStb
+    ) {
+        return load2DBuf(null, name, param, useStb);
     }
 
-    /**
-     * Load texture from file system.
-     *
-     * @param name  The filename.
-     * @param param The texture parameters.
-     * @return The texture id.
-     * @since 2.0.0
-     */
-    public static int loadFS(String name,
-                             TexParam param) {
-        if (ID_MAP.containsKey(name)) {
-            return ID_MAP.get(name);
-        }
-        int w, h;
-        ByteBuffer data;
-        try (var stack = MemoryStack.stackPush()) {
-            var pw = stack.mallocInt(1);
-            var ph = stack.mallocInt(1);
-            var pc = stack.mallocInt(1);
-            data = stbi_load(name, pw, ph, pc, STBI_rgb_alpha);
-            if (data == null) {
-                throw new RuntimeException("Error loading image [" +
-                    name +
-                    "] from file system: " +
-                    stbi_failure_reason());
+    private static Texture2D load2DBuf(
+        @Nullable Object o,
+        String name,
+        TexParam param,
+        boolean useStb
+    ) {
+        int w, h, id = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, id);
+        if (useStb) {
+            try (var stack = stackPush()) {
+                var px = stack.mallocInt(1);
+                var py = stack.mallocInt(1);
+                var pc = stack.mallocInt(1);
+                ByteBuffer img;
+                if (o != null) {
+                    var bb = ntoBBuffer(getBytes(o, name));
+                    img = stbi_load_from_memory(
+                        bb,
+                        px,
+                        py,
+                        pc,
+                        STBI_rgb_alpha
+                    );
+                    memFree(bb);
+                } else {
+                    img = stbi_load(
+                        name,
+                        px,
+                        py,
+                        pc,
+                        STBI_rgb_alpha
+                    );
+                }
+                if (img == null) {
+                    Images.thrRE(name);
+                }
+                w = px.get(0);
+                h = py.get(0);
+                pushToGL2D(param,
+                    w,
+                    h,
+                    img);
+                stbi_image_free(img);
             }
-            w = pw.get(0);
-            h = ph.get(0);
+        } else {
+            var img = o != null
+                ? loadAwt(o, name)
+                : loadFsAwt(name);
+            var arr = Images.getRGB(img);
+            var bb = memAlloc(arr.length);
+            bb.asIntBuffer().put(arr).flip();
+            w = img.getWidth();
+            h = img.getHeight();
+            pushToGL2D(param,
+                w,
+                h,
+                bb);
+            memFree(bb);
         }
-        int id = gen();
-        bind2D(id);
-        pushToGL2D(param, w, h, data);
-        stbi_image_free(data);
-        ID_MAP.put(name, id);
-        return id;
+        return new Texture2D(w, h, id);
     }
-
-    /**
-     * Load texture by buffer.
-     *
-     * @param identifier The identifier of texture.
-     * @param buffer     The ByteBuffer that contains pixel data.
-     * @param param      The texture parameters.
-     * @return The texture id.
-     * @since 2.0.0
-     */
-    public static int load(String identifier,
-                           ByteBuffer buffer,
-                           TexParam param) {
-        if (ID_MAP.containsKey(identifier)) {
-            return ID_MAP.get(identifier);
-        }
-        int w, h;
-        ByteBuffer data;
-        try (var stack = MemoryStack.stackPush()) {
-            var pw = stack.mallocInt(1);
-            var ph = stack.mallocInt(1);
-            var pc = stack.mallocInt(1);
-            data = stbi_load_from_memory(buffer, pw, ph, pc, STBI_rgb_alpha);
-            if (data == null) {
-                Images.thrRE(identifier);
-            }
-            w = pw.get(0);
-            h = ph.get(0);
-        }
-        int id = gen();
-        bind2D(id);
-        pushToGL2D(param, w, h, data);
-        stbi_image_free(data);
-        ID_MAP.put(identifier, id);
-        return id;
-    }
-
-    /**
-     * Load texture by array.
-     *
-     * @param identifier The identifier of texture.
-     * @param w          Texture width
-     * @param h          Texture height
-     * @param data       The array that contains pixel data.
-     * @param param      The texture parameters.
-     * @return The texture id.
-     * @since 2.0.0
-     */
-    public static int load(String identifier,
-                           int w,
-                           int h,
-                           int[] data,
-                           TexParam param) {
-        if (ID_MAP.containsKey(identifier)) {
-            return ID_MAP.get(identifier);
-        }
-        int id = gen();
-        bind2D(id);
-        pushToGL2D(param, w, h, data);
-        ID_MAP.put(identifier, id);
-        return id;
-    }
-
-    /**
-     * @param param The texture parameters.
-     * @since 2.0.0
-     */
-    public static void texParameter2D(TexParam param) {
-        if (param != null) {
-            param.glMinFilter(GL_TEXTURE_2D);
-            param.glMagFilter(GL_TEXTURE_2D);
-            param.glWrapS(GL_TEXTURE_2D);
-            param.glWrapT(GL_TEXTURE_2D);
-            param.glWrapR(GL_TEXTURE_2D);
-        }
-    }
-
 
     /**
      * push image data to OpenGL state manager
@@ -248,7 +163,7 @@ public class Textures {
                                   int w,
                                   int h,
                                   ByteBuffer data) {
-        texParameter2D(param);
+        param.glSet(GL_TEXTURE_2D);
         if (hasGenMipmap()) {
             glTexImage2D(GL_TEXTURE_2D,
                 0,
@@ -260,7 +175,7 @@ public class Textures {
                 GL_UNSIGNED_BYTE,
                 data
             );
-            genMipmap2D();
+            glGenerateMipmap(GL_TEXTURE_2D);
         } else {
             gluBuild2DMipmaps(GL_TEXTURE_2D,
                 GL_RGBA,
@@ -274,15 +189,6 @@ public class Textures {
     }
 
     /**
-     * Generate a texture by OpenGL.
-     *
-     * @return The texture id.
-     */
-    public static int gen() {
-        return glGenTextures();
-    }
-
-    /**
      * Check if {@link GLCapabilities#glGenerateMipmap} is not null.
      *
      * @return true or false
@@ -290,42 +196,6 @@ public class Textures {
      */
     public static boolean hasGenMipmap() {
         return GL.getCapabilities().glGenerateMipmap != NULL;
-    }
-
-    /**
-     * Generate mipmap cube map.
-     * <p>
-     * This method has no effect when GPU doesn't support to OpenGL 3.0.
-     * </p>
-     *
-     * @since 2.0.0
-     */
-    public static void genMipmapCubeMap() {
-        genMipmap(GL_TEXTURE_CUBE_MAP);
-    }
-
-    /**
-     * Generate mipmap 3D.
-     * <p>
-     * This method has no effect when GPU doesn't support to OpenGL 3.0.
-     * </p>
-     *
-     * @since 2.0.0
-     */
-    public static void genMipmap3D() {
-        genMipmap(GL_TEXTURE_3D);
-    }
-
-    /**
-     * Generate mipmap 2D.
-     * <p>
-     * This method has no effect when GPU doesn't support to OpenGL 3.0.
-     * </p>
-     *
-     * @since 1.5.0
-     */
-    public static void genMipmap2D() {
-        genMipmap(GL_TEXTURE_2D);
     }
 
     /**
@@ -344,33 +214,6 @@ public class Textures {
     }
 
     /**
-     * push image data to OpenGL state manager
-     *
-     * @param param The texture parameters.
-     * @param w     texture width
-     * @param h     texture height
-     * @param data  pixel data
-     * @since 2.0.0
-     */
-    public static void pushToGL2D(TexParam param,
-                                  int w,
-                                  int h,
-                                  int[] data) {
-        texParameter2D(param);
-        glTexImage2D(GL_TEXTURE_2D,
-            0,
-            GL_RGBA,
-            w,
-            h,
-            0,
-            GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            data
-        );
-        genMipmap2D();
-    }
-
-    /**
      * get max texture size
      *
      * @return max texture size
@@ -381,17 +224,5 @@ public class Textures {
             maxSize = glGetInteger(GL_MAX_TEXTURE_SIZE);
         }
         return maxSize;
-    }
-
-    /**
-     * Cleanup all resources.
-     *
-     * @since 1.5.0
-     */
-    public static void free() {
-        for (int id : ID_MAP.values()) {
-            glDeleteTextures(id);
-        }
-        ID_MAP.clear();
     }
 }

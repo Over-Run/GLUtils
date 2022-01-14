@@ -26,6 +26,7 @@
 package org.overrun.glutils.mesh;
 
 import org.overrun.glutils.gl.GLProgram;
+import org.overrun.glutils.gl.GLState;
 import org.overrun.glutils.tex.Textures;
 import org.overrun.glutils.gl.VertexAttrib;
 import org.overrun.glutils.light.Material;
@@ -144,7 +145,7 @@ public class Mesh extends BaseMesh<Mesh> {
                           float[] colors,
                           String colorIdx,
                           float[] texCoords,
-                          int texture,
+                          GLState texture,
                           String texIdx,
                           int[] indices) {
         return of(program,
@@ -234,14 +235,16 @@ public class Mesh extends BaseMesh<Mesh> {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         if (material != null) {
             Textures.active(0);
-            Textures.bind2D(getTexture());
+            getTexture().bind();
         }
         if (ibo == null) {
             glDrawArrays(primitive, 0, getVertexCount());
         } else {
             glDrawElements(primitive, getVertexCount(), GL_UNSIGNED_INT, 0);
         }
-        Textures.unbind2D();
+        if (material != null) {
+            getTexture().unbind();
+        }
     }
 
     @Override
