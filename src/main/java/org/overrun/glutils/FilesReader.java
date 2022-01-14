@@ -92,10 +92,13 @@ public class FilesReader {
 
     /**
      * Get the ClassLoader of the Object.
+     * <hr>
      * <p>
      * Input:<br>
      * An object. May be null, ClassLoader, Class, primitive types.
+     * </p>
      * <hr>
+     * <p>
      * Output:<br>
      * The ClassLoader. If the param {@code o} provided null or a primitive
      * type, the method returns {@link ClassLoader#getSystemClassLoader() the
