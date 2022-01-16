@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,39 @@ package org.overrun.glutils.timer;
  * @since 1.5.0
  */
 public interface ITimer {
+    /**
+     * Advance the time
+     */
     void advanceTime();
 
+    /**
+     * Get timer ticks per seconds.
+     *
+     * @return The tps.
+     */
+    double getTps();
+
+    /**
+     * Get timer speed scale.
+     *
+     * @return The timer speed scale.
+     * @since 2.0.0
+     */
+    double getTimeScale();
+
+    /**
+     * Set timer speed scale.
+     *
+     * @param timeScale The timer speed scale.
+     * @since 2.0.0
+     */
+    void setTimeScale(double timeScale);
+
+    /**
+     * The tick count that should tick.
+     *
+     * @return ticks
+     */
     int getTicks();
 
     /**
@@ -39,7 +70,7 @@ public interface ITimer {
      *
      * @return The delta time.
      */
-    float getDelta();
+    double getDelta();
 
     /**
      * Get current time in seconds.

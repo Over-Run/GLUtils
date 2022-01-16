@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,27 +29,30 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.overrun.glutils.*;
+import org.overrun.glutils.gl.GLProgram;
+import org.overrun.glutils.gui.DrawableText;
+import org.overrun.glutils.gui.FontTexture;
 import org.overrun.glutils.light.DirectionalLight;
 import org.overrun.glutils.light.PointLight;
 import org.overrun.glutils.mesh.Mesh3;
 import org.overrun.glutils.mesh.MeshLoader;
 import org.overrun.glutils.mesh.obj.ObjLoader;
 import org.overrun.glutils.mesh.obj.ObjModel3;
+import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Textures;
 
-import java.awt.Font;
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL15.*;
-import static org.overrun.glutest.GLUTest.fps;
-import static org.overrun.glutils.ShaderReader.lines;
-import static org.overrun.glutils.game.GLStateManager.*;
-import static org.overrun.glutils.math.Transform.*;
+import static org.overrun.glutils.FilesReader.lines;
+import static org.overrun.glutils.game.GameEngine.*;
+import static org.overrun.glutils.util.math.Transform.*;
 
 /**
  * @author squid233
  */
-public class GameRenderer implements AutoCloseable {
+public class GameRenderer {
     public static final float[] LOW_FPS_COLOR = {
         1, 0, 0, 1,
         1, 0, 0, 1,
@@ -68,10 +71,10 @@ public class GameRenderer implements AutoCloseable {
         0.0f, 0.0f, 0.0f, 0.5f,
         0.0f, 0.0f, 0.0f, 0.5f
     };
-    public static final ClassLoader cl = GameRenderer.class.getClassLoader();
+    public static final Class<GameRenderer> clazz = GameRenderer.class;
     public final Matrix4f proj = new Matrix4f();
     public final Matrix4fStack modelv = new Matrix4fStack(32);
-    public final FontTexture utf8 = FontTextures.builder("Consolas-UTF_8-2")
+    public final FontTexture utf8 = FontTexture.builder("Consolas-UTF_8-2")
         .font(Font.decode("Consolas"))
         .charset(StandardCharsets.UTF_8)
         .padding(2)
@@ -86,29 +89,32 @@ public class GameRenderer implements AutoCloseable {
 
     public void init() {
         program = new GLProgram();
-        program.createVsh(lines(cl, "shaders/scene.vsh"));
-        program.createFsh(lines(cl, "shaders/scene.fsh"));
+        program.createVsh(lines(this, "shaders/scene.vsh"));
+        program.createFsh(lines(this, "shaders/scene.fsh"));
         program.link();
         guiProgram = new GLProgram();
-        guiProgram.createVsh(lines(cl, "shaders/gui.vsh"));
-        guiProgram.createFsh(lines(cl, "shaders/gui.fsh"));
+        guiProgram.createVsh(lines(this, "shaders/gui.vsh"));
+        guiProgram.createFsh(lines(this, "shaders/gui.fsh"));
         guiProgram.link();
-        cube = ObjLoader.load3(cl,
+        cube = ObjLoader.load3(this,
             "model/cube/cube.obj",
             (m, v, i) -> m.vertIdx(0)
                 .texIdx(1)
                 .normalIdx(2)
         );
-        cube.setPreRender(m -> program.setUniform("material.ambient",
+        cube.setConsumer(m -> program.setUniform("material.ambient",
             "material.diffuse",
             "material.specular",
             "material.textured",
             "material.reflectance",
             m.getMaterial()));
-        crossing = MeshLoader.load3(cl,
+        crossing = MeshLoader.load3(clazz,
                 "crossing.mesh",
                 m -> m.vertIdx(0).colorIdx(1).texIdx(2))
-            .texture(Textures.loadAWT(cl, "crossing.png", GL_NEAREST));
+            .texture(Textures.load2D(this,
+                "crossing.png",
+                TexParam.glNearest(),
+                true));
         text = new Mesh3()
             .vertUsage(GL_DYNAMIC_DRAW)
             .vertIdx(0)
@@ -124,8 +130,7 @@ public class GameRenderer implements AutoCloseable {
             .unbindVao();
     }
 
-    public void render(int w,
-                       int h,
+    public void render(float delta,
                        Player player,
                        Vector3f ambientLight,
                        PointLight pointLight,
@@ -135,31 +140,42 @@ public class GameRenderer implements AutoCloseable {
         float xRot = player.xRot;
         float yRot = player.yRot;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        enableDepthTest();
-        enableCullFace();
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
         program.bind();
 
         modelv.pushMatrix();
         Matrix4f viewMatrix = new Matrix4f(rotateY(rotateX(modelv, -xRot), yRot));
         modelv.popMatrix();
+        {
+            final float x = player.x,
+                y = player.y,
+                z = player.z,
+                xo = player.xo,
+                yo = player.yo,
+                zo = player.zo;
+            float tx = xo + (x - xo) * delta;
+            float ty = yo + (y - yo) * delta;
+            float tz = zo + (z - zo) * delta;
+            viewMatrix.translate(-tx, -ty, -tz);
+        }
 
         modelv.mul(viewMatrix);
         program.setUniformMat4("proj",
             setPerspective(proj,
                 90,
-                w,
-                h,
+                bufFrame,
                 0.05f,
                 1000.0f));
 
-        DirectionalLight currDirLight = new DirectionalLight(light);
-        Vector4f dir = new Vector4f(currDirLight.getDirection(), 0)
+        var currDirLight = new DirectionalLight(light);
+        var dir = new Vector4f(currDirLight.getDirection(), 0)
             .mul(viewMatrix);
         currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
         // Get a copy of the point light object and transform its position to view coordinates
-        PointLight currPointLight = new PointLight(pointLight);
-        Vector3f lightPos = currPointLight.getPosition();
-        Vector4f aux = new Vector4f(lightPos, 1);
+        var currPointLight = new PointLight(pointLight);
+        var lightPos = currPointLight.getPosition();
+        var aux = new Vector4f(lightPos, 1);
         aux.mul(viewMatrix);
         lightPos.x = aux.x;
         lightPos.y = aux.y;
@@ -186,29 +202,25 @@ public class GameRenderer implements AutoCloseable {
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    renderMesh(player, x, y, z);
+                    renderMesh(x, y, z);
                 }
             }
         }
         program.unbind();
-        disableDepthTest();
-        disableCullFace();
-        enableBlend();
-        renderGui(player, w, h, lightAngle);
-        disableBlend();
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        renderGui(player, lightAngle);
+        glDisable(GL_BLEND);
         modelv.popMatrix();
     }
 
-    private void renderMesh(Player player,
-                            float x,
+    private void renderMesh(float x,
                             float y,
                             float z) {
-        float cameraX = player.x;
-        float cameraY = player.y;
-        float cameraZ = player.z;
-        float fx = x == 0 ? -cameraX : -cameraX + (x * 0.9375f);
-        float fy = y == 0 ? -cameraY : -cameraY + (y * 0.9375f);
-        float fz = z == 0 ? -cameraZ : -cameraZ + (z * 0.9375f);
+        float fx = x * 0.9375f;
+        float fy = y * 0.9375f;
+        float fz = z * 0.9375f;
         modelv.pushMatrix();
         program.setUniformMat4("modelv", modelv.translate(fx, fy, fz));
         cube.render();
@@ -216,8 +228,6 @@ public class GameRenderer implements AutoCloseable {
     }
 
     public void renderGui(Player player,
-                          int w,
-                          int h,
                           float lightAngle) {
         float cameraX = player.x;
         float cameraY = player.y;
@@ -227,11 +237,22 @@ public class GameRenderer implements AutoCloseable {
         guiProgram.bind();
         guiProgram.setUniform("texSampler", 0);
         guiProgram.setUniform("textured", true);
-        //todo scale
-        guiProgram.setUniformMat4("proj", modelv.setOrtho2D(0, w, h, 0));
-        guiProgram.setUniformMat4("modelv", modelv.translation(w / 2f, h / 2f, 0));
+        int scrWidth = bufFrame.width() * 240 / bufFrame.height();
+        int scrHeight = 240;
+        guiProgram.setUniformMat4("proj",
+            proj.setOrtho2D(0,
+                scrWidth,
+                scrHeight,
+                0));
+        guiProgram.setUniformMat4("modelv",
+            modelv.translation(scrWidth / 2f,
+                scrHeight / 2f,
+                0));
         crossing.render();
-        guiProgram.setUniformMat4("modelv", modelv.translation(2, 2, 0));
+        guiProgram.setUniformMat4("modelv",
+            modelv.translation(2, 2, 0)
+                .scale(0.5f, 0.5f, 1));
+        int fps = graphics.getFps();
         String fpsSt = "FPS: " + fps;
         String st = fpsSt + "\nLight angle: " + lightAngle;
         st += "\nCamera pos: " + cameraX + ", " + cameraY + ", " + cameraZ;
@@ -278,22 +299,24 @@ public class GameRenderer implements AutoCloseable {
         modelv.popMatrix();
     }
 
-    @Override
-    public void close() {
+    public void free() {
         if (cube != null) {
-            cube.close();
+            cube.free();
         }
         if (crossing != null) {
-            crossing.close();
+            crossing.free();
         }
         if (text != null) {
-            text.close();
+            text.free();
+        }
+        if (textBg != null) {
+            textBg.free();
         }
         if (program != null) {
-            program.close();
+            program.free();
         }
         if (guiProgram != null) {
-            guiProgram.close();
+            guiProgram.free();
         }
     }
 }

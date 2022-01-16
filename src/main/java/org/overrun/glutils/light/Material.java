@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 package org.overrun.glutils.light;
 
 import org.joml.Vector4f;
+import org.overrun.glutils.gl.GLState;
 
 /**
  * @author squid233
@@ -40,7 +41,7 @@ public class Material {
     private Vector4f diffuseColor = DEFAULT_COLOR;
     private Vector4f specularColor = DEFAULT_COLOR;
     private float reflectance = 0;
-    private int texture = 0;
+    private GLState texture = null;
 
     /**
      * construct
@@ -56,7 +57,7 @@ public class Material {
      */
     public Material(Vector4f color,
                     float reflectance) {
-        this(color, color, color, 0, reflectance);
+        this(color, color, color, null, reflectance);
     }
 
     /**
@@ -64,7 +65,7 @@ public class Material {
      *
      * @param texture material texture
      */
-    public Material(int texture) {
+    public Material(GLState texture) {
         this.texture = texture;
     }
 
@@ -74,7 +75,7 @@ public class Material {
      * @param texture     material texture
      * @param reflectance reflectance
      */
-    public Material(int texture,
+    public Material(GLState texture,
                     float reflectance) {
         this.texture = texture;
         this.reflectance = reflectance;
@@ -92,7 +93,7 @@ public class Material {
     public Material(Vector4f ambientColor,
                     Vector4f diffuseColor,
                     Vector4f specularColor,
-                    int texture,
+                    GLState texture,
                     float reflectance) {
         this.ambientColor = ambientColor;
         this.diffuseColor = diffuseColor;
@@ -178,7 +179,7 @@ public class Material {
      *
      * @return {@link #texture}
      */
-    public int getTexture() {
+    public GLState getTexture() {
         return texture;
     }
 
@@ -187,16 +188,16 @@ public class Material {
      *
      * @param texture texture
      */
-    public void setTexture(int texture) {
+    public void setTexture(GLState texture) {
         this.texture = texture;
     }
 
     /**
      * is textured
      *
-     * @return {@link #texture} != 0
+     * @return {@link #texture} != null
      */
     public boolean isTextured() {
-        return texture != 0;
+        return texture != null;
     }
 }

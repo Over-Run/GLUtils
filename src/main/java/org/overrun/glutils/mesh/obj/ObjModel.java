@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 package org.overrun.glutils.mesh.obj;
 
-import org.overrun.glutils.Drawable;
+import org.overrun.glutils.IDrawable;
 import org.overrun.glutils.mesh.IMesh;
 
 import java.util.function.Consumer;
@@ -34,19 +34,20 @@ import java.util.function.Consumer;
  * @author squid233
  * @since 1.2.0
  */
-public class ObjModel<T extends IMesh> implements Drawable, AutoCloseable {
+public class ObjModel<T extends IMesh> implements IDrawable {
     private final T[] meshes;
-    private PreRender<T> preRender;
+    private Consumer<T> consumer;
 
     /**
      * construct
      *
-     * @param meshes    meshes
-     * @param preRender pre render
+     * @param meshes   meshes
+     * @param consumer mesh consumer
      */
-    public ObjModel(T[] meshes, PreRender<T> preRender) {
+    public ObjModel(T[] meshes,
+                    Consumer<T> consumer) {
         this.meshes = meshes;
-        this.preRender = preRender;
+        this.consumer = consumer;
     }
 
     /**
@@ -59,56 +60,38 @@ public class ObjModel<T extends IMesh> implements Drawable, AutoCloseable {
     }
 
     /**
-     * set pre render
+     * Set mesh consumer
      *
-     * @param preRender pre render
+     * @param consumer pre render
+     * @since 2.0.0
      */
-    public void setPreRender(PreRender<T> preRender) {
-        this.preRender = preRender;
+    public void setConsumer(Consumer<T> consumer) {
+        this.consumer = consumer;
     }
 
     /**
      * get meshes
      *
      * @return {@link #meshes}
+     * @since 2.0.0
      */
     public T[] getMeshes() {
         return meshes;
     }
 
-    /**
-     * pre render
-     * <p>
-     * function: {@link PreRender#accept accept}
-     *
-     * @author squid233
-     */
-    @FunctionalInterface
-    public interface PreRender<T extends IMesh>
-        extends Consumer<T> {
-        /**
-         * Set uniforms before render.
-         *
-         * @param mesh Mesh to set
-         */
-        @Override
-        void accept(T mesh);
-    }
-
     @Override
     public void render() {
         for (T mesh : meshes) {
-            if (preRender != null) {
-                preRender.accept(mesh);
+            if (consumer != null) {
+                consumer.accept(mesh);
             }
             mesh.render();
         }
     }
 
-    @Override
-    public void close() {
+    public void free() {
         for (T mesh : meshes) {
-            mesh.close();
+            mesh.free();
         }
     }
 }

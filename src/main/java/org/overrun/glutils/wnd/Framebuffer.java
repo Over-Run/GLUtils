@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@ package org.overrun.glutils.wnd;
 
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import org.lwjgl.opengl.GL11;
+import org.overrun.glutils.SizedObject;
+import org.overrun.glutils.game.GameApp;
 
 import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
 
@@ -98,7 +100,7 @@ public class Framebuffer implements SizedObject {
      * @param parent parent window
      */
     public void init(long parent) {
-        glfwSetFramebufferSizeCallback(parent,
+        var ocb = glfwSetFramebufferSizeCallback(parent,
             (window, w, h) -> {
                 if (cb != null) {
                     cb.invoke(window, w, h);
@@ -106,6 +108,9 @@ public class Framebuffer implements SizedObject {
                 width = w;
                 height = h;
             });
+        if (ocb != null) {
+            ocb.free();
+        }
     }
 
     /**
@@ -115,6 +120,28 @@ public class Framebuffer implements SizedObject {
      */
     public void init(GLFWindow parent) {
         init(parent.hWnd);
+    }
+
+    /**
+     * Set width. Only call by {@link GameApp}
+     *
+     * @param width The width.
+     * @return this
+     */
+    public Framebuffer setWidth(int width) {
+        this.width = width;
+        return this;
+    }
+
+    /**
+     * Set height. Only call by {@link GameApp}
+     *
+     * @param height The height.
+     * @return this
+     */
+    public Framebuffer setHeight(int height) {
+        this.height = height;
+        return this;
     }
 
     /**

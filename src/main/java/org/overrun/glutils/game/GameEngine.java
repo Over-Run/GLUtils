@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 package org.overrun.glutils.game;
 
-import org.overrun.glutils.timer.ITimer;
+import org.overrun.glutils.timer.ITimerMgr;
 import org.overrun.glutils.wnd.Framebuffer;
 import org.overrun.glutils.wnd.GLFWindow;
 
@@ -37,7 +37,11 @@ public class GameEngine {
     public static GameApp app;
     public static GLFWindow window;
     public static Framebuffer framebuffer;
-    public static ITimer timer;
+    /**
+     * The short name of {@link #framebuffer}
+     */
+    public static Framebuffer bufFrame;
+    public static ITimerMgr timerMgr;
     public static Input input;
     public static Graphics graphics;
 }

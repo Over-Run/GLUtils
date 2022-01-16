@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,20 +25,19 @@
 
 package org.overrun.glutest;
 
-import org.overrun.glutils.FontTexture;
-import org.overrun.glutils.FontTextures;
 import org.overrun.glutils.game.Game;
 import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
-import org.overrun.glutils.ll.TextRenderer;
+import org.overrun.glutils.gl.ll.TextRenderer;
+import org.overrun.glutils.gui.FontTexture;
+import org.overrun.glutils.timer.TimerID;
+import org.overrun.glutils.timer.TimerMgrImpl;
 
 import java.awt.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.game.GLStateManager.enableBlend;
-import static org.overrun.glutils.game.GLStateManager.enableTexture2D;
 import static org.overrun.glutils.game.GameEngine.window;
 
 /**
@@ -52,10 +51,10 @@ public class TextRendererTest extends Game {
     @Override
     public void create() {
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
-        enableTexture2D();
-        enableBlend();
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        unifont = FontTextures.builder("unifont")
+        unifont = FontTexture.builder("unifont")
             .font(Font.decode("Unifont"))
             .charset(UTF_8)
             .padding(2)
@@ -73,8 +72,8 @@ public class TextRendererTest extends Game {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tick(TimerID timerID) {
+        super.tick(timerID);
         if (window.getKey(GLFW_KEY_W) == GLFW_PRESS) {
             --cy;
         }
@@ -102,7 +101,7 @@ public class TextRendererTest extends Game {
     @Override
     public void keyReleased(int key, int scancode, int mods) {
         if (key == GLFW_RELEASE) {
-            window.closeWindow();
+            window.close();
         }
         super.keyReleased(key, scancode, mods);
     }
@@ -110,7 +109,7 @@ public class TextRendererTest extends Game {
     public static void main(String[] args) {
         GameConfig config = new GameConfig();
         config.title = "TextRenderer";
-        config.tps = 100;
-        new GameApp(new TextRendererTest(), config);
+        config.timerMgr = new TimerMgrImpl(100);
+        new GameApp(new TextRendererTest(), config).start();
     }
 }

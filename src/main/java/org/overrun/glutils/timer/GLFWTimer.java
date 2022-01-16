@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,17 +32,22 @@ import static org.lwjgl.glfw.GLFW.glfwGetTime;
  * @since 1.5.0
  */
 public class GLFWTimer extends AbstractTimer {
-    private static final double MAX_SECONDS_PER_UPDATE = 1.0;
+    public static final double MAX_SECONDS_PER_UPDATE = 1.0;
     private double lastTime = glfwGetTime();
 
-    public GLFWTimer(float tps) {
+    /**
+     * Construct with {@link #tps}
+     *
+     * @param tps {@link #tps}
+     */
+    public GLFWTimer(double tps) {
         super(tps);
     }
 
     @Override
     public void advanceTime() {
-        double now = glfwGetTime();
-        double passedS = now - lastTime;
+        var now = glfwGetTime();
+        var passedS = now - lastTime;
         lastTime = now;
         if (passedS < 0.0) {
             passedS = 0.0;
@@ -50,8 +55,8 @@ public class GLFWTimer extends AbstractTimer {
         if (passedS > MAX_SECONDS_PER_UPDATE) {
             passedS = MAX_SECONDS_PER_UPDATE;
         }
-        fps = (float) (MAX_SECONDS_PER_UPDATE / passedS);
-        passedTime += (float) passedS * timeScale * tps;
+        fps = MAX_SECONDS_PER_UPDATE / passedS;
+        passedTime += passedS * timeScale * tps;
         ticks = (int) passedTime;
         if (ticks > MAX_TICKS_PER_UPDATE) {
             ticks = MAX_TICKS_PER_UPDATE;

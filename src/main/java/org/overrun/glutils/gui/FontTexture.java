@@ -1,0 +1,420 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021-2022 Overrun Organization
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+package org.overrun.glutils.gui;
+
+import org.overrun.glutils.tex.Texture2D;
+import org.overrun.glutils.tex.Textures;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static java.awt.RenderingHints.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
+import static org.lwjgl.system.MemoryUtil.memFree;
+import static org.overrun.glutils.tex.Images.getRGB;
+import static org.overrun.glutils.tex.TexParam.glLinear;
+import static org.overrun.glutils.tex.TexParam.glNearest;
+
+/**
+ * @author squid233
+ * @since 1.1.0
+ */
+public class FontTexture {
+    private static final Map<String, FontTexture> FONT_TEXTURES =
+        new HashMap<>();
+    private final Font font;
+    private final Charset charset;
+    private final Map<Character, Glyph> charMap = new LinkedHashMap<>();
+    private final int padding;
+    private Texture2D texture;
+    private int width;
+    private int height;
+    private int glyphHeight;
+
+    /**
+     * construct builder
+     *
+     * @param texName texture name
+     * @return font texture builder
+     * @since 2.0.0
+     */
+    public static Builder builder(String texName) {
+        return new Builder(texName);
+    }
+
+    /**
+     * Font texture builder
+     *
+     * @since 2.0.0
+     */
+    public static class Builder {
+        private final String texName;
+        private Font font;
+        private Charset charset;
+        private int padding = 0;
+
+        /**
+         * construct
+         *
+         * @param texName texture name
+         */
+        public Builder(String texName) {
+            this.texName = texName;
+        }
+
+        /**
+         * set font
+         *
+         * @param font font
+         * @return this
+         */
+        public Builder font(Font font) {
+            this.font = font;
+            return this;
+        }
+
+        /**
+         * set charset
+         *
+         * @param charset charset
+         * @return this
+         */
+        public Builder charset(Charset charset) {
+            this.charset = charset;
+            return this;
+        }
+
+        /**
+         * set charset
+         *
+         * @param charsetName charset name
+         * @return this
+         */
+        public Builder charset(String charsetName) {
+            this.charset = Charset.forName(charsetName);
+            return this;
+        }
+
+        /**
+         * set padding
+         *
+         * @param padding padding
+         * @return this
+         */
+        public Builder padding(int padding) {
+            this.padding = padding;
+            return this;
+        }
+
+        /**
+         * build font texture
+         *
+         * @return font texture
+         */
+        public FontTexture build() {
+            return build(true);
+        }
+
+        /**
+         * build font texture
+         *
+         * @param antialias enable antialias
+         * @return font texture
+         * @since 1.4.0
+         */
+        public FontTexture build(boolean antialias) {
+            if (FONT_TEXTURES.containsKey(texName)) {
+                return FONT_TEXTURES.get(texName);
+            }
+            FontTexture ft = new FontTexture(font,
+                charset,
+                padding,
+                antialias);
+            FONT_TEXTURES.put(texName, ft);
+            return ft;
+        }
+    }
+
+    /**
+     * construct and build texture
+     *
+     * @param font    font
+     * @param charset charset
+     * @param padding char padding
+     */
+    public FontTexture(Font font,
+                       Charset charset,
+                       int padding) {
+        this(font, charset, padding, true);
+    }
+
+    /**
+     * construct and build texture
+     *
+     * @param font      font
+     * @param charset   charset
+     * @param padding   char padding
+     * @param antialias enable antialias
+     * @since 1.4.0
+     */
+    public FontTexture(Font font,
+                       Charset charset,
+                       int padding,
+                       boolean antialias) {
+        this.font = font;
+        this.charset = charset;
+        this.padding = padding;
+        buildTexture(antialias);
+    }
+
+    /**
+     * construct and build texture
+     *
+     * @param font    font
+     * @param charset charset
+     */
+    public FontTexture(Font font,
+                       Charset charset) {
+        this(font, charset, 0);
+    }
+
+    /**
+     * construct and build texture
+     *
+     * @param font        font
+     * @param charsetName charset name
+     * @param padding     char padding
+     */
+    public FontTexture(Font font,
+                       String charsetName,
+                       int padding) {
+        this(font, Charset.forName(charsetName), padding);
+    }
+
+    /**
+     * construct and build texture
+     *
+     * @param font        font
+     * @param charsetName charset name
+     */
+    public FontTexture(Font font,
+                       String charsetName) {
+        this(font, charsetName, 0);
+    }
+
+    private String getAllAvailableChars() {
+        var ce = charset.newEncoder();
+        var result = new StringBuilder();
+        for (char c = 0; c < Character.MAX_VALUE; c++) {
+            if (ce.canEncode(c)) {
+                result.append(c);
+            }
+        }
+        return result.toString();
+    }
+
+    private void buildTexture(boolean antialias) {
+        var aa = antialias
+            ? VALUE_ANTIALIAS_ON
+            : VALUE_ANTIALIAS_OFF;
+        var bi = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        var g = bi.createGraphics();
+        g.setRenderingHint(KEY_ANTIALIASING, aa);
+        g.setFont(font);
+        var fm = g.getFontMetrics();
+        var allChars = getAllAvailableChars().toCharArray();
+        glyphHeight = fm.getHeight();
+        int maxSize = Textures.getMaxSize();
+        int startX = 0;
+        int y = 0;
+        for (char c : allChars) {
+            int cw = fm.charWidth(c);
+            if (startX > maxSize) {
+                int w = startX - cw - padding;
+                if (w > width) {
+                    width = w;
+                }
+                startX = 0;
+                y += glyphHeight;
+            }
+            var glyph = new Glyph(startX, y, cw);
+            charMap.put(c, glyph);
+            startX += glyph.getWidth() + padding;
+        }
+        height = y + glyphHeight;
+        g.dispose();
+        bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        g = bi.createGraphics();
+        g.setRenderingHint(KEY_ANTIALIASING, aa);
+        g.setFont(font);
+        fm = g.getFontMetrics();
+        g.setColor(Color.WHITE);
+        startX = 0;
+        y = 0;
+        for (char c : allChars) {
+            int cw = fm.charWidth(c);
+            if (startX > maxSize) {
+                startX = 0;
+                y += glyphHeight;
+            }
+            Glyph glyph = new Glyph(startX, y, cw);
+            g.drawString(String.valueOf(c), startX, y + fm.getAscent());
+            startX += glyph.getWidth() + padding;
+        }
+        g.dispose();
+        int id = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, id);
+        ByteBuffer bb = null;
+        try {
+            var rgb = getRGB(bi);
+            bb = memAlloc(rgb.length * Integer.BYTES);
+            bb.asIntBuffer().put(rgb).flip();
+            Textures.pushToGL2D(antialias ? glLinear() : glNearest(),
+                width,
+                height,
+                bb);
+        } finally {
+            memFree(bb);
+        }
+        texture = new Texture2D(
+            width,
+            height,
+            id
+        );
+    }
+
+    /**
+     * char info
+     */
+    public static class Glyph {
+        private final int startX;
+        private final int startY;
+        private final int width;
+
+        /**
+         * construct
+         *
+         * @param startX start x
+         * @param startY start y
+         * @param width  char width
+         */
+        public Glyph(int startX,
+                     int startY,
+                     int width) {
+            this.startX = startX;
+            this.startY = startY;
+            this.width = width;
+        }
+
+        /**
+         * get start x
+         *
+         * @return start x
+         */
+        public int getStartX() {
+            return startX;
+        }
+
+        /**
+         * get start y
+         *
+         * @return start y
+         */
+        public int getStartY() {
+            return startY;
+        }
+
+        /**
+         * get char width
+         *
+         * @return char width
+         */
+        public int getWidth() {
+            return width;
+        }
+    }
+
+    /**
+     * get width
+     *
+     * @return width
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * get height
+     *
+     * @return height
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * get glyph height
+     *
+     * @return glyph height
+     */
+    public int getGlyphHeight() {
+        return glyphHeight;
+    }
+
+    /**
+     * get texture
+     *
+     * @return texture
+     */
+    public Texture2D getTexture() {
+        return texture;
+    }
+
+    /**
+     * get char padding
+     *
+     * @return char padding
+     */
+    public int getPadding() {
+        return padding;
+    }
+
+    /**
+     * get glyph by char
+     *
+     * @param c char
+     * @return glyph
+     */
+    public Glyph getGlyph(char c) {
+        return charMap.get(c);
+    }
+}

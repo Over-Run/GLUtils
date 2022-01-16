@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,18 +27,20 @@ package org.overrun.glutest;
 
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
-import org.overrun.glutils.IndexedTesselator3;
-import org.overrun.glutils.MipmapMode;
-import org.overrun.glutils.Tesselator3;
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.Callback;
 import org.overrun.glutils.game.*;
+import org.overrun.glutils.gl.Tesselator3;
+import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Texture2D;
+import org.overrun.glutils.tex.Textures;
+import org.overrun.glutils.timer.TimerID;
 
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.overrun.glutils.game.GLStateManager.enableBlend;
-import static org.overrun.glutils.game.GLStateManager.enableDepthTest;
 import static org.overrun.glutils.game.GameEngine.*;
-import static org.overrun.glutils.math.Transform.*;
+import static org.overrun.glutils.util.math.Transform.*;
 
 /**
  * @author squid233
@@ -50,9 +52,10 @@ public class Tesselator3Test extends Game {
         xd = 0, yd = 0, zd = 0;
     private final Matrix4fStack mat3d = new Matrix4fStack(32);
     private final Matrix4f mat2d = new Matrix4f();
-    private IndexedTesselator3 it;
+    private Tesselator3 it;
     private Tesselator3 t;
     private Texture2D sth;
+    private Callback debugProc;
 
     private class Scr extends Screen {
         public Scr(final Screen parent) {
@@ -62,7 +65,7 @@ public class Tesselator3Test extends Game {
         @Override
         public void render() {
             it.setMatrix(mat2d);
-            it.init()
+            it.init(GL_TRIANGLES)
                 .color(0, 0, 0, 0.5f).vertex(0, 0, 0)
                 .color(0, 0, 0, 0.5f).vertex(0, height, 0)
                 .color(0, 0, 0, 0.5f).vertex(width, height, 0)
@@ -75,12 +78,13 @@ public class Tesselator3Test extends Game {
 
     @Override
     public void create() {
+        debugProc = GLUtil.setupDebugMessageCallback();
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
-        enableDepthTest();
-        enableBlend();
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         window.setGrabbed(true);
-        it = new IndexedTesselator3(false);
+        it = new Tesselator3(false);
         t = new Tesselator3(true)
             .vertexUV(0, 0, 0, 0, 0)
             .vertexUV(0, 17, 0, 0, 1)
@@ -88,22 +92,22 @@ public class Tesselator3Test extends Game {
             .vertexUV(17, 17, 0, 1, 1)
             .vertexUV(17, 0, 0, 1, 0)
             .vertexUV(0, 0, 0, 0, 0);
-        sth = new Texture2D(ClassLoader.getSystemClassLoader(),
+        sth = Textures.load2D(this,
             "tstest.png",
-            new MipmapMode()
-                .minFilter(GL_NEAREST)
-                .magFilter(GL_NEAREST));
+            TexParam.glNearest(),
+            true);
     }
 
     @Override
     public void render() {
-        float delta = timer.getDelta();
+        var timer = timerMgr.getID(0).get();
+        float delta = (float) timer.getDelta();
         float tx = xo + (x - xo) * delta;
         float ty = yo + (y - yo) * delta;
         float tz = zo + (z - zo) * delta;
         rotateY(
             rotateX(
-                setPerspective(mat3d, 90, framebuffer, 0.05f, 1000.0f)
+                setPerspective(mat3d, 90, bufFrame, 0.05f, 1000.0f)
                     .translate(0, 0, -0.3f),
                 -xRot),
             yRot).translate(-tx, -ty, -tz);
@@ -113,15 +117,15 @@ public class Tesselator3Test extends Game {
         float c0 = abs(sin);
         float c1 = 1 - c0;
         it.setMatrix(mat3d.scaleLocal((c0 * 0.95f + 1f) / 2f));
-        it.init()
+        it.init(GL_TRIANGLES)
             .color(c0, c1, c0).vertex(0, 1, 0)
             .color(c0, c0, c0).vertex(0, 0, 0)
             .color(c1, c0, c0).vertex(1, 0, 0)
             .color(c1, c1, c0).vertex(1, 1, 0)
-            .color(c0, c1, c1).vertex(0, 1, -1)
-            .color(c0, c0, c1).vertex(0, 0, -1)
-            .color(c1, c0, c1).vertex(1, 0, -1)
-            .color(c1, c1, c1).vertex(1, 1, -1)
+            .color(c0, c1, c1).vertex(0, 1, 1)
+            .color(c0, c0, c1).vertex(0, 0, 1)
+            .color(c1, c0, c1).vertex(1, 0, 1)
+            .color(c1, c1, c1).vertex(1, 1, 1)
             .indices(
                 // south
                 0, 1, 2, 2, 3, 0,
@@ -149,8 +153,8 @@ public class Tesselator3Test extends Game {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tick(TimerID timerID) {
+        super.tick(timerID);
         xo = x;
         yo = y;
         zo = z;
@@ -238,6 +242,8 @@ public class Tesselator3Test extends Game {
 
     @Override
     public void free() {
+        if (debugProc != null)
+            debugProc.free();
         sth.free();
         it.free();
         t.free();
@@ -250,6 +256,6 @@ public class Tesselator3Test extends Game {
         config.title = "Tesselator3 Test";
         //config.glVersion = 3.3;
         //config.coreProfile = true;
-        new GameApp(new Tesselator3Test(), config);
+        new GameApp(new Tesselator3Test(), config).start();
     }
 }

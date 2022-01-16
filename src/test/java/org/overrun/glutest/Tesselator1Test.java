@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ package org.overrun.glutest;
 import org.overrun.glutils.game.Game;
 import org.overrun.glutils.game.GameApp;
 import org.overrun.glutils.game.GameConfig;
-import org.overrun.glutils.ll.Tesselator;
+import org.overrun.glutils.gl.ll.Tesselator;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -40,15 +40,20 @@ public class Tesselator1Test extends Game {
     public void render() {
         glClear(GL_COLOR_BUFFER_BIT);
         Tesselator t = Tesselator.getInstance();
-        t.init()
+        t.init(GL_TRIANGLES)
             .color(1, 0, 0).vertex(0, 0.5f, 0)
             .color(0, 1, 0).vertex(-0.5f, -0.5f, 0)
             .color(0, 0, 1).vertex(0.5f, -0.5f, 0)
-            .draw(GL_TRIANGLES);
+            .draw();
         super.render();
     }
 
+    @Override
+    public void free() {
+        Tesselator.getInstance().free();
+    }
+
     public static void main(String[] args) {
-        new GameApp(new Tesselator1Test(), new GameConfig());
+        new GameApp(new Tesselator1Test(), new GameConfig()).start();
     }
 }

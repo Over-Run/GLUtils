@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,8 @@
 
 package org.overrun.glutils;
 
-import org.overrun.glutils.callback.ErrorCallback;
-import org.overrun.glutils.callback.ThrowableCallback;
-import org.overrun.glutils.callback.WarningCallback;
+import org.overrun.glutils.util.GLULoggerImpl;
+import org.overrun.glutils.util.IGLULogger;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -43,44 +42,60 @@ import static org.overrun.glutils.Versions.current;
 public final class GLUtils {
     /**
      * current version
+     *
+     * @since 2.0.0
      */
-    public static final String VERSION = current();
+    public static final String version = current();
     /**
      * no error
      */
-    public static final String NO_ERR = "GL_NO_ERROR (0)";
+    public static final String NO_ERR = "No error (0)";
     /**
-     * version major index
+     * The version major index
      */
     private static final int MAJOR = 0;
     /**
-     * version minor index
+     * The version minor index
      */
     private static final int MINOR = 1;
     /**
-     * version patch index
+     * The version patch index
      */
     private static final int PATCH = 2;
     /**
-     * version pre-build index
+     * The version pre-build index
      */
     private static final int PRE_BUILD = 3;
-    private static ThrowableCallback throwableCb = Throwable::printStackTrace;
-    private static WarningCallback warningCb = GLUtils::defaultWarningCb;
-    private static ErrorCallback errorCb = GLUtils::defaultErrorCb;
+    /**
+     * The logger.
+     *
+     * @since 2.0.0
+     */
+    private static IGLULogger logger = GLULoggerImpl.getInstance();
+
+    /**
+     * Print library information and contributors
+     */
+    public static void printLibInfo() {
+        logger.info("===========================================================================");
+        logger.info("Thanks for using GLUtils " + version);
+        logger.info("\tAuthor:");
+        logger.info("\t\tsquid233");
+        logger.info("===========================================================================");
+    }
 
     /**
      * Check current version older than {@code other}
      *
      * @param other Other version
-     * @return {@link #VERSION} &lt; {@code other}
+     * @return {@link #version} &lt; {@code other}
      * @since 0.9.0
      */
     public static boolean isOlder(String other) {
         // example: 0.9.0 < 0.10.0
         // so 0.9.0 is older than 0.10.0
         // so return true
-        int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
+        int[] curr = expand(toIArray(version.split("\\.")), 4);
         int[] oth = expand(toIArray(other.split("\\.")), 4);
         if (curr[MAJOR] < oth[MAJOR]) {
             return true;
@@ -113,14 +128,14 @@ public final class GLUtils {
      * Check current version newer than {@code other}
      *
      * @param other Other version
-     * @return {@link #VERSION} &gt; {@code other}
+     * @return {@link #version} &gt; {@code other}
      * @since 0.9.0
      */
     public static boolean isNewer(String other) {
         // example: 0.9.0 > 0.10.0
         // so 0.9.0 is older than 0.10.0
         // so return false
-        int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
+        int[] curr = expand(toIArray(version.split("\\.")), 4);
         int[] oth = expand(toIArray(other.split("\\.")), 4);
         if (curr[MAJOR] > oth[MAJOR]) {
             return true;
@@ -153,14 +168,14 @@ public final class GLUtils {
      * Check current version equals {@code other}
      *
      * @param other Other version
-     * @return {@link #VERSION} == {@code other}
+     * @return {@link #version} == {@code other}
      * @since 0.9.0
      */
     public static boolean isEqual(String other) {
         // example: 0.9.0 > 0.10.0
         // so 0.9.0 is older than 0.10.0
         // so return false
-        int[] curr = expand(toIArray(VERSION.split("\\.")), 4);
+        int[] curr = expand(toIArray(version.split("\\.")), 4);
         int[] oth = expand(toIArray(other.split("\\.")), 4);
         return curr[MAJOR] == oth[MAJOR]
             && curr[MINOR] == oth[MINOR]
@@ -214,126 +229,86 @@ public final class GLUtils {
     }
 
     /**
-     * glGetError to string
+     * Translate a GL error code to a String describing the error
      *
-     * @return error name
-     * @since 0.5.0
+     * @param err The error code
+     * @return The string
+     * @since 2.0.0
      */
-    public static String glErrorString() {
-        int err = glGetError();
+    public static String glErrorString(int err) {
         switch (err) {
             case GL_NO_ERROR:
                 return NO_ERR;
             case GL_INVALID_ENUM:
-                return "GL_INVALID_ENUM (1280)";
+                return "Invalid enum (1280)";
             case GL_INVALID_VALUE:
-                return "GL_INVALID_VALUE (1281)";
+                return "Invalid value (1281)";
             case GL_INVALID_OPERATION:
-                return "GL_INVALID_OPERATION (1282)";
+                return "Invalid operation (1282)";
             case GL_INVALID_FRAMEBUFFER_OPERATION:
-                return "GL_INVALID_FRAMEBUFFER_OPERATION (1286)";
+                return "Invalid framebuffer operation (1286)";
             case GL_OUT_OF_MEMORY:
-                return "GL_OUT_OF_MEMORY (1285)";
+                return "Out of memory (1285)";
             case GL_STACK_UNDERFLOW:
-                return "GL_STACK_UNDERFLOW (1284)";
+                return "Stack underflow (1284)";
             case GL_STACK_OVERFLOW:
-                return "GL_STACK_OVERFLOW (1283)";
+                return "Stack overflow (1283)";
             default:
-                return "GL_UNKNOWN_ERROR";
+                return "Unknown error";
         }
+    }
+
+    /**
+     * glGetError to string
+     *
+     * @return error name
+     * @see #glErrorString(int)
+     * @since 0.5.0
+     */
+    public static String glErrorString() {
+        int err = glGetError();
+        return glErrorString(err);
     }
 
     /**
      * Print error code and name.
-     * <p>Only for debugging.</p>
+     * <p>
+     * Only for debugging.
+     * </p>
      *
-     * @param i mark
+     * @param id marking id
      * @since 0.5.0
      */
-    public static void glPrintError(int i) {
+    public static void debug(int id) {
         String err = glErrorString();
-        String s = i + ":" + err;
+        String s = id + ": " + err;
         if (err.equals(NO_ERR)) {
-            System.out.println(s);
+            logger.info(s);
         } else {
-            System.err.println(s);
+            logger.error(s);
         }
     }
 
     /**
-     * default warning callback
+     * Set the logger for GLUtils.
      *
-     * @param msg    message
-     * @param format objects to replace to msg
+     * @param l The logger.
+     * @since 2.0.0
      */
-    public static void defaultWarningCb(Object msg, Object... format) {
-        defaultErrorCb(msg, format);
+    public static void setLogger(IGLULogger l) {
+        if (l == null) {
+            l = GLULoggerImpl.getInstance();
+        }
+        logger = l;
     }
 
     /**
-     * default warning callback
+     * Get the logger in GLUtils.
      *
-     * @param msg    message
-     * @param format objects to replace to msg
+     * @return The {@link #logger}.
+     * @since 2.0.0
      */
-    public static void defaultErrorCb(Object msg, Object... format) {
-        System.err.printf(msg + "%n", format);
-    }
-
-    /**
-     * set warning callback
-     *
-     * @param cb callback to set
-     */
-    public static void setWarningCb(WarningCallback cb) {
-        warningCb = cb;
-    }
-
-    /**
-     * get warning callback
-     *
-     * @return warning callback
-     */
-    public static WarningCallback getWarningCb() {
-        return warningCb;
-    }
-
-    /**
-     * set error callback
-     *
-     * @param cb callback to set
-     */
-    public static void setErrorCb(ErrorCallback cb) {
-        errorCb = cb;
-    }
-
-    /**
-     * get error callback
-     *
-     * @return error callback
-     */
-    public static ErrorCallback getErrorCb() {
-        return errorCb;
-    }
-
-    /**
-     * Set the throwable callback.
-     * <p>
-     * You can set the callback to your logger.
-     * </p>
-     *
-     * @param cb Consumer with a Throwable.
-     */
-    public static void setThrowableCb(ThrowableCallback cb) {
-        throwableCb = cb;
-    }
-
-    /**
-     * get throwable callback
-     *
-     * @return throwable callback
-     */
-    public static ThrowableCallback getThrowableCb() {
-        return throwableCb;
+    public static IGLULogger getLogger() {
+        return logger;
     }
 }

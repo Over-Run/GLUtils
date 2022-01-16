@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,8 @@
 
 package org.overrun.glutils.game;
 
+import org.overrun.glutils.timer.TimerID;
+
 /**
  * @author squid233
  * @since 1.5.0
@@ -46,9 +48,10 @@ public interface IGameLogic {
      * This method call per ticks.
      * </p>
      *
-     * @see GameConfig#tps
+     * @param timerID The timer ID.
+     * @since 2.0.0
      */
-    default void tick() {
+    default void tick(TimerID timerID) {
     }
 
     /**
@@ -65,6 +68,12 @@ public interface IGameLogic {
      * Called after polling events.
      */
     default void onUpdated() {
+    }
+
+    /**
+     * Called on setting {@link Graphics#fps fps}.
+     */
+    default void passedFrame() {
     }
 
     /**
@@ -113,5 +122,50 @@ public interface IGameLogic {
                              final int mods) {
     }
 
+    /**
+     * Called on mouse button pressed.
+     *
+     * @param button The button.
+     * @param mods   The modifiers.
+     * @since 2.0.0
+     */
+    default void mousePressed(final int button,
+                              final int mods) {
+    }
+
+    /**
+     * Called on mouse button released.
+     *
+     * @param button The button.
+     * @param mods   The modifiers.
+     * @since 2.0.0
+     */
+    default void mouseReleased(final int button,
+                               final int mods) {
+    }
+
+    /**
+     * Called on mouse wheeled.
+     *
+     * @param xo X offset
+     * @param yo Y offset
+     * @since 2.0.0
+     */
+    default void mouseWheel(final double xo,
+                            final double yo) {
+    }
+
+    /**
+     * Called on char inputted.
+     *
+     * @param codepoint Codepoint
+     * @since 2.0.0
+     */
+    default void inputChar(final int codepoint) {
+    }
+
+    /**
+     * Free all resource
+     */
     void free();
 }

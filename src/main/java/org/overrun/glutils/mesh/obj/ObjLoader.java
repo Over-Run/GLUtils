@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,33 +27,29 @@ package org.overrun.glutils.mesh.obj;
 
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4f;
-import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
-import org.overrun.glutils.Textures;
+import org.overrun.glutils.tex.Texture2D;
 import org.overrun.glutils.light.Material;
 import org.overrun.glutils.mesh.Mesh;
 import org.overrun.glutils.mesh.Mesh3;
+import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Textures;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.JarURLConnection;
-import java.net.URL;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import static java.util.Objects.requireNonNull;
 import static org.lwjgl.assimp.Assimp.*;
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
+import static org.overrun.glutils.FilesReader.getClassLoader;
 
 /**
  * @author squid233
@@ -61,7 +57,7 @@ import static org.lwjgl.opengl.GL11.GL_NEAREST;
  */
 public class ObjLoader {
     /**
-     *
+     * The default flags for Assimp.
      */
     public static final int DEFAULT_FLAGS = aiProcess_JoinIdenticalVertices
         | aiProcess_Triangulate
@@ -69,12 +65,13 @@ public class ObjLoader {
     private static final File TMP = new File("glutils_obj_tmp");
 
     /**
-     * pre return
+     * Vertices processor
      *
      * @author squid233
+     * @since 2.0.0
      */
     @FunctionalInterface
-    public interface PreReturn {
+    public interface VertProcessor {
         /**
          * Set attribute index before return.
          *
@@ -82,40 +79,41 @@ public class ObjLoader {
          * @param vertices  Vertices
          * @param meshIndex The order of the index of the mesh
          */
-        void accept(Mesh3 mesh,
-                    float[] vertices,
-                    int meshIndex);
+        void process(Mesh3 mesh,
+                     float[] vertices,
+                     int meshIndex);
     }
 
-    private static AIScene load(ClassLoader cl,
+    private static AIScene load(Object o,
                                 String filename,
                                 int flags) {
-        String fn = filename.replaceAll("\\\\", "/");
-        String parentPath = fn.substring(0, fn.lastIndexOf('/') + 1);
-        File f = new File(TMP + "/" + parentPath);
+        var cl = getClassLoader(o);
+        var fn = filename.replaceAll("\\\\", "/");
+        var parentPath = fn.substring(0, fn.lastIndexOf('/') + 1);
+        var f = new File(TMP + "/" + parentPath);
         f.mkdirs();
         try {
-            Enumeration<URL> resources = cl.getResources(parentPath);
+            var resources = cl.getResources(parentPath);
             while (resources.hasMoreElements()) {
-                URL url = resources.nextElement();
-                String protocol = url.getProtocol();
-                if (protocol.equals("jar")) {
+                var url = resources.nextElement();
+                var protocol = url.getProtocol();
+                if ("jar".equals(protocol)) {
                     // TODO: 2021/8/31 0031 test
-                    JarURLConnection conn = (JarURLConnection) url.openConnection();
-                    JarFile jar = conn.getJarFile();
-                    Enumeration<JarEntry> entries = jar.entries();
+                    var conn = (JarURLConnection) url.openConnection();
+                    var jar = conn.getJarFile();
+                    var entries = jar.entries();
                     while (entries.hasMoreElements()) {
-                        JarEntry entry = entries.nextElement();
-                        String name = entry.getName();
+                        var entry = entries.nextElement();
+                        var name = entry.getName();
                         if (!entry.isDirectory() && name.startsWith(parentPath)) {
                             copyToFS(cl, name);
                         }
                     }
-                } else if (protocol.equals("file")) {
-                    URL resource = requireNonNull(cl.getResource(parentPath));
-                    String[] files = new File(resource.getPath()).list();
+                } else if ("file".equals(protocol)) {
+                    var resource = requireNonNull(cl.getResource(parentPath));
+                    var files = new File(resource.getPath()).list();
                     if (files != null) {
-                        for (String file : files) {
+                        for (var file : files) {
                             copyToFS(cl, parentPath + "/" + file);
                         }
                     }
@@ -137,7 +135,7 @@ public class ObjLoader {
     private static void copyToFS(ClassLoader cl,
                                  String p)
         throws IOException {
-        try (InputStream in = cl.getResourceAsStream(p)) {
+        try (var in = cl.getResourceAsStream(p)) {
             Files.copy(requireNonNull(in),
                 Paths.get(TMP + "/" + p),
                 StandardCopyOption.REPLACE_EXISTING);
@@ -145,34 +143,38 @@ public class ObjLoader {
     }
 
     private static void deleteTmpFiles(File file) {
-        File[] files = file.listFiles();
+        var files = file.listFiles();
         if (files != null) {
-            for (File f1 : files) {
+            for (var f1 : files) {
                 deleteTmpFiles(f1);
             }
         }
-        file.delete();
+        try {
+            Files.deleteIfExists(file.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private static List<Material> createMaterials(ClassLoader cl,
+    private static List<Material> createMaterials(Object o,
                                                   AIScene scene,
                                                   String filename) {
         int numMaterials = scene.mNumMaterials();
-        PointerBuffer aiMaterials = scene.mMaterials();
-        List<Material> materials = new ArrayList<>();
+        var aiMaterials = scene.mMaterials();
+        var materials = new ArrayList<Material>();
         for (int i = 0; i < numMaterials; i++) {
-            AIMaterial aiMaterial = AIMaterial.create(requireNonNull(aiMaterials).get(i));
-            processMaterial(cl, aiMaterial, materials, filename);
+            var aiMaterial = AIMaterial.create(requireNonNull(aiMaterials).get(i));
+            processMaterial(o, aiMaterial, materials, filename);
         }
         return materials;
     }
 
-    private static void processMaterial(ClassLoader cl,
+    private static void processMaterial(Object o,
                                         AIMaterial aiMaterial,
                                         List<Material> materials,
                                         String filename) {
-        AIColor4D color = AIColor4D.create();
-        AIString path = AIString.calloc();
+        var color = AIColor4D.create();
+        var path = AIString.calloc();
         Assimp.aiGetMaterialTexture(aiMaterial,
             aiTextureType_DIFFUSE,
             0,
@@ -183,49 +185,77 @@ public class ObjLoader {
             null,
             null,
             null);
-        String texPath = path.dataString();
-        int texture = 0;
+        var texPath = path.dataString();
+        Texture2D texture = null;
         if (!texPath.isEmpty()) {
-            texture = Textures.loadAWT(cl, filename + "/../" + texPath, GL_NEAREST);
+            texture = Textures.load2D(o,
+                filename + "/../" + texPath,
+                TexParam.glNearest(),
+                true);
         }
         path.close();
 
-        Vector4f ambient = Material.DEFAULT_COLOR;
-        int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, color);
+        var ambient = Material.DEFAULT_COLOR;
+        int result = aiGetMaterialColor(aiMaterial,
+            AI_MATKEY_COLOR_AMBIENT,
+            aiTextureType_NONE,
+            0,
+            color);
         if (result == 0) {
-            ambient = new Vector4f(color.r(), color.g(), color.b(), color.a());
+            ambient = new Vector4f(color.r(),
+                color.g(),
+                color.b(),
+                color.a());
         }
 
-        Vector4f diffuse = Material.DEFAULT_COLOR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, color);
+        var diffuse = Material.DEFAULT_COLOR;
+        result = aiGetMaterialColor(aiMaterial,
+            AI_MATKEY_COLOR_DIFFUSE,
+            aiTextureType_NONE,
+            0,
+            color);
         if (result == 0) {
-            diffuse = new Vector4f(color.r(), color.g(), color.b(), color.a());
+            diffuse = new Vector4f(color.r(),
+                color.g(),
+                color.b(),
+                color.a());
         }
 
-        Vector4f specular = Material.DEFAULT_COLOR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, color);
+        var specular = Material.DEFAULT_COLOR;
+        result = aiGetMaterialColor(aiMaterial,
+            AI_MATKEY_COLOR_SPECULAR,
+            aiTextureType_NONE,
+            0,
+            color);
         if (result == 0) {
-            specular = new Vector4f(color.r(), color.g(), color.b(), color.a());
+            specular = new Vector4f(color.r(),
+                color.g(),
+                color.b(),
+                color.a());
         }
 
-        materials.add(new Material(ambient, diffuse, specular, texture, 1.0f));
+        materials.add(new Material(ambient,
+            diffuse,
+            specular,
+            texture,
+            1.0f));
     }
 
     private static void processVertices(AIMesh mesh,
                                         FloatArray vertices) {
-        AIVector3D.Buffer buffer = mesh.mVertices();
+        var buffer = mesh.mVertices();
         while (buffer.remaining() > 0) {
-            AIVector3D vertex = buffer.get();
+            var vertex = buffer.get();
             vertices.addAll(vertex.x(), vertex.y(), vertex.z());
         }
     }
 
     private static void processColors(AIMesh mesh,
                                       FloatArray colors) {
-        AIColor4D.Buffer buffer = mesh.mColors(0);
+        var buffer = mesh.mColors(0);
         if (buffer != null) {
             while (buffer.remaining() > 0) {
-                AIColor4D color = buffer.get();
+                var color = buffer.get();
                 colors.addAll(color.r(), color.g(), color.b(), color.a());
             }
         }
@@ -233,10 +263,10 @@ public class ObjLoader {
 
     private static void processNormals(AIMesh mesh,
                                        FloatArray normals) {
-        AIVector3D.Buffer buffer = mesh.mNormals();
+        var buffer = mesh.mNormals();
         if (buffer != null) {
             while (buffer.remaining() > 0) {
-                AIVector3D normal = buffer.get();
+                var normal = buffer.get();
                 normals.addAll(normal.x(), normal.y(), normal.z());
             }
         }
@@ -244,10 +274,10 @@ public class ObjLoader {
 
     private static void processTexCoords(AIMesh mesh,
                                          FloatArray textures) {
-        AIVector3D.Buffer buffer = mesh.mTextureCoords(0);
+        var buffer = mesh.mTextureCoords(0);
         int numTexCoords = buffer != null ? buffer.remaining() : 0;
         for (int i = 0; i < numTexCoords; i++) {
-            AIVector3D texCoord = buffer.get();
+            var texCoord = buffer.get();
             textures.addAll(texCoord.x(), 1 - texCoord.y());
         }
     }
@@ -255,10 +285,10 @@ public class ObjLoader {
     private static void processIndices(AIMesh mesh,
                                        IntArray indices) {
         int numFaces = mesh.mNumFaces();
-        AIFace.Buffer buffer = mesh.mFaces();
+        var buffer = mesh.mFaces();
         for (int i = 0; i < numFaces; i++) {
-            AIFace face = buffer.get(i);
-            IntBuffer ib = face.mIndices();
+            var face = buffer.get(i);
+            var ib = face.mIndices();
             while (ib.remaining() > 0) {
                 indices.add(ib.get());
             }
@@ -267,10 +297,10 @@ public class ObjLoader {
 
     private static Mesh processMesh(AIMesh aiMesh,
                                     List<Material> materials) {
-        FloatArray vertices = new FloatArray();
-        FloatArray textures = new FloatArray();
-        FloatArray normals = new FloatArray();
-        IntArray indices = new IntArray();
+        var vertices = new FloatArray();
+        var textures = new FloatArray();
+        var normals = new FloatArray();
+        var indices = new IntArray();
 
         processVertices(aiMesh, vertices);
         processNormals(aiMesh, normals);
@@ -295,13 +325,13 @@ public class ObjLoader {
 
     private static Mesh3 processMesh(AIMesh aiMesh,
                                      List<Material> materials,
-                                     @Nullable PreReturn preReturn,
+                                     @Nullable VertProcessor vertProcessor,
                                      int index) {
-        FloatArray vertices = new FloatArray();
-        FloatArray colors = new FloatArray();
-        FloatArray textures = new FloatArray();
-        FloatArray normals = new FloatArray();
-        IntArray indices = new IntArray();
+        var vertices = new FloatArray();
+        var colors = new FloatArray();
+        var textures = new FloatArray();
+        var normals = new FloatArray();
+        var indices = new IntArray();
 
         processVertices(aiMesh, vertices);
         processColors(aiMesh, colors);
@@ -317,10 +347,10 @@ public class ObjLoader {
             material = new Material();
         }
 
-        Mesh3 mesh = new Mesh3();
-        float[] v = vertices.toFArray();
-        if (preReturn != null) {
-            preReturn.accept(mesh, v, index);
+        var mesh = new Mesh3();
+        var v = vertices.toFArray();
+        if (vertProcessor != null) {
+            vertProcessor.process(mesh, v, index);
         }
         if (!colors.isEmpty()) {
             mesh.colors(colors.toFArray());
@@ -335,34 +365,34 @@ public class ObjLoader {
     /**
      * Load object file with default flags.
      *
-     * @param cl       Class loader
+     * @param o        The object Class or ClassLoader.
      * @param filename Object filename in classpath.
      * @return Meshes.
      */
-    public static ObjModel2 load2(ClassLoader cl,
+    public static ObjModel2 load2(Object o,
                                   String filename) {
-        return load2(cl, filename, DEFAULT_FLAGS);
+        return load2(o, filename, DEFAULT_FLAGS);
     }
 
     /**
      * Load object file.
      *
-     * @param cl       Class loader
+     * @param o        The object Class or ClassLoader.
      * @param filename Object filename in classpath (in relative path).
      * @param flags    Assimp flags.
      * @return Meshes.
      */
-    public static ObjModel2 load2(ClassLoader cl,
+    public static ObjModel2 load2(Object o,
                                   String filename,
                                   int flags) {
-        AIScene scene = load(cl, filename, flags);
-        List<Material> materials = createMaterials(cl, scene, filename);
+        var scene = load(o, filename, flags);
+        var materials = createMaterials(o, scene, filename);
         int numMeshes = scene.mNumMeshes();
-        PointerBuffer aiMeshes = scene.mMeshes();
-        Mesh[] meshes = new Mesh[numMeshes];
+        var aiMeshes = scene.mMeshes();
+        var meshes = new Mesh[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
-            AIMesh aiMesh = AIMesh.create(requireNonNull(aiMeshes).get(i));
-            Mesh mesh = processMesh(aiMesh, materials);
+            var aiMesh = AIMesh.create(requireNonNull(aiMeshes).get(i));
+            var mesh = processMesh(aiMesh, materials);
             meshes[i] = mesh;
         }
         aiReleaseImport(scene);
@@ -372,38 +402,38 @@ public class ObjLoader {
     /**
      * Load object file with default flags.
      *
-     * @param cl        Class loader
-     * @param filename  Object filename in classpath.
-     * @param preReturn Set attribute index before return.
+     * @param o             The object Class or ClassLoader.
+     * @param filename      Object filename in classpath.
+     * @param vertProcessor Set attribute index before return.
      * @return Meshes v3.
      */
-    public static ObjModel3 load3(ClassLoader cl,
+    public static ObjModel3 load3(Object o,
                                   String filename,
-                                  @Nullable PreReturn preReturn) {
-        return load3(cl, filename, DEFAULT_FLAGS, preReturn);
+                                  @Nullable VertProcessor vertProcessor) {
+        return load3(o, filename, DEFAULT_FLAGS, vertProcessor);
     }
 
     /**
      * Load object file.
      *
-     * @param cl        Class loader
-     * @param filename  Object filename in classpath (in relative path).
-     * @param flags     Assimp flags.
-     * @param preReturn Set attribute index before return.
+     * @param o             The object Class or ClassLoader.
+     * @param filename      Object filename in classpath (in relative path).
+     * @param flags         Assimp flags.
+     * @param vertProcessor Set attribute index before return.
      * @return Meshes v3.
      */
-    public static ObjModel3 load3(ClassLoader cl,
+    public static ObjModel3 load3(Object o,
                                   String filename,
                                   int flags,
-                                  @Nullable PreReturn preReturn) {
-        AIScene scene = load(cl, filename, flags);
-        List<Material> materials = createMaterials(cl, scene, filename);
+                                  @Nullable VertProcessor vertProcessor) {
+        var scene = load(o, filename, flags);
+        var materials = createMaterials(o, scene, filename);
         int numMeshes = scene.mNumMeshes();
-        PointerBuffer aiMeshes = scene.mMeshes();
-        Mesh3[] meshes = new Mesh3[numMeshes];
+        var aiMeshes = scene.mMeshes();
+        var meshes = new Mesh3[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
-            AIMesh aiMesh = AIMesh.create(requireNonNull(aiMeshes).get(i));
-            Mesh3 mesh = processMesh(aiMesh, materials, preReturn, i)
+            var aiMesh = AIMesh.create(requireNonNull(aiMeshes).get(i));
+            var mesh = processMesh(aiMesh, materials, vertProcessor, i)
                 .unbindVao();
             meshes[i] = mesh;
         }

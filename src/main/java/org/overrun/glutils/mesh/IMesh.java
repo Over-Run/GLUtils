@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 package org.overrun.glutils.mesh;
 
-import org.overrun.glutils.Drawable;
+import org.overrun.glutils.IDrawable;
 
 import static org.lwjgl.opengl.GL15.*;
 
@@ -33,7 +33,7 @@ import static org.lwjgl.opengl.GL15.*;
  * @author squid233
  * @since 0.2.0
  */
-public interface IMesh extends Drawable, AutoCloseable {
+public interface IMesh extends IDrawable {
     /**
      * get vertex count
      *
@@ -59,6 +59,5 @@ public interface IMesh extends Drawable, AutoCloseable {
     /**
      * Cleanup all resources.
      */
-    @Override
-    void close();
+    void free();
 }

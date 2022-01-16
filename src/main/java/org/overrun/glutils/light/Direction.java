@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,13 @@
 
 package org.overrun.glutils.light;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
+
+import static org.joml.FrustumIntersection.*;
 
 /**
  * @author squid233
@@ -35,31 +39,30 @@ import org.joml.Vector3ic;
  */
 public enum Direction {
     /**
-     * Vector to up
-     */
-    UP(0, 1, 0, 1, 0),
-    /**
-     * Vector to down
-     */
-    DOWN(1, 0, 0, -1, 0),
-    /**
-     * Vector to north
-     */
-    NORTH(2, 3, 0, 0, -1),
-    /**
-     * Vector to south
-     */
-    SOUTH(3, 2, 0, 0, 1),
-    /**
      * Vector to west
      */
-    WEST(4, 5, -1, 0, 0),
+    WEST(PLANE_NX, PLANE_PX, -1, 0, 0),
     /**
      * Vector to east
      */
-    EAST(5, 4, 1, 0, 0);
+    EAST(PLANE_PX, PLANE_NX, 1, 0, 0),
+    /**
+     * Vector to down
+     */
+    DOWN(PLANE_NY, PLANE_PY, 0, -1, 0),
+    /**
+     * Vector to up
+     */
+    UP(PLANE_PY, PLANE_NY, 0, 1, 0),
+    /**
+     * Vector to north
+     */
+    NORTH(PLANE_NZ, PLANE_PZ, 0, 0, -1),
+    /**
+     * Vector to south
+     */
+    SOUTH(PLANE_PZ, PLANE_NZ, 0, 0, 1);
 
-    private static final Vector3i[] CACHE_VECTOR = new Vector3i[6];
     private final int id;
     private final int oppositeId;
     private final int axisX;
@@ -79,14 +82,14 @@ public enum Direction {
     }
 
     /**
-     * get direction by id
+     * Get direction by id
      *
      * @param vector vector contains axis
      * @return a direction
      */
     @Nullable
     public static Direction getByVector(Vector3ic vector) {
-        for (Direction c : values()) {
+        for (var c : values()) {
             if (c.toVector().equals(vector.x(), vector.y(), vector.z())) {
                 return c;
             }
@@ -95,7 +98,7 @@ public enum Direction {
     }
 
     /**
-     * get direction by id
+     * Get direction by id or facing
      *
      * @param id direction id
      * @return a direction
@@ -105,7 +108,7 @@ public enum Direction {
     }
 
     /**
-     * get id
+     * Get id
      *
      * @return {@link #id}
      */
@@ -114,7 +117,7 @@ public enum Direction {
     }
 
     /**
-     * get opposite id
+     * Get opposite id
      *
      * @return {@link #oppositeId}
      */
@@ -123,7 +126,7 @@ public enum Direction {
     }
 
     /**
-     * get opposite direction
+     * Get opposite direction
      *
      * @return opposite direction
      */
@@ -132,7 +135,7 @@ public enum Direction {
     }
 
     /**
-     * get axisX
+     * Get axisX
      *
      * @return {@link #axisX}
      */
@@ -141,7 +144,7 @@ public enum Direction {
     }
 
     /**
-     * get axisY
+     * Get axisY
      *
      * @return {@link #axisY}
      */
@@ -150,7 +153,7 @@ public enum Direction {
     }
 
     /**
-     * get axisZ
+     * Get axisZ
      *
      * @return {@link #axisZ}
      */
@@ -159,14 +162,13 @@ public enum Direction {
     }
 
     /**
-     * convert to vector
+     * Convert to vector.
      *
      * @return Vector3i contains vec xyz
      */
+    @Contract(value = " -> new", pure = true)
+    @NotNull
     public Vector3i toVector() {
-        if (CACHE_VECTOR[id] == null) {
-            CACHE_VECTOR[id] = new Vector3i(axisX, axisY, axisZ);
-        }
-        return CACHE_VECTOR[id];
+        return new Vector3i(axisX, axisY, axisZ);
     }
 }

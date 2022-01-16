@@ -7,13 +7,12 @@ plugins {
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
 
-group 'io.github.over-run'
-archivesBaseName = 'glutils'
-version = '2.0.0-SNAPSHOT'
+group projGroupId
+archivesBaseName = projArtifactId
+version = projVersion
 
 repositories {
     mavenCentral()
-    maven { url 'https://repo1.maven.org/maven2' }
     maven { url 'https://maven.aliyun.com/repository/central' }
     maven { url 'https://jitpack.io' }
     // temporary maven repositories
@@ -22,23 +21,25 @@ repositories {
 }
 
 dependencies {
-    api platform('org.lwjgl:lwjgl-bom:3.2.3')
+    api platform('org.lwjgl:lwjgl-bom:3.3.0')
 
     api 'org.lwjgl:lwjgl'
+    api 'org.lwjgl:lwjgl-assimp'
     api 'org.lwjgl:lwjgl-glfw'
+    api "org.lwjgl:lwjgl-jemalloc"
     api 'org.lwjgl:lwjgl-opengl'
     api 'org.lwjgl:lwjgl-stb'
-    api 'org.lwjgl:lwjgl-assimp'
     api 'org.joml:joml:1.10.3'
-    api 'io.github.over-run:common-utils:0.2.0'
+    api 'io.github.over-run:common-utils:0.3.0'
 
-    compileOnly 'org.jetbrains:annotations:22.0.0'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
 
     testRuntimeOnly 'org.lwjgl:lwjgl::natives-windows'
+    testRuntimeOnly 'org.lwjgl:lwjgl-assimp::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-glfw::natives-windows'
+    testRuntimeOnly "org.lwjgl:lwjgl-jemalloc::natives-windows"
     testRuntimeOnly 'org.lwjgl:lwjgl-opengl::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-stb::natives-windows'
-    testRuntimeOnly 'org.lwjgl:lwjgl-assimp::natives-windows'
 }
 
 tasks.withType(JavaCompile) {
@@ -46,15 +47,17 @@ tasks.withType(JavaCompile) {
 }
 
 jar {
-    from 'LICENSE'
-    manifest {
-        attributes 'Specification-Title': 'GLUtils',
-                'Specification-Vendor': 'Overrun Organization',
-                'Specification-Version': '1',
-                'Implementation-Title': 'GLUtils 1',
-                'Implementation-Vendor': 'Overrun Organization',
-                'Implementation-Version': archiveVersion
-    }
+    manifestContentCharset 'utf-8'
+    metadataCharset 'utf-8'
+    from 'LICENSE', 'changelog.txt'
+    manifest.attributes(
+        'Specification-Title': projName,
+        'Specification-Vendor': 'Overrun Organization',
+        'Specification-Version': '2',
+        'Implementation-Title': projName,
+        'Implementation-Vendor': 'Overrun Organization',
+        'Implementation-Version': archiveVersion
+    )
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -76,21 +79,32 @@ java {
     withSourcesJar()
 }
 
+javadoc {
+    options {
+        //-encoding utf-8 -charset utf-8 -windowtitle "GLUtils 1.6.0 Javadoc" -link https://docs.oracle.com/en/java/javase/11/docs/api/
+        encoding 'UTF-8'
+        charSet 'UTF-8'
+        author true
+        links 'https://docs.oracle.com/en/java/javase/11/docs/api/'
+        title "GLUtils $projVersion Javadoc"
+    }
+}
+
 publishing.publications {
     mavenJava(MavenPublication) {
-        groupId = 'io.github.over-run'
-        artifactId = 'glutils'
-        version = project.version
-        description = 'Utils for OpenGL for Java.'
+        groupId = projGroupId
+        artifactId = projArtifactId
+        version = projVersion
+        description = projDesc
         from components.java
         pom {
-            name = 'GLUtils'
-            description = 'Utils for OpenGL for Java.'
-            url = 'https://github.com/Over-Run/GLUtils'
+            name = projName
+            description = projDesc
+            url = "https://github.com/$projVcs"
             licenses {
                 license {
                     name = 'The MIT License'
-                    url = 'https://raw.githubusercontent.com/Over-Run/GLUtils/1.x/LICENSE'
+                    url = "https://raw.githubusercontent.com/$projVcs/$projBranch/LICENSE"
                 }
             }
             developers {
@@ -101,9 +115,9 @@ publishing.publications {
                 }
             }
             scm {
-                connection = 'https://github.com/Over-Run/GLUtils.git'
-                developerConnection = 'https://github.com/Over-Run/GLUtils.git'
-                url = 'https://github.com/Over-Run/GLUtils'
+                connection = "https://github.com/${projVcs}.git"
+                developerConnection = "https://github.com/${projVcs}.git"
+                url = "https://github.com/$projVcs"
             }
         }
     }
@@ -121,8 +135,8 @@ publishing.repositories {
             password System.getenv("OSSRH_PASSWORD")
         }
         url = version.endsWith('-SNAPSHOT')
-                ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+            : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
     }
 }
 

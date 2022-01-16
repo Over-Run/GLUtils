@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,18 +30,23 @@ package org.overrun.glutils.timer;
  * @since 1.5.0
  */
 public class SystemTimer extends AbstractTimer {
-    private static final long NS_PER_SECOND = 1_000_000_000L;
-    private static final long MAX_NS_PER_UPDATE = 1_000_000_000L;
+    public static final long NS_PER_SECOND = 1_000_000_000L;
+    public static final long MAX_NS_PER_UPDATE = 1_000_000_000L;
     private long lastTime = System.nanoTime();
 
-    public SystemTimer(float tps) {
+    /**
+     * Construct with {@link #tps}
+     *
+     * @param tps {@link #tps}
+     */
+    public SystemTimer(double tps) {
         super(tps);
     }
 
     @Override
     public void advanceTime() {
-        long now = System.nanoTime();
-        long passedNs = now - lastTime;
+        var now = System.nanoTime();
+        var passedNs = now - lastTime;
         lastTime = now;
         if (passedNs < 0L) {
             passedNs = 0L;
@@ -49,13 +54,13 @@ public class SystemTimer extends AbstractTimer {
         if (passedNs > MAX_NS_PER_UPDATE) {
             passedNs = MAX_NS_PER_UPDATE;
         }
-        fps = (float) (MAX_NS_PER_UPDATE / passedNs);
-        passedTime += (float) passedNs * timeScale * tps / (float) NS_PER_SECOND;
+        fps = (double) MAX_NS_PER_UPDATE / passedNs;
+        passedTime += passedNs * timeScale * tps / (double) NS_PER_SECOND;
         ticks = (int) passedTime;
         if (ticks > MAX_TICKS_PER_UPDATE) {
             ticks = MAX_TICKS_PER_UPDATE;
         }
-        passedTime = passedTime - ticks;
+        passedTime -= ticks;
         delta = passedTime;
     }
 

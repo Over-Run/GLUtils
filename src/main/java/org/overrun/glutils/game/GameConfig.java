@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,11 @@
 package org.overrun.glutils.game;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.overrun.glutils.timer.ITimerMgr;
 
 /**
+ * Game configs.
+ *
  * @author squid233
  * @since 1.5.0
  */
@@ -47,7 +50,7 @@ public class GameConfig {
     /**
      * Minimum required OpenGL version
      */
-    public double glVersion = 1.1;
+    public double glVersion = 1.0;
     /**
      * Option to enable core profile
      */
@@ -60,13 +63,16 @@ public class GameConfig {
      * </p>
      */
     public boolean hintVisible = false;
-    public boolean useStb = false;
     /**
-     * Set ticks per seconds.
+     * Option to set using stb
      */
-    public float tps = 20;
+    public boolean useStb = true;
     /**
-     * Option to enable vertical synchronize.
+     * Option to set timer manager.
+     */
+    public ITimerMgr timerMgr;
+    /**
+     * Option to enable vertical synchronizing.
      * <p>
      * <b>Note:</b> Don't confuse with {@link Graphics#vSync}
      * </p>
@@ -75,6 +81,5 @@ public class GameConfig {
     /**
      * Set GLFW error callback.
      */
-    public GLFWErrorCallback errorCallback =
-        GLFWErrorCallback.createPrint();
+    public GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint(System.err);
 }

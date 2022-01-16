@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,29 +25,27 @@
 
 package org.overrun.glutest;
 
-import static org.joml.Math.*;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.overrun.commonutils.Math.isNotZero;
 
 /**
  * @author squid233
  */
 public class Player {
-    //private static final int RATE = 8;
-    public static final float STEP = 0.02f;
-    public float x = 1.5f;
-    public float y = 1.5f;
-    public float z = 4.5f;
-    public float xa;
-    public float ya;
-    public float za;
-    /*public float xv;
-    public float yv;
-    public float zv;
-    private int xvRate = RATE;
-    private int yvRate = RATE;
-    private int zvRate = RATE;
-    private float lastSpeed;*/
+    public static final float SPEED = 0.1f;
+    public float
+        x = 1.5f,
+        y = 1.5f,
+        z = 4.5f,
+        xo,
+        yo,
+        zo,
+        xd,
+        yd,
+        zd;
     public float xRot, yRot;
 
     public boolean pressing(int key) {
@@ -55,14 +53,15 @@ public class Player {
     }
 
     public void tick() {
-        xa = 0;
-        ya = 0;
-        za = 0;
+        xo = x;
+        yo = y;
+        zo = z;
+        float xa = 0, ya = 0, za = 0;
         if (pressing(GLFW_KEY_W)) {
-            ++za;
+            --za;
         }
         if (pressing(GLFW_KEY_S)) {
-            --za;
+            ++za;
         }
         if (pressing(GLFW_KEY_A)) {
             --xa;
@@ -70,63 +69,48 @@ public class Player {
         if (pressing(GLFW_KEY_D)) {
             ++xa;
         }
-        if (pressing(GLFW_KEY_LEFT_SHIFT)) {
+        if (pressing(GLFW_KEY_LEFT_SHIFT)
+            || pressing(GLFW_KEY_RIGHT_SHIFT)) {
             --ya;
         }
         if (pressing(GLFW_KEY_SPACE)) {
             ++ya;
         }
-        moveRelative(pressing(GLFW_KEY_LEFT_CONTROL) || pressing(GLFW_KEY_RIGHT_CONTROL)
-                ? STEP * 2
-                : STEP);
+        moveRelative(pressing(GLFW_KEY_LEFT_CONTROL)
+                || pressing(GLFW_KEY_RIGHT_CONTROL)
+                ? SPEED * 2
+                : SPEED,
+            xa,
+            ya,
+            za);
+        x += xd;
+        y += yd;
+        z += zd;
+        xd *= 0.91 * 0.7;
+        yd *= 0.98 * 0.65;
+        zd *= 0.91 * 0.7;
     }
 
-    public void moveRelative(float speed) {
-        /*if (speed != lastSpeed) {
-            xv = 0;
-            yv = 0;
-            zv = 0;
-            xvRate = RATE;
-            yvRate = RATE;
-            zvRate = RATE;
+    public void moveRelative(float speed,
+                             float xa,
+                             float ya,
+                             float za) {
+        float dist = xa * xa + ya * ya + za * za;
+        if (dist >= 0.01) {
+            dist = (float) (speed / sqrt(dist));
+            xa *= dist;
+            ya *= dist;
+            za *= dist;
+            float sin = (float) sin(toRadians(yRot));
+            float cos = (float) cos(toRadians(yRot));
+            xd += xa * cos - za * sin;
+            yd += ya;
+            zd += za * cos + xa * sin;
         }
-        lastSpeed = speed;*/
-        if (isNotZero(xa)) {
-            /*if (--xvRate != 0 && xv < speed) {
-                xv += speed / xvRate;
-            }*/
-            x -= sin(toRadians(yRot - 90)) * xa * speed /* xv*/;
-            z += cos(toRadians(yRot - 90)) * xa * speed /* xv*/;
-        }
-        /*else {
-            xv = 0;
-            xvRate = RATE;
-        }*/
-        if (isNotZero(ya)) {
-            /*if (--yvRate != 0 && yv < speed) {
-                yv += speed / yvRate;
-            }*/
-            y += ya * speed /* yv*/;
-        }
-        /*else {
-            yv = 0;
-            yvRate = RATE;
-        }*/
-        if (isNotZero(za)) {
-            /*if (--zvRate != 0 && zv < speed) {
-                zv += speed / zvRate;
-            }*/
-            x += sin(toRadians(yRot)) * za * speed /* zv*/;
-            z -= cos(toRadians(yRot)) * za * speed /* zv*/;
-        }
-        /*else {
-            zv = 0;
-            zvRate = RATE;
-        }*/
     }
 
     public void turn(double xOffset, double yOffset) {
-        xRot += yOffset;
+        xRot -= yOffset;
         yRot += xOffset;
         if (xRot > 90) {
             xRot = 90;

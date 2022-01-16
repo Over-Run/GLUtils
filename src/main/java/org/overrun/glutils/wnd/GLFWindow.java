@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Overrun Organization
+ * Copyright (c) 2021-2022 Overrun Organization
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ package org.overrun.glutils.wnd;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
+import org.overrun.glutils.SizedObject;
 
 import java.nio.DoubleBuffer;
 
@@ -41,7 +42,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * @author squid233
  * @since 1.0.0
  */
-public class GLFWindow implements AutoCloseable, SizedObject {
+public class GLFWindow implements SizedObject {
     /**
      * window handle
      */
@@ -75,7 +76,7 @@ public class GLFWindow implements AutoCloseable, SizedObject {
                      final long share) {
         hWnd = glfwCreateWindow(width, height, title, monitor, share);
         if (hWnd == NULL) {
-            throw new RuntimeException("Can't create window");
+            throw new RuntimeException("Failed to create the GLFW window");
         }
         this.width = width;
         this.height = height;
@@ -124,48 +125,58 @@ public class GLFWindow implements AutoCloseable, SizedObject {
      * set key callback
      *
      * @param cb key callback
+     * @return the previous callback
      */
-    public void keyCb(final GLFWKeyCallbackI cb) {
-        glfwSetKeyCallback(hWnd, cb);
+    @Nullable
+    public GLFWKeyCallback keyCb(final GLFWKeyCallbackI cb) {
+        return glfwSetKeyCallback(hWnd, cb);
     }
 
     /**
      * set cursor pos callback
      *
      * @param cb cursor pos callback
+     * @return the previous callback
      */
-    public void cursorPosCb(final GLFWCursorPosCallbackI cb) {
-        glfwSetCursorPosCallback(hWnd, cb);
+    @Nullable
+    public GLFWCursorPosCallback cursorPosCb(final GLFWCursorPosCallbackI cb) {
+        return glfwSetCursorPosCallback(hWnd, cb);
     }
 
     /**
      * set scroll callback
      *
      * @param cb scroll callback
+     * @return the previous callback
      * @since 1.3.0
      */
-    public void scrollCb(final GLFWScrollCallbackI cb) {
-        glfwSetScrollCallback(hWnd, cb);
+    @Nullable
+    public GLFWScrollCallback scrollCb(final GLFWScrollCallbackI cb) {
+        return glfwSetScrollCallback(hWnd, cb);
     }
 
     /**
      * set mouse button callback
      *
      * @param cb mouse button callback
+     * @return the previous callback
      * @since 1.4.0
      */
-    public void mouseButtonCb(final GLFWMouseButtonCallbackI cb) {
-        glfwSetMouseButtonCallback(hWnd, cb);
+    @Nullable
+    public GLFWMouseButtonCallback mouseButtonCb(final GLFWMouseButtonCallbackI cb) {
+        return glfwSetMouseButtonCallback(hWnd, cb);
     }
 
     /**
      * set char callback
      *
      * @param cb char callback
+     * @return the previous callback
      * @since 1.4.0
      */
-    public void charCb(final GLFWCharCallbackI cb) {
-        glfwSetCharCallback(hWnd, cb);
+    @Nullable
+    public GLFWCharCallback charCb(final GLFWCharCallbackI cb) {
+        return glfwSetCharCallback(hWnd, cb);
     }
 
     /**
@@ -271,13 +282,28 @@ public class GLFWindow implements AutoCloseable, SizedObject {
     /**
      * set grabbed
      *
-     * @param grabbed grabbed
+     * @param grabbed        grabbed
+     * @param rawMouseMotion Use raw mouse motion
      * @since 1.5.0
      */
-    public void setGrabbed(final boolean grabbed) {
+    public void setGrabbed(final boolean grabbed,
+                           final boolean rawMouseMotion) {
         this.grabbed = grabbed;
         setInputMode(GLFW_CURSOR,
             grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+        if (rawMouseMotion && glfwRawMouseMotionSupported()) {
+            setInputMode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        }
+    }
+
+    /**
+     * set grabbed
+     *
+     * @param grabbed grabbed
+     * @since 2.0.0
+     */
+    public void setGrabbed(final boolean grabbed) {
+        setGrabbed(grabbed, true);
     }
 
     /**
@@ -291,16 +317,16 @@ public class GLFWindow implements AutoCloseable, SizedObject {
     }
 
     /**
-     * close window
+     * Close window
      *
-     * @since 1.3.0
+     * @since 2.0.0
      */
-    public void closeWindow() {
+    public void close() {
         glfwSetWindowShouldClose(hWnd, true);
     }
 
     /**
-     * free callbacks and destroy window
+     * Free callbacks and destroy window
      */
     public void free() {
         glfwFreeCallbacks(hWnd);
@@ -378,20 +404,6 @@ public class GLFWindow implements AutoCloseable, SizedObject {
     public GLFWindow setResized(final boolean resized) {
         this.resized = resized;
         return this;
-    }
-
-    /**
-     * Set mouse pos.
-     *
-     * @param mouseX mouse x
-     * @param mouseY mouse y
-     * @return this
-     * @since 1.3.0
-     */
-    @Deprecated
-    public GLFWindow setMousePos(final int mouseX,
-                                 final int mouseY) {
-        return setCursorPos(mouseX, mouseY);
     }
 
     /**
@@ -504,11 +516,5 @@ public class GLFWindow implements AutoCloseable, SizedObject {
      */
     public long getHandle() {
         return hWnd;
-    }
-
-    @Override
-    @Deprecated
-    public void close() {
-        free();
     }
 }
