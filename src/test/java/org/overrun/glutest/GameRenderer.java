@@ -309,6 +309,9 @@ public class GameRenderer {
         if (text != null) {
             text.free();
         }
+        if (textBg != null) {
+            textBg.free();
+        }
         if (program != null) {
             program.free();
         }

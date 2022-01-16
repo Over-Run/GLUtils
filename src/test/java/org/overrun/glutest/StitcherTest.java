@@ -78,6 +78,11 @@ public class StitcherTest extends Game {
         super.resize(width, height);
     }
 
+    @Override
+    public void free() {
+        Tesselator.getInstance().free();
+    }
+
     public static void main(String[] args) {
         GameConfig config = new GameConfig();
         new GameApp(new StitcherTest(), config);

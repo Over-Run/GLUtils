@@ -48,7 +48,7 @@ public class GameConfig {
     /**
      * Minimum required OpenGL version
      */
-    public double glVersion = 1.1;
+    public double glVersion = 1.0;
     /**
      * Option to enable core profile
      */
@@ -79,5 +79,5 @@ public class GameConfig {
     /**
      * Set GLFW error callback.
      */
-    public GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint();
+    public GLFWErrorCallback errorCallback = GLFWErrorCallback.createPrint(System.err);
 }

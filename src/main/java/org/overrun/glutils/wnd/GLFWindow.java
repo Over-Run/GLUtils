@@ -125,48 +125,58 @@ public class GLFWindow implements SizedObject {
      * set key callback
      *
      * @param cb key callback
+     * @return the previous callback
      */
-    public void keyCb(final GLFWKeyCallbackI cb) {
-        glfwSetKeyCallback(hWnd, cb);
+    @Nullable
+    public GLFWKeyCallback keyCb(final GLFWKeyCallbackI cb) {
+        return glfwSetKeyCallback(hWnd, cb);
     }
 
     /**
      * set cursor pos callback
      *
      * @param cb cursor pos callback
+     * @return the previous callback
      */
-    public void cursorPosCb(final GLFWCursorPosCallbackI cb) {
-        glfwSetCursorPosCallback(hWnd, cb);
+    @Nullable
+    public GLFWCursorPosCallback cursorPosCb(final GLFWCursorPosCallbackI cb) {
+        return glfwSetCursorPosCallback(hWnd, cb);
     }
 
     /**
      * set scroll callback
      *
      * @param cb scroll callback
+     * @return the previous callback
      * @since 1.3.0
      */
-    public void scrollCb(final GLFWScrollCallbackI cb) {
-        glfwSetScrollCallback(hWnd, cb);
+    @Nullable
+    public GLFWScrollCallback scrollCb(final GLFWScrollCallbackI cb) {
+        return glfwSetScrollCallback(hWnd, cb);
     }
 
     /**
      * set mouse button callback
      *
      * @param cb mouse button callback
+     * @return the previous callback
      * @since 1.4.0
      */
-    public void mouseButtonCb(final GLFWMouseButtonCallbackI cb) {
-        glfwSetMouseButtonCallback(hWnd, cb);
+    @Nullable
+    public GLFWMouseButtonCallback mouseButtonCb(final GLFWMouseButtonCallbackI cb) {
+        return glfwSetMouseButtonCallback(hWnd, cb);
     }
 
     /**
      * set char callback
      *
      * @param cb char callback
+     * @return the previous callback
      * @since 1.4.0
      */
-    public void charCb(final GLFWCharCallbackI cb) {
-        glfwSetCharCallback(hWnd, cb);
+    @Nullable
+    public GLFWCharCallback charCb(final GLFWCharCallbackI cb) {
+        return glfwSetCharCallback(hWnd, cb);
     }
 
     /**

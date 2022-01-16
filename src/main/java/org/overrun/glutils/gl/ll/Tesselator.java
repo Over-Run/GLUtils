@@ -27,13 +27,15 @@ package org.overrun.glutils.gl.ll;
 
 import org.overrun.glutils.ITesselator;
 
+import java.lang.reflect.Field;
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 /**
- * {@link ITesselator Tesselator} for OpenGL in immediate mode
+ * {@link ITesselator Tesselator} for OpenGL in immediate mode<br>
+ * You must {@link #free() free} it.
  *
  * @author squid233
  * @since 1.6.0
@@ -45,6 +47,30 @@ public class Tesselator implements ITesselator {
         1, 2, 1, 1, 3, 1, 1, 4, 1, 1
     };
     private static final Tesselator INSTANCE = new Tesselator();
+    private static final Field VALIDATE;
+    private static final Object VALIDATE_OBJ;
+
+    static {
+        Object VALIDATE_OBJ1;
+        Field VALIDATE1;
+        try {
+            VALIDATE_OBJ1 = Class.forName(
+                    "org.lwjglx.debug.Properties"
+                ).getField("VALIDATE")
+                .get(null);
+            VALIDATE1 = VALIDATE_OBJ1
+                .getClass()
+                .getField("enabled");
+        } catch (NoSuchFieldException
+            | IllegalAccessException
+            | ClassNotFoundException e) {
+            VALIDATE_OBJ1 = null;
+            VALIDATE1 = null;
+        }
+        VALIDATE_OBJ = VALIDATE_OBJ1;
+        VALIDATE = VALIDATE1;
+    }
+
     private static float[] array = new float[memoryUse];
     private static FloatBuffer buffer = memAllocFloat(memoryUse);
     private static float r, g, b, u, v;
@@ -150,7 +176,19 @@ public class Tesselator implements ITesselator {
 
     @Override
     public Tesselator draw() {
-        buffer.clear().put(array, 0, pos).flip();
+        boolean b = false;
+        try {
+            b = VALIDATE != null && VALIDATE.getBoolean(VALIDATE_OBJ);
+            if (b) {
+                VALIDATE.setBoolean(VALIDATE_OBJ, false);
+            }
+        } catch (IllegalAccessException ignored) {
+        }
+
+        buffer.clear().put(array, 0, pos);
+        if (buffer.position() > 0) {
+            buffer.flip();
+        }
 
         int mode = GL_V3F;
         if (hasColor) {
@@ -182,6 +220,18 @@ public class Tesselator implements ITesselator {
         }
 
         clear();
+
+        if (b) {
+            try {
+                VALIDATE.setBoolean(VALIDATE_OBJ, true);
+            } catch (IllegalAccessException ignored) {
+            }
+        }
         return this;
+    }
+
+    @Override
+    public void free() {
+        memFree(buffer);
     }
 }

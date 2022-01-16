@@ -48,6 +48,11 @@ public class Tesselator1Test extends Game {
         super.render();
     }
 
+    @Override
+    public void free() {
+        Tesselator.getInstance().free();
+    }
+
     public static void main(String[] args) {
         new GameApp(new Tesselator1Test(), new GameConfig());
     }

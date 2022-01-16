@@ -27,6 +27,8 @@ package org.overrun.glutest;
 
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.Callback;
 import org.overrun.glutils.game.*;
 import org.overrun.glutils.gl.Tesselator3;
 import org.overrun.glutils.tex.TexParam;
@@ -52,6 +54,7 @@ public class Tesselator3Test extends Game {
     private Tesselator3 it;
     private Tesselator3 t;
     private Texture2D sth;
+    private Callback debugProc;
 
     private class Scr extends Screen {
         public Scr(final Screen parent) {
@@ -74,6 +77,7 @@ public class Tesselator3Test extends Game {
 
     @Override
     public void create() {
+        debugProc = GLUtil.setupDebugMessageCallback();
         glClearColor(0.4f, 0.6f, 0.9f, 1.0f);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
@@ -237,6 +241,8 @@ public class Tesselator3Test extends Game {
 
     @Override
     public void free() {
+        if (debugProc != null)
+            debugProc.free();
         sth.free();
         it.free();
         t.free();

@@ -24,20 +24,22 @@ dependencies {
     api platform('org.lwjgl:lwjgl-bom:3.3.0')
 
     api 'org.lwjgl:lwjgl'
+    api 'org.lwjgl:lwjgl-assimp'
     api 'org.lwjgl:lwjgl-glfw'
+    api "org.lwjgl:lwjgl-jemalloc"
     api 'org.lwjgl:lwjgl-opengl'
     api 'org.lwjgl:lwjgl-stb'
-    api 'org.lwjgl:lwjgl-assimp'
     api 'org.joml:joml:1.10.3'
     api 'io.github.over-run:common-utils:0.3.0'
 
     compileOnly 'org.jetbrains:annotations:23.0.0'
 
     testRuntimeOnly 'org.lwjgl:lwjgl::natives-windows'
+    testRuntimeOnly 'org.lwjgl:lwjgl-assimp::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-glfw::natives-windows'
+    testRuntimeOnly "org.lwjgl:lwjgl-jemalloc::natives-windows"
     testRuntimeOnly 'org.lwjgl:lwjgl-opengl::natives-windows'
     testRuntimeOnly 'org.lwjgl:lwjgl-stb::natives-windows'
-    testRuntimeOnly 'org.lwjgl:lwjgl-assimp::natives-windows'
 }
 
 tasks.withType(JavaCompile) {

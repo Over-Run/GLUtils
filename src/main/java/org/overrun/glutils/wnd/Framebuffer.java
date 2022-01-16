@@ -100,7 +100,7 @@ public class Framebuffer implements SizedObject {
      * @param parent parent window
      */
     public void init(long parent) {
-        glfwSetFramebufferSizeCallback(parent,
+        var ocb = glfwSetFramebufferSizeCallback(parent,
             (window, w, h) -> {
                 if (cb != null) {
                     cb.invoke(window, w, h);
@@ -108,6 +108,9 @@ public class Framebuffer implements SizedObject {
                 width = w;
                 height = h;
             });
+        if (ocb != null) {
+            ocb.free();
+        }
     }
 
     /**
