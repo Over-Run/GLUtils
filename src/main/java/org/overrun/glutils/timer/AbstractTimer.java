@@ -26,6 +26,8 @@
 package org.overrun.glutils.timer;
 
 /**
+ * The abstract layer of {@link ITimer}
+ *
  * @author squid233
  * @since 1.5.0
  */
@@ -43,7 +45,7 @@ public abstract class AbstractTimer implements ITimer {
      */
     public int ticks;
     /**
-     * @see #passedTime
+     * The time since the last time.
      */
     public double delta;
     /**

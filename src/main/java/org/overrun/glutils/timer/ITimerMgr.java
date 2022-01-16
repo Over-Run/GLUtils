@@ -26,6 +26,8 @@
 package org.overrun.glutils.timer;
 
 /**
+ * The interface of timer manager.
+ *
  * @author squid233
  * @since 2.0.0
  */

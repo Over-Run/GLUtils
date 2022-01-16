@@ -110,6 +110,6 @@ public class TextRendererTest extends Game {
         GameConfig config = new GameConfig();
         config.title = "TextRenderer";
         config.timerMgr = new TimerMgrImpl(100);
-        new GameApp(new TextRendererTest(), config);
+        new GameApp(new TextRendererTest(), config).start();
     }
 }

@@ -28,6 +28,8 @@ package org.overrun.glutils.timer;
 import java.util.function.Supplier;
 
 /**
+ * The supplier of the timer.
+ *
  * @author squid233
  * @since 2.0.0
  */

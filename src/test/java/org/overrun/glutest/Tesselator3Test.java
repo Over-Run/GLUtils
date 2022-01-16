@@ -32,6 +32,7 @@ import org.lwjgl.system.Callback;
 import org.overrun.glutils.game.*;
 import org.overrun.glutils.gl.Tesselator3;
 import org.overrun.glutils.tex.TexParam;
+import org.overrun.glutils.tex.Texture2D;
 import org.overrun.glutils.tex.Textures;
 import org.overrun.glutils.timer.TimerID;
 
@@ -255,6 +256,6 @@ public class Tesselator3Test extends Game {
         config.title = "Tesselator3 Test";
         //config.glVersion = 3.3;
         //config.coreProfile = true;
-        new GameApp(new Tesselator3Test(), config);
+        new GameApp(new Tesselator3Test(), config).start();
     }
 }

@@ -32,10 +32,19 @@ package org.overrun.glutils.util;
 public class GLULoggerImpl implements IGLULogger {
     private static final GLULoggerImpl instance = new GLULoggerImpl();
 
+    /**
+     * Get the instance of the default logger.
+     *
+     * @return this
+     */
     public static GLULoggerImpl getInstance() {
         return instance;
     }
 
+    /**
+     * A constructor only for subclasses and
+     * {@link org.overrun.glutils.GLUtils GLUtils}.
+     */
     protected GLULoggerImpl() {
     }
 

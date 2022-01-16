@@ -26,20 +26,35 @@
 package org.overrun.glutils.timer;
 
 /**
+ * The default implementation of {@link ITimerMgr}.
+ *
  * @author squid233
  * @since 2.0.0
  */
 public class TimerMgrImpl implements ITimerMgr, TimerID {
     private final ITimer timer;
 
+    /**
+     * Construct
+     *
+     * @param timer The timer
+     */
     public TimerMgrImpl(ITimer timer) {
         this.timer = timer;
     }
 
+    /**
+     * Construct with {@link SystemTimer}
+     *
+     * @param tps The tps
+     */
     public TimerMgrImpl(double tps) {
         this(new SystemTimer(tps));
     }
 
+    /**
+     * Construct with 20 tps
+     */
     public TimerMgrImpl() {
         this(20);
     }

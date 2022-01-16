@@ -44,7 +44,7 @@ public class Screen implements IGameLogic {
     }
 
     /**
-     * Creating screen.
+     * Called on creating screen.
      */
     @Override
     public void create() {

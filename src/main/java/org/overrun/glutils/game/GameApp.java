@@ -46,7 +46,7 @@ public class GameApp {
     public final GameConfig config;
 
     /**
-     * Create and run game
+     * Create game
      *
      * @param game   Game logic
      * @param config Game config
@@ -55,6 +55,14 @@ public class GameApp {
                    final GameConfig config) {
         this.game = game;
         this.config = config;
+    }
+
+    /**
+     * Start the game
+     *
+     * @since 2.0.0
+     */
+    public void start() {
         app = this;
         config.errorCallback.set();
         if (!glfwInit()) {

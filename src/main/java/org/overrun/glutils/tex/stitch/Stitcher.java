@@ -50,7 +50,7 @@ import static org.overrun.glutils.tex.Textures.genMipmap;
  * You may need to merge many textures into one atlas to speed up loading, so we
  * provide a class to do this, it's {@code Stitcher}!
  * </p><p>
- * {@code Stitcher} will automatically delete duplicate filenames.
+ * {@code Stitcher} will automatically remove duplicate filenames.
  * </p>
  *
  * @author squid233
@@ -61,6 +61,27 @@ public class Stitcher {
         0xfff800f8, 0xff000000,
         0xff000000, 0xfff800f8
     };
+
+    private static class Slot extends Sprite {
+        /**
+         * The image info
+         */
+        public final NativeImage image;
+
+        /**
+         * Construct
+         *
+         * @param id    {@link #id}
+         * @param block {@link #block}
+         * @param image {@link #image}
+         */
+        public Slot(Object id,
+                    Block block,
+                    NativeImage image) {
+            super(id, block);
+            this.image = image;
+        }
+    }
 
     public static StrSpriteAtlas stitch(
         Object o,
@@ -103,7 +124,7 @@ public class Stitcher {
         boolean useStb,
         String... filenames
     ) {
-        var sprites = new Sprite[filenames.length];
+        var slots = new Slot[filenames.length];
         if (useStb) {
             try (var stack = stackPush()) {
                 var px = stack.mallocInt(1);
@@ -147,7 +168,7 @@ public class Stitcher {
                         w = px.get(0);
                         h = py.get(0);
                     }
-                    sprites[i] = new Sprite(filename,
+                    slots[i] = new Slot(filename,
                         new Block(w, h),
                         new NativeImage(w, h, bb));
                 }
@@ -179,17 +200,17 @@ public class Stitcher {
                 }
                 bb = memAlloc(w * h * Integer.BYTES);
                 bb.asIntBuffer().put(pixels);
-                sprites[i] = new Sprite(filename,
+                slots[i] = new Slot(filename,
                     new Block(w, h),
                     new NativeImage(w, h, bb, false));
             }
         }
 
-        Arrays.sort(sprites, null);
+        Arrays.sort(slots, null);
 
-        var blocks = new Block[sprites.length];
+        var blocks = new Block[slots.length];
         for (int i = 0; i < blocks.length; i++) {
-            blocks[i] = sprites[i].block;
+            blocks[i] = slots[i].block;
         }
         var packer = new GrowingPacker();
         packer.fit(blocks);
@@ -208,7 +229,7 @@ public class Stitcher {
             GL_RGBA,
             GL_UNSIGNED_BYTE,
             new int[w * h]);
-        for (var s : sprites) {
+        for (var s : slots) {
             var b = s.block;
             if (b.fit != null) {
                 glTexSubImage2D(GL_TEXTURE_2D,
@@ -219,14 +240,14 @@ public class Stitcher {
                     b.h,
                     GL_RGBA,
                     GL_UNSIGNED_BYTE,
-                    s.buffer.data);
+                    s.image.data);
             }
-            s.free();
+            s.image.free();
         }
         genMipmap(GL_TEXTURE_2D);
 
         var map = new LinkedHashMap<String, Sprite>();
-        for (var sprite : sprites) {
+        for (var sprite : slots) {
             map.put((String) sprite.id, sprite);
         }
         return new StrSpriteAtlas(w, h, id, map);

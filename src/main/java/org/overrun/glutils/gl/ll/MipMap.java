@@ -25,12 +25,13 @@
 
 package org.overrun.glutils.gl.ll;
 
-import org.lwjgl.BufferUtils;
 import org.overrun.glutils.tex.Textures;
 
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
+import static org.lwjgl.system.MemoryUtil.memFree;
 import static org.overrun.glutils.gl.ll.GLU.GLU_INVALID_ENUM;
 import static org.overrun.glutils.gl.ll.GLU.GLU_INVALID_VALUE;
 import static org.overrun.glutils.gl.ll.Util.*;
@@ -68,7 +69,7 @@ public class MipMap {
         }
 
         // Get current glPixelStore state
-        PixelStoreState pss = new PixelStoreState();
+        var pss = new PixelStoreState();
 
         // set pixel packing
         glPixelStorei(GL_PACK_ROW_LENGTH, 0);
@@ -82,7 +83,7 @@ public class MipMap {
 
         if (w != width || h != height) {
             // must rescale image to get "top" mipmap texture image
-            image = BufferUtils.createByteBuffer((w + 4) * h * bpp);
+            image = memAlloc((w + 4) * h * bpp);
             int error = gluScaleImage(format, width, height, type, data, w, h, type, image);
             if (error != 0) {
                 retVal = error;
@@ -122,11 +123,14 @@ public class MipMap {
             final ByteBuffer newImage;
 
             if (bufferA == null)
-                newImage = (bufferA = BufferUtils.createByteBuffer((newW + 4) * newH * bpp));
-            else if (bufferB == null)
-                newImage = (bufferB = BufferUtils.createByteBuffer((newW + 4) * newH * bpp));
-            else
+                newImage = (bufferA = memAlloc((newW + 4) * newH * bpp));
+            else if (bufferB == null) {
+                memFree(bufferA);
+                newImage = (bufferB = memAlloc((newW + 4) * newH * bpp));
+            } else {
+                memFree(bufferA);
                 newImage = bufferB;
+            }
 
             int error = gluScaleImage(format, w, h, type, image, newW, newH, type, newImage);
             if (error != 0) {
@@ -134,9 +138,12 @@ public class MipMap {
                 done = true;
             }
 
+            memFree(image);
             image = newImage;
-            if (bufferB != null)
+            if (bufferB != null) {
+                memFree(bufferB);
                 bufferB = bufferA;
+            }
 
             w = newW;
             h = newH;
@@ -198,7 +205,7 @@ public class MipMap {
         }
 
         // Get glPixelStore state
-        PixelStoreState pss = new PixelStoreState();
+        var pss = new PixelStoreState();
 
         //Unpack the pixel data and convert to floating point
         if (pss.unpackRowLength > 0)

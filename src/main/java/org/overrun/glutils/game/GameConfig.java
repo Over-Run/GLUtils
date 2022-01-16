@@ -29,6 +29,8 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.overrun.glutils.timer.ITimerMgr;
 
 /**
+ * Game configs.
+ *
  * @author squid233
  * @since 1.5.0
  */

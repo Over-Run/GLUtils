@@ -85,6 +85,6 @@ public class StitcherTest extends Game {
 
     public static void main(String[] args) {
         GameConfig config = new GameConfig();
-        new GameApp(new StitcherTest(), config);
+        new GameApp(new StitcherTest(), config).start();
     }
 }

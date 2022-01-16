@@ -54,7 +54,6 @@ public class Images {
         throw new RuntimeException(strErrStbi(filename));
     }
 
-    @Contract("_ -> fail")
     public static void thrOut(String filename) {
         getLogger().error(strErrStbi(filename));
     }

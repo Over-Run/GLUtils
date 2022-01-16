@@ -28,7 +28,7 @@ package org.overrun.glutils.gui;
 import org.jetbrains.annotations.Nullable;
 import org.overrun.commonutils.FloatArray;
 import org.overrun.commonutils.IntArray;
-import org.overrun.glutils.game.Texture2D;
+import org.overrun.glutils.tex.Texture2D;
 
 import java.util.Scanner;
 

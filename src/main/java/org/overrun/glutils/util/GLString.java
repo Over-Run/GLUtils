@@ -26,6 +26,8 @@
 package org.overrun.glutils.util;
 
 /**
+ * Utils of C String.
+ *
  * @author squid233
  * @since 0.4.0
  */
@@ -33,12 +35,12 @@ public class GLString {
     /**
      * Convert C String to Java String.
      *
-     * @param str Null terminated string.
+     * @param str A null terminated string.
      * @return String
      */
     public static String toJava(String str) {
         return str.endsWith("\0")
-                ? str.substring(0, str.length() - 1)
-                : str;
+            ? str.substring(0, str.length() - 1)
+            : str;
     }
 }

@@ -47,15 +47,17 @@ tasks.withType(JavaCompile) {
 }
 
 jar {
-    from 'LICENSE'
-    manifest {
-        attributes 'Specification-Title': projName,
-                'Specification-Vendor': 'Overrun Organization',
-                'Specification-Version': '2',
-                'Implementation-Title': projName,
-                'Implementation-Vendor': 'Overrun Organization',
-                'Implementation-Version': archiveVersion
-    }
+    manifestContentCharset 'utf-8'
+    metadataCharset 'utf-8'
+    from 'LICENSE', 'changelog.txt'
+    manifest.attributes(
+        'Specification-Title': projName,
+        'Specification-Vendor': 'Overrun Organization',
+        'Specification-Version': '2',
+        'Implementation-Title': projName,
+        'Implementation-Vendor': 'Overrun Organization',
+        'Implementation-Version': archiveVersion
+    )
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -133,8 +135,8 @@ publishing.repositories {
             password System.getenv("OSSRH_PASSWORD")
         }
         url = version.endsWith('-SNAPSHOT')
-                ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+            : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
     }
 }
 

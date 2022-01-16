@@ -26,6 +26,8 @@
 package org.overrun.glutils.util.math;
 
 /**
+ * Utils of math.
+ *
  * @author squid233
  * @since 2.0.0
  */

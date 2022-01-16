@@ -26,15 +26,37 @@
 package org.overrun.glutils.util;
 
 /**
+ * An interface of logger for GLUtils.
+ *
  * @author squid233
  * @since 2.0.0
  */
 public interface IGLULogger {
+    /**
+     * Send information message to console.
+     *
+     * @param msg The message.
+     */
     void info(String msg);
 
+    /**
+     * Send warning message to console.
+     *
+     * @param msg The message.
+     */
     void warn(String msg);
 
+    /**
+     * Send error message to console.
+     *
+     * @param msg The message.
+     */
     void error(String msg);
 
+    /**
+     * Send stack trace to console.
+     *
+     * @param t The Throwable.
+     */
     void catching(Throwable t);
 }

@@ -25,7 +25,7 @@
 
 package org.overrun.glutils.gui;
 
-import org.overrun.glutils.game.Texture2D;
+import org.overrun.glutils.tex.Texture2D;
 import org.overrun.glutils.tex.Textures;
 
 import java.awt.*;

@@ -148,6 +148,6 @@ public class DrawerTest extends Game {
     }
 
     public static void main(String[] args) {
-        new GameApp(new DrawerTest(), new GameConfig());
+        new GameApp(new DrawerTest(), new GameConfig()).start();
     }
 }

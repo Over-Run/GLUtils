@@ -188,6 +188,6 @@ public class GLUTest extends Game {
             cfg.coreProfile = true;
         }
         System.out.println("Testing GLUtils " + GLUtils.version);
-        new GameApp(new GLUTest(), cfg);
+        new GameApp(new GLUTest(), cfg).start();
     }
 }

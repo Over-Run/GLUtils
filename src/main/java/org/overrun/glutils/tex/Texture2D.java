@@ -23,9 +23,7 @@
  *
  */
 
-package org.overrun.glutils.game;
-
-import org.overrun.glutils.tex.Texture;
+package org.overrun.glutils.tex;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 

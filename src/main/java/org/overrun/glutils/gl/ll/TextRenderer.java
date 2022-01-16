@@ -107,8 +107,8 @@ public class TextRenderer {
     public static int getWidth(String text,
                                FontTexture font) {
         int i = 0;
-        for (char c : text.toCharArray()) {
-            i += font.getGlyph(c).getWidth();
+        for (int j = 0, l = text.length(); j < l; j++) {
+            i += font.getGlyph(text.charAt(j)).getWidth();
         }
         return i;
     }

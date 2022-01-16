@@ -54,6 +54,6 @@ public class Tesselator1Test extends Game {
     }
 
     public static void main(String[] args) {
-        new GameApp(new Tesselator1Test(), new GameConfig());
+        new GameApp(new Tesselator1Test(), new GameConfig()).start();
     }
 }

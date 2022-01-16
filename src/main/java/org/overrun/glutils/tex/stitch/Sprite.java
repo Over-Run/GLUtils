@@ -25,38 +25,28 @@
 
 package org.overrun.glutils.tex.stitch;
 
-import org.jetbrains.annotations.NotNull;
-import org.overrun.glutils.tex.NativeImage;
-
 import java.util.StringJoiner;
 
-import static java.lang.Integer.compare;
-
 /**
+ * The sprite in {@link SpriteAtlas}.
+ *
  * @author squid233
  * @since 2.0.0
  */
-public class Sprite implements Comparable<Sprite> {
+public class Sprite {
+    /**
+     * The id
+     */
     public final Object id;
+    /**
+     * The block that contains pos and size
+     */
     public final Block block;
-    public final NativeImage buffer;
 
     public Sprite(Object id,
-                  Block block,
-                  NativeImage buffer) {
+                  Block block) {
         this.id = id;
         this.block = block;
-        this.buffer = buffer;
-    }
-
-    public void free() {
-        buffer.free();
-    }
-
-    @Override
-    public int compareTo(@NotNull Sprite o) {
-        var c = compare(o.buffer.height, buffer.height);
-        return c == 0 ? compare(o.buffer.width, buffer.width) : c;
     }
 
     @Override
@@ -64,7 +54,6 @@ public class Sprite implements Comparable<Sprite> {
         return new StringJoiner(", ", Sprite.class.getSimpleName() + "[", "]")
             .add("id=" + id)
             .add("block=" + block)
-            .add("buffer=" + buffer)
             .toString();
     }
 }

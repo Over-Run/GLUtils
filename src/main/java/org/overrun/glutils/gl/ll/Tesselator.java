@@ -183,6 +183,7 @@ public class Tesselator implements ITesselator {
                 VALIDATE.setBoolean(VALIDATE_OBJ, false);
             }
         } catch (IllegalAccessException ignored) {
+            // Do nothing; when LWJGLX-debug is not found
         }
 
         buffer.clear().put(array, 0, pos);
@@ -225,6 +226,7 @@ public class Tesselator implements ITesselator {
             try {
                 VALIDATE.setBoolean(VALIDATE_OBJ, true);
             } catch (IllegalAccessException ignored) {
+                // Do nothing; when LWJGLX-debug is not found
             }
         }
         return this;

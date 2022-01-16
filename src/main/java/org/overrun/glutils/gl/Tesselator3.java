@@ -257,6 +257,7 @@ public class Tesselator3 implements ITesselator {
         return this;
     }
 
+    @Override
     public void free() {
         memFree(buffer);
         program.free();
