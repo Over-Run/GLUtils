@@ -50,7 +50,6 @@ public class Game implements IGameLogic {
      *     <li>{@link Screen#resize Resize} the new screen</li>
      *     <li>{@link Screen#create Create} the new screen</li>
      * </ul>
-     * </p>
      *
      * @param s The new screen
      */
