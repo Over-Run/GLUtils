@@ -25,6 +25,7 @@
 
 package org.overrun.glutils.tex.stitch;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.overrun.glutils.tex.NativeImage;
 import org.overrun.glutils.tex.TexParam;
@@ -34,6 +35,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
+import static java.lang.Integer.compare;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -62,7 +64,9 @@ public class Stitcher {
         0xff000000, 0xfff800f8
     };
 
-    private static class Slot extends Sprite {
+    private static class Slot
+        extends Sprite
+        implements Comparable<Slot> {
         /**
          * The image info
          */
@@ -80,6 +84,12 @@ public class Stitcher {
                     NativeImage image) {
             super(id, block);
             this.image = image;
+        }
+
+        @Override
+        public int compareTo(@NotNull Slot o) {
+            var c = compare(o.image.height, image.height);
+            return c == 0 ? compare(o.image.width, image.width) : c;
         }
     }
 
